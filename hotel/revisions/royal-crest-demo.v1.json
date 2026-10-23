@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "source_id": "royal-crest-demo",
+  "version": 1,
+  "demo": true,
+  "name": "Royal Crest Manor",
+  "language": "en",
+  "timezone": "Europe/Kyiv",
+  "rooms": [
+    {
+      "id": "manor-suite",
+      "name": "Manor Suite",
+      "description": "Fictional demo suite with one bedroom and a sitting area.",
+      "capacity": 2,
+      "bedrooms": 1,
+      "beds": [
+        "1 king bed"
+      ],
+      "amenity_ids": [
+        "wifi",
+        "breakfast"
+      ]
+    },
+    {
+      "id": "garden-room",
+      "name": "Garden Room",
+      "description": "Fictional demo room with a garden view.",
+      "capacity": 4,
+      "bedrooms": 2,
+      "beds": [
+        "1 king bed",
+        "2 single beds"
+      ],
+      "amenity_ids": [
+        "wifi",
+        "breakfast",
+        "terrace"
+      ]
+    }
+  ],
+  "amenities": [
+    {
+      "id": "wifi",
+      "name": "Wi-Fi",
+      "description": "Demo Wi-Fi is included in guest rooms and public areas. Passwords are not published."
+    },
+    {
+      "id": "breakfast",
+      "name": "Breakfast",
+      "description": "Demo breakfast is included, daily from 07:00 to 10:00. Dietary arrangements need staff confirmation."
+    },
+    {
+      "id": "terrace",
+      "name": "Garden terrace",
+      "description": "A private terrace for registered guests of the Garden Room."
+    }
+  ],
+  "policies": [
+    {
+      "id": "arrival",
+      "title": "Arrival and departure",
+      "status": "known",
+      "body": "Fictional demo policy. All times are in Europe/Kyiv. Check-in starts at 15:00. Checkout is by 11:00. Early check-in and late checkout need staff confirmation and are not guaranteed by an open inventory night. Luggage storage is available from 07:00 to 22:00. Fees for special arrangements are not published."
+    },
+    {
+      "id": "pets",
+      "title": "Pets and access",
+      "status": "known",
+      "body": "Fictional demo policy. Pets are not permitted except assistance animals arranged with staff. Step-free access is not confirmed. Ask staff before relying on accessible accommodation. No live staff contact is configured in this demo."
+    },
+    {
+      "id": "family",
+      "title": "Family and occupancy",
+      "status": "known",
+      "body": "Fictional demo policy. Adults, children and infants all count towards room capacity. Manor Suite holds two guests; Garden Room holds four guests. No extra beds are available. A cot may be requested for a child under two, subject to staff confirmation; it does not increase capacity."
+    },
+    {
+      "id": "cancellation",
+      "title": "Cancellation terms",
+      "status": "known",
+      "body": "Fictional demo policy. For a flexible rate, cancellation is free by 23:59 Europe/Kyiv time seven calendar days before check-in. Later cancellation or a no-show has a charge of one accommodation night. A non-refundable rate has a full-stay charge for cancellation or a no-show. Ask which rate applies; do not infer it from the room. This demo has no paid rates or published room prices, so no monetary fee can be calculated. Cancellation, changes and refunds require staff review; this data reader cannot perform them."
+    },
+    {
+      "id": "prices",
+      "title": "Room prices and service fees",
+      "status": "unknown",
+      "body": "Room prices, currency and service fees have not been set for this fictional demo. Do not quote amounts or assume a free service."
+    },
+    {
+      "id": "reservations",
+      "title": "Demo reservation limits",
+      "status": "known",
+      "body": "Royal Crest Manor is fictional. Any later reservation feature must label reservations as demo only and require explicit guest confirmation. Reading hotel information or inventory does not reserve or hold a room. This task provides data only; it does not create reservations."
+    }
+  ],
+  "inventory": [
+    {
+      "room_id": "manor-suite",
+      "night": "2026-11-01",
+      "open": true
+    },
+    {
+      "room_id": "manor-suite",
+      "night": "2026-11-02",
+      "open": true
+    },
+    {
+      "room_id": "manor-suite",
+      "night": "2026-11-03",
+      "open": true
+    },
+    {
+      "room_id": "manor-suite",
+      "night": "2026-11-04",
+      "open": true
+    },
+    {
+      "room_id": "manor-suite",
+      "night": "2026-11-05",
+      "open": true
+    },
+    {
+      "room_id": "manor-suite",
+      "night": "2026-11-06",
+      "open": true
+    },
+    {
+      "room_id": "manor-suite",
+      "night": "2026-11-07",
+      "open": true
+    },
+    {
+      "room_id": "garden-room",
+      "night": "2026-11-01",
+      "open": true
+    },
+    {
+      "room_id": "garden-room",
+      "night": "2026-11-02",
+      "open": true
+    },
+    {
+      "room_id": "garden-room",
+      "night": "2026-11-03",
+      "open": true
+    },
+    {
+      "room_id": "garden-room",
+      "night": "2026-11-04",
+      "open": true
+    },
+    {
+      "room_id": "garden-room",
+      "night": "2026-11-05",
+      "open": false
+    },
+    {
+      "room_id": "garden-room",
+      "night": "2026-11-06",
+      "open": true
+    },
+    {
+      "room_id": "garden-room",
+      "night": "2026-11-07",
+      "open": true
+    }
+  ]
+}

@@ -187,3 +187,9 @@ Keep this plan focused on future development. Historical audits and detailed wor
 - Result: Same-origin website/FastAPI, local PostgreSQL, configuration examples, locked Python dependencies, migration command and CI checks are ready for review.
 - Check: Windows startup passed; migrations applied once and safely repeated. Seven tests passed against a separate disposable PostgreSQL database, including rollback and database failure. Lint, formatting, JavaScript syntax and desktop/mobile checks passed.
 - Next: Review and merge the SIN-59 PR. Model integration and hotel data remain in later tasks.
+
+### T03 — SIN-60
+
+- Result: Versioned local demo hotel files, validated backend reads and read-only API routes provide rooms, amenities, complete policies and inventory fixtures. Unknown facts are explicit; the edit/reload guide preserves source versions.
+- Check: Hotel validation, lint, formatting, JavaScript syntax and 32 local tests passed. Two PostgreSQL tests were skipped locally because Docker is unavailable; the PR CI runs them with a separate database. Focused checks cover invalid data, safe reload, old citations and HTTP results.
+- Next: Review the SIN-60 PR and its CI result. User acceptance and merge are required before Done.

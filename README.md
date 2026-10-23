@@ -1,8 +1,8 @@
 # Smart Hotels System
 
 A local foundation for Royal Crest Manor, a fictional demo hotel. FastAPI serves the
-website and API on the same origin. PostgreSQL holds application state. This task
-adds no assistant, model calls, hotel inventory or reservations.
+website and API on the same origin. PostgreSQL holds application state. Local
+`hotel/` files provide validated demo rooms, amenities, policies and inventory fixtures. There are no assistant/model calls or reservation operations yet.
 
 ## Requirements
 
@@ -61,7 +61,16 @@ Add numbered SQL files to `backend/migrations/`; never edit an applied file.
 The migration command uses one transaction, a database advisory lock, and a checksum
 ledger. A repeat run makes no changes. A failed run rolls back the whole batch;
 fix the new file and run again. The initial migration creates only the ledger;
-feature tables belong to later tasks. There is no seed command in T02.
+feature tables belong to later tasks. Hotel information is read from local files
+and does not need a database seed. See [hotel/README.md](hotel/README.md) for editing,
+validation, reload commands and the `/api/hotel/*` read API.
+
+## Hotel information
+
+Run `uv run --locked python -m backend.app.hotel` to validate the complete demo
+catalogue. FastAPI loads a validated snapshot at startup. Reads include a source ID,
+version and demo label. Missing facts are explicit; no model fills in the gaps.
+See [hotel/README.md](hotel/README.md) for the data format and safe version updates.
 
 ## Checks and disposable database
 
