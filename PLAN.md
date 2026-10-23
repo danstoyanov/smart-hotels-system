@@ -181,3 +181,9 @@ For each completed task, record only:
 - Next: the next task or a concrete blocker.
 
 Keep this plan focused on future development. Historical audits and detailed work logs do not belong here.
+
+### T02 — SIN-59
+
+- Result: Same-origin website/FastAPI, local PostgreSQL, configuration examples, locked Python dependencies, migration command and CI checks are ready for review.
+- Check: Windows startup passed; migrations applied once and safely repeated. Seven tests passed against a separate disposable PostgreSQL database, including rollback and database failure. Lint, formatting, JavaScript syntax and desktop/mobile checks passed.
+- Next: Review and merge the SIN-59 PR. Model integration and hotel data remain in later tasks.

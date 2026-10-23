@@ -10,7 +10,8 @@
 
 ## Setup and checks
 
-- This baseline has documentation only. There are no application install, run or test commands yet. T02 must add and verify them, with tested versions in lockfiles.
+- Run `uv sync --locked` from the root. See README.md for PostgreSQL and PowerShell startup.
+- Use `scripts/check.ps1` for local checks and `scripts/test.ps1` for the separate disposable PostgreSQL database. Never use the application database for tests.
 - Do not invent setup commands or claim unrun checks passed. Never commit credentials or real guest data.
 - Add focused safeguards and checks with each feature. For documentation changes, check the diff, links and agreement with the plan and confirmed choices; no application tests are needed.
 
