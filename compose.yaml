@@ -1,0 +1,36 @@
+name: smart-hotels-system
+
+services:
+  db:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_USER: smart_hotels
+      POSTGRES_PASSWORD: local_demo_only
+      POSTGRES_DB: smart_hotels
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - hotel_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smart_hotels -d smart_hotels"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  test-db:
+    image: postgres:17.6-alpine
+    profiles: [test]
+    environment:
+      POSTGRES_USER: smart_hotels
+      POSTGRES_PASSWORD: local_test_only
+      POSTGRES_DB: smart_hotels_test
+    ports:
+      - "127.0.0.1:55433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smart_hotels -d smart_hotels_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+volumes:
+  hotel_db:

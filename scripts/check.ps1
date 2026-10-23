@@ -1,0 +1,12 @@
+$ErrorActionPreference = "Stop"
+Push-Location (Split-Path $PSScriptRoot -Parent)
+try {
+    uv run --locked ruff check .
+    if ($LASTEXITCODE -ne 0) { throw "Lint failed." }
+    uv run --locked ruff format --check .
+    if ($LASTEXITCODE -ne 0) { throw "Format check failed." }
+    node --check frontend/assets/site.js
+    if ($LASTEXITCODE -ne 0) { throw "JavaScript check failed." }
+    uv run --locked pytest
+    if ($LASTEXITCODE -ne 0) { throw "Tests failed." }
+} finally { Pop-Location }

@@ -1,0 +1,25 @@
+[project]
+name = "smart-hotels-system"
+version = "0.1.0"
+description = "Local foundation for one demo hotel"
+requires-python = ">=3.13,<3.15"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.36,<1",
+  "psycopg[binary,pool]>=3.2,<4",
+  "pydantic-settings>=2.7,<3",
+  "tzdata>=2025.1",
+]
+
+[dependency-groups]
+dev = ["httpx>=0.28,<1", "pytest>=8,<10", "ruff>=0.11,<1"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["backend/tests"]

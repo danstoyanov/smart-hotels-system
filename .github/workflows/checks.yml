@@ -1,0 +1,33 @@
+name: Checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.6-alpine
+        env:
+          POSTGRES_USER: smart_hotels
+          POSTGRES_PASSWORD: local_test_only
+          POSTGRES_DB: smart_hotels_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U smart_hotels -d smart_hotels_test"
+          --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      TEST_DATABASE_URL: postgresql://smart_hotels:local_test_only@127.0.0.1:5432/smart_hotels_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.4"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: uv sync --locked
+      - run: uv run --locked ruff check .
+      - run: uv run --locked ruff format --check .
+      - run: node --check frontend/assets/site.js
+      - run: uv run --locked pytest
