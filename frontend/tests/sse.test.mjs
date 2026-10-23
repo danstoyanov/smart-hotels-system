@@ -27,3 +27,16 @@ test('SSE rejects truncated frames and invalid JSON', async () => {
     await assert.rejects(readEvents(stream(new TextEncoder().encode(body), 1), () => {}));
   }
 });
+
+test('SSE cancels an open stream when parsing or its handler fails', async () => {
+  for (const body of ['event: text\ndata: invalid\n\n', 'event: error\ndata: {"message":"failed"}\n\n']) {
+    let cancelled = false;
+    const source = new ReadableStream({
+      start(controller) { controller.enqueue(new TextEncoder().encode(body)); },
+      cancel() { cancelled = true; },
+    });
+    await assert.rejects(readEvents(source, () => { throw new Error('failed'); }));
+    assert.equal(cancelled, true, 'A failed reader must close the response stream');
+    assert.equal(source.locked, false);
+  }
+});
