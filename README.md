@@ -131,7 +131,7 @@ The database stores SHA-256 hashes of random 256-bit tokens, not the cookie valu
 - `POST /api/conversation` starts a new conversation. Earlier history stays in the
   database but is no longer returned. Reset is rejected while a reply is active.
 - `POST /api/chat` takes `{turn_id, message}` with a client-generated UUID and
-  1–2000 nonblank characters. It streams `turn_started`, `text`, committed `result`,
+  1â€“2000 nonblank characters. It streams `turn_started`, `text`, committed `result`,
   then `done` using fetch/SSE. Partial text is provisional. The browser uses plain
   text rendering, so guest input cannot become HTML.
 

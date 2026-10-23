@@ -291,3 +291,39 @@ def test_commit_precedes_result_and_model_holds_no_connection(guest_client):
             call(refreshed, "GET", "/api/history", token).json()["turns"][0]["answer"]
             == "saved answer"
         )
+
+
+def test_concurrent_admission_allows_one_turn(guest_client):
+    from fastapi import HTTPException
+
+    client = guest_client
+    token = new_guest(client)
+    store = GuestStore(client.app.state.pool)
+
+    async def race():
+        return await asyncio.gather(
+            store.admit(token, uuid4(), "first"),
+            store.admit(token, uuid4(), "second"),
+            return_exceptions=True,
+        )
+
+    results = client.portal.call(race)
+    assert sum(isinstance(result, tuple) for result in results) == 1
+    errors = [result for result in results if isinstance(result, HTTPException)]
+    assert len(errors) == 1 and errors[0].status_code == 409
+
+
+def test_failed_commit_never_reports_completion(guest_client):
+    from unittest.mock import AsyncMock, patch
+
+    client = guest_client
+    token = new_guest(client)
+    with patch.object(GuestStore, "complete", AsyncMock(side_effect=RuntimeError("commit failed"))):
+        response = call(
+            client, "POST", "/api/chat", token, json={"turn_id": str(uuid4()), "message": "hello"}
+        )
+    assert "event: error" in response.text
+    assert "event: result" not in response.text
+    assert "event: done" not in response.text
+    assert call(client, "GET", "/api/history", token).json()["turns"] == []
+    assert call(client, "POST", "/api/conversation", token).status_code == 200
