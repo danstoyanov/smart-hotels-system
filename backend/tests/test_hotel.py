@@ -64,6 +64,8 @@ def test_complete_reads_and_unknowns(hotel_dir):
         lambda d: d["inventory"][0].update(night="2026-02-30"),
         lambda d: d["inventory"].append(d["inventory"][0]),
         lambda d: d["policies"][0].update(body=""),
+        lambda d: d["policies"][0].update(body=" \n\t "),
+        lambda d: d["rooms"][0].update(name="   "),
         lambda d: d.update(version=2),
         lambda d: d.update(unexpected="field"),
     ],

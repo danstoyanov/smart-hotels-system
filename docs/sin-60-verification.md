@@ -24,3 +24,21 @@ content. Prices, currency and service fees remain unknown. Hotel versions are
 local files, not database imports. Reload keeps a last good snapshot within a
 process; after restart, archived-file immutability relies on the documented editing
 rule and Git review. Every server process must restart after a file update.
+
+## Self-review follow-up
+
+Reviewed SIN-60 against PLAN.md sections 1 and 3–5 and the permitted reference
+hotel catalogue, arrival policy, room facts and inventory. Demo labels, complete
+backend reads, source versions, missing/unknown states and edit/reload instructions
+meet T03. The small versioned JSON source is intentional; copying the reference's
+full document set or database format is not required.
+
+Found and fixed one defect: whitespace-only policy bodies and other required text
+were accepted. Required text now contains at least one non-whitespace character;
+existing policy content is preserved. Regression checks verify a failed reload
+keeps the previous valid snapshot for blank policy bodies and room names.
+
+Reran only relevant checks: 29 hotel tests, hotel fixture validation, Ruff lint and
+format for the two changed Python files, and git diff --check. All passed. The
+existing Starlette/httpx deprecation warning remains. No infrastructure, integrations
+or new runtime features were added. The PR remains open for user review and merge.

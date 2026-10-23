@@ -13,7 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_valida
 from backend.app.settings import ROOT
 
 ID = Annotated[str, Field(pattern=r"^[a-z][a-z0-9-]{0,79}$")]
-Text = Annotated[str, Field(min_length=1, max_length=12000)]
+Text = Annotated[str, Field(min_length=1, max_length=12000, pattern=r"\S")]
 Version = Annotated[int, Field(ge=1)]
 
 
