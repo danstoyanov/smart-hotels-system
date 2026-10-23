@@ -1,19 +1,31 @@
 import asyncio
+import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
+from typing import Literal
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from backend.app.db import create_pool
+from backend.app.hotel import HotelDataError, HotelStore
 from backend.app.settings import ROOT, Settings
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(settings: Settings | None = None, *, hotel_directory: Path | None = None) -> FastAPI:
     settings = settings or Settings()
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
+        app.state.hotel = HotelStore(
+            hotel_directory or ROOT / "hotel",
+            expected_hotel=(settings.hotel_name, settings.hotel_language, settings.hotel_timezone),
+        )
+        try:
+            app.state.hotel.reload()
+        except HotelDataError:
+            logging.warning("Hotel data is unavailable; run python -m backend.app.hotel")
         async with create_pool(settings.database_url) as pool:
             app.state.pool = pool
             yield
@@ -48,6 +60,32 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "timezone": settings.hotel_timezone,
             "demo": True,
         }
+
+    def hotel_response(result):
+        codes = {
+            "ok": 200,
+            "unknown": 200,
+            "not_found": 404,
+            "invalid_input": 422,
+            "unavailable": 503,
+        }
+        return JSONResponse(result, status_code=codes[result["status"]])
+
+    @app.get("/api/hotel/catalogue")
+    async def hotel_catalogue():
+        return hotel_response(app.state.hotel.catalogue())
+
+    @app.get("/api/hotel/{section}")
+    @app.get("/api/hotel/{section}/{item_id}")
+    async def hotel_information(
+        section: Literal["rooms", "amenities", "policies", "inventory"],
+        item_id: str | None = None,
+        source_id: str | None = None,
+        version: int | None = Query(default=None, ge=1),
+    ):
+        return hotel_response(
+            app.state.hotel.read(section, item_id, source_id=source_id, version=version)
+        )
 
     @app.get("/", include_in_schema=False)
     async def index():
