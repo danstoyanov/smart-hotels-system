@@ -37,3 +37,21 @@ Reset changes the visible conversation, not database retention. One session can
 have one active turn; a failed cleanup can remain busy until its two-minute lease
 expires. There is no replay/status endpoint or model integration in this task.
 The user reviews and merges the PR, then accepts the criteria before SIN-61 is Done.
+
+## Self-review after merge
+
+- Checked SIN-61 and PLAN sections 1 and 3–5 against guest ownership, completed
+  history after refresh, conversation reset and interrupted requests. Ownership
+  comes only from the session cookie; reset rotates only that session's conversation.
+- Read REFERENCE.md and consulted only the pinned example's session/history and
+  streaming code. Its stream-reader cleanup highlighted an open-response defect:
+  our parser released its lock without cancelling on parse/handler failures.
+- Fixed that cleanup and added a regression that failed before the fix and passed
+  after it. No endpoints or advanced recovery features were added.
+- Three focused SSE tests passed. Desktop/mobile browser checks passed, including
+  Stop, failed reply followed by a successful message, refresh and reset. These use
+  API fixtures. The local session suite passed its cookie check and skipped eleven
+  PostgreSQL checks because Docker is unavailable; follow-up CI runs the real DB tests.
+- Remaining limits are unchanged: a local response stub, fixed 24-hour sessions,
+  reset without data deletion, and up to two minutes busy after process/cleanup
+  failure. The follow-up PR needs user review and merge.

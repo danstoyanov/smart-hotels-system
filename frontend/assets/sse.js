@@ -26,6 +26,8 @@ export async function readEvents(stream, onEvent) {
     drain();
     if (buffer.trim()) throw new Error('Incomplete reply. Reload chat before sending again.');
   } finally {
+    // A parser/handler failure must also stop server work on the open response.
+    await reader.cancel().catch(() => {});
     reader.releaseLock();
   }
 }

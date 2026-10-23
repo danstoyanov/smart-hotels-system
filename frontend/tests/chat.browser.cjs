@@ -24,6 +24,10 @@ const fs = require('node:fs');
         if (path === '/api/conversation') { turns = []; return json({ conversation_id: 'fixture-new' }); }
         if (path === '/api/chat') {
           const body = route.request().postDataJSON();
+          if (mode === 'fail') {
+            return route.fulfill({ contentType: 'text/event-stream', body:
+              'event: text\ndata: {"text":"not saved"}\n\nevent: error\ndata: {"message":"Demo reply failed. Try again."}\n\n' });
+          }
           if (mode === 'hold') {
             await new Promise(resolve => setTimeout(resolve, 1200));
             return route.abort().catch(() => {});
@@ -61,8 +65,19 @@ const fs = require('node:fs');
       await page.getByText('Reply stopped.', { exact: false }).waitFor();
       assert.equal(await page.locator('.chat-message').count(), 0);
       assert.equal(await page.locator('#send').isEnabled(), true);
+      mode = 'fail';
+      await page.getByLabel('Your message', { exact: true }).fill('This reply will fail');
+      await page.getByRole('button', { name: 'Send message' }).click();
+      await page.getByText('Demo reply failed. Try again.', { exact: true }).waitFor();
+      assert.equal(await page.locator('.chat-message').count(), 0);
+      assert.equal(await page.locator('#send').isEnabled(), true);
+      mode = 'complete';
+      await page.getByLabel('Your message', { exact: true }).fill('Continue after failure');
+      await page.getByRole('button', { name: 'Send message' }).click();
+      await page.getByText('Reply saved.', { exact: false }).waitFor();
+      assert.equal(await page.locator('.chat-message').count(), 2);
       assert.deepEqual(errors, []);
-      console.log(`${name}: send, safe text, refresh, reset, stop, overflow and console checks passed`);
+      console.log(`${name}: send, safe text, refresh, reset, stop, failure/retry, overflow and console checks passed`);
       await context.close();
     }
   } finally {
