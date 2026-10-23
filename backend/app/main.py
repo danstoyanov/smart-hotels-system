@@ -4,10 +4,13 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI, Query
+import psycopg
+from fastapi import FastAPI, Query, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from psycopg_pool import PoolTimeout
 
+from backend.app.chat import guest_routes, stub_reply
 from backend.app.db import create_pool
 from backend.app.hotel import HotelDataError, HotelStore
 from backend.app.settings import ROOT, Settings
@@ -31,6 +34,23 @@ def create_app(settings: Settings | None = None, *, hotel_directory: Path | None
             yield
 
     app = FastAPI(title="Smart Hotels", lifespan=lifespan)
+
+    app.state.reply = stub_reply
+    app.include_router(guest_routes(settings))
+
+    @app.middleware("http")
+    async def private_cache(request: Request, call_next):
+        response = await call_next(request)
+        if request.url.path in {"/api/session", "/api/history", "/api/conversation", "/api/chat"}:
+            response.headers["Cache-Control"] = "no-store"
+        return response
+
+    @app.exception_handler(psycopg.Error)
+    @app.exception_handler(PoolTimeout)
+    async def database_error(request, exc):
+        return JSONResponse(
+            {"detail": "Chat storage unavailable. Try again shortly."}, status_code=503
+        )
 
     @app.get("/api/health")
     async def health():

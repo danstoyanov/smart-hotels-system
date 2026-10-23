@@ -1,6 +1,4 @@
 import asyncio
-import os
-from urllib.parse import urlsplit
 
 import psycopg
 import pytest
@@ -12,33 +10,21 @@ from backend.app.runtime import new_loop
 from backend.app.settings import Settings
 
 
-@pytest.fixture
-def database_url():
-    url = os.environ.get("TEST_DATABASE_URL")
-    if not url:
-        if os.environ.get("CI"):
-            pytest.fail("CI requires TEST_DATABASE_URL")
-        pytest.skip("Run scripts/test.ps1 for disposable PostgreSQL checks")
-    name = urlsplit(url).path.lstrip("/")
-    if not name.endswith("_test"):
-        pytest.fail("TEST_DATABASE_URL must name a disposable database ending in _test")
-    return url
-
-
 def test_migrations_repeat_health_and_rollback(database_url, tmp_path):
     async def exercise():
         await migrate(database_url)
         assert await migrate(database_url) == []
         async with await psycopg.AsyncConnection.connect(database_url) as conn:
             rows = await (await conn.execute("SELECT name FROM schema_migrations")).fetchall()
-            assert rows == [("001_foundation.sql",)]
+            assert set(rows) == {("001_foundation.sql",), ("002_guest_sessions.sql",)}
 
         # Include the original file, then test a failed new migration transaction.
         from backend.app.db import MIGRATIONS
 
         original = (MIGRATIONS / "001_foundation.sql").read_text()
-        (tmp_path / "001_foundation.sql").write_text(original)
-        bad = tmp_path / "002_failure.sql"
+        for path in MIGRATIONS.glob("*.sql"):
+            (tmp_path / path.name).write_text(path.read_text())
+        bad = tmp_path / "003_failure.sql"
         bad.write_text("CREATE TABLE rollback_probe (id int); SELECT 1 / 0;")
         with pytest.raises(psycopg.errors.DivisionByZero):
             await migrate(database_url, tmp_path)

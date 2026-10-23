@@ -2,7 +2,7 @@
 
 A local foundation for Royal Crest Manor, a fictional demo hotel. FastAPI serves the
 website and API on the same origin. PostgreSQL holds application state. Local
-`hotel/` files provide validated demo rooms, amenities, policies and inventory fixtures. There are no assistant/model calls or reservation operations yet.
+`hotel/` files provide validated demo rooms, amenities, policies and inventory fixtures. The chat uses a local response stub. There are no model calls or reservation operations yet.
 
 ## Requirements
 
@@ -115,3 +115,44 @@ The frontend uses browser JavaScript without packages, so it has no npm lockfile
 - If dependency installation fails, check network access, then repeat `uv sync --locked`.
 
 See `brief.md` for approved demo choices and `PLAN.md` for the next tasks.
+
+## Guest conversations (SIN-61)
+
+Open the site at `APP_ORIGIN` (default `http://127.0.0.1:8000`). A different host,
+including `localhost` instead of `127.0.0.1`, requires a matching setting. All
+session/chat writes require this exact Origin. For HTTPS, set `COOKIE_SECURE=true`.
+The local HTTP default is false. Cookies are host-only, HttpOnly and SameSite=Strict.
+The database stores SHA-256 hashes of random 256-bit tokens, not the cookie values.
+
+- `POST /api/session` creates or reuses a session. Its fixed lifetime is 24 hours;
+  reuse does not extend it. An expired or invalid cookie starts a fresh session.
+- `GET /api/history` returns the current conversation's latest 20 completed turns,
+  oldest first. The cookie is the only ownership credential. No guest IDs are accepted.
+- `POST /api/conversation` starts a new conversation. Earlier history stays in the
+  database but is no longer returned. Reset is rejected while a reply is active.
+- `POST /api/chat` takes `{turn_id, message}` with a client-generated UUID and
+  1–2000 nonblank characters. It streams `turn_started`, `text`, committed `result`,
+  then `done` using fetch/SSE. Partial text is provisional. The browser uses plain
+  text rendering, so guest input cannot become HTML.
+
+Missing/expired cookies return 401 for history, reset and chat. Use Reload chat to
+start a new session; old history is not recovered. Duplicate UUIDs return a generic
+409 for every guest, including after reset. Reload history before retrying with a
+new UUID. This task does not add replay or a turn-status endpoint.
+
+Stop reply aborts fetch. Only complete answers enter history. Refresh reads saved
+history; it does not resume a running reply. If the database commit succeeded but
+the network lost the result, Reload chat restores the saved answer. A failed reply
+emits a safe `error` without `done`. A storage outage returns 503 before streaming,
+or a safe SSE error if streaming already started.
+
+Only one turn runs per session. Admission and completion use short transactions;
+model work holds no database connection. Replies have a 90-second deadline and a
+16,000-character output limit. Disconnect cleanup has a shielded five-second limit.
+If the process dies or cleanup cannot reach PostgreSQL, the two-minute busy lease
+expires; the next chat/reset marks the old turn interrupted. A stale worker cannot
+save over a later turn. Expiry during a reply also prevents saving the answer.
+
+Sessions are browser credentials, not guest accounts. People sharing a browser
+share its session. New conversation clears the visible conversation; it is not a
+data-deletion feature. Data retention and deployment controls belong to later tasks.

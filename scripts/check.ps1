@@ -7,6 +7,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Format check failed." }
     node --check frontend/assets/site.js
     if ($LASTEXITCODE -ne 0) { throw "JavaScript check failed." }
+    node --check frontend/assets/chat.js
+    if ($LASTEXITCODE -ne 0) { throw "Chat JavaScript check failed." }
+    node --test frontend/tests/sse.test.mjs
+    if ($LASTEXITCODE -ne 0) { throw "SSE browser-module tests failed." }
     uv run --locked python -m backend.app.hotel
     if ($LASTEXITCODE -ne 0) { throw "Hotel data validation failed." }
     uv run --locked pytest

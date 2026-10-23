@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     hotel_name: str = Field(default="Royal Crest Manor", min_length=1, max_length=120)
     hotel_language: str = Field(default="en", pattern=r"^[a-z]{2,3}(-[A-Za-z]{2,4})?$")
     hotel_timezone: str = "Europe/Kyiv"
+    app_origin: str = "http://127.0.0.1:8000"
+    cookie_secure: bool = False
 
     @field_validator("hotel_timezone")
     @classmethod
