@@ -1,7 +1,8 @@
 from pathlib import Path
+from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -16,6 +17,19 @@ class Settings(BaseSettings):
     hotel_timezone: str = "Europe/Kyiv"
     app_origin: str = "http://127.0.0.1:8000"
     cookie_secure: bool = False
+    assistant_mode: Literal["stub", "vertex"] = "stub"
+    google_cloud_project: str = ""
+    google_cloud_location: str = ""
+    gemini_model: str = "gemini-3.8-flash"
+
+    @model_validator(mode="after")
+    def vertex_settings(self):
+        if self.assistant_mode == "vertex" and not all(
+            value.strip()
+            for value in (self.google_cloud_project, self.google_cloud_location, self.gemini_model)
+        ):
+            raise ValueError("Vertex mode requires a project, location and model")
+        return self
 
     @field_validator("hotel_timezone")
     @classmethod

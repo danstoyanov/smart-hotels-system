@@ -44,6 +44,7 @@ def test_pages_and_public_configuration():
             "language": "en",
             "timezone": "Europe/Kyiv",
             "demo": True,
+            "assistant_mode": "stub",
         }
         assert "database_url" not in site
 
