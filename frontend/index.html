@@ -6,6 +6,7 @@
   <title>Royal Crest Manor · Demo</title>
   <link rel="stylesheet" href="/assets/site.css">
   <script type="module" src="/assets/site.js"></script>
+  <script type="module" src="/assets/chat.js"></script>
 </head>
 <body>
   <header><a href="/" aria-label="Home">Royal Crest Manor</a><span>Fictional hotel · Demo</span></header>
@@ -14,12 +15,32 @@
     <p class="intro">Welcome to <span id="hotel-name">Royal Crest Manor</span>. This is the first step of our demo hotel website.</p>
     <section aria-labelledby="status-heading">
       <h2 id="status-heading">The foundation is here.</h2>
-      <p>Hotel information, an assistant and demo reservations will arrive in later stages. Reservations are not available yet.</p>
+      <p>Demo hotel information and a private conversation are available. The AI assistant and demo reservations will arrive in later stages.</p>
       <div class="connection">
         <p id="status" role="status" aria-live="polite">Checking the connection…</p>
         <button id="check" type="button">Check connection</button>
       </div>
       <noscript><p>Enable JavaScript to check the connection.</p></noscript>
+    </section>
+    <section class="chat" aria-labelledby="chat-heading">
+      <div class="chat-heading">
+        <h2 id="chat-heading">Your conversation</h2>
+        <button id="reset" type="button" disabled>New conversation</button>
+      </div>
+      <p>Try the chat with a demo reply. It cannot answer hotel questions yet. This browser keeps your conversation for up to 24 hours. Avoid sharing sensitive information.</p>
+      <p id="chat-empty">Your completed messages will appear here.</p>
+      <div id="chat-log" role="log" aria-label="Conversation history" aria-live="off"></div>
+      <form id="chat-form">
+        <label for="message">Your message</label>
+        <textarea id="message" name="message" rows="3" maxlength="2000" required disabled></textarea>
+        <div class="chat-actions">
+          <button id="send" type="submit" disabled>Send message</button>
+          <button id="stop" type="button" hidden>Stop reply</button>
+          <button id="retry-chat" type="button">Reload chat</button>
+        </div>
+      </form>
+      <p id="chat-status" role="status" aria-live="polite">Loading your conversation…</p>
+      <noscript><p>Enable JavaScript to use the chat.</p></noscript>
     </section>
   </main>
   <footer><span>One hotel. A work in progress.</span><span id="timezone">Europe/Kyiv</span></footer>

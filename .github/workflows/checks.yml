@@ -30,5 +30,7 @@ jobs:
       - run: uv run --locked ruff check .
       - run: uv run --locked ruff format --check .
       - run: node --check frontend/assets/site.js
+      - run: node --check frontend/assets/chat.js
+      - run: node --test frontend/tests/sse.test.mjs
       - run: uv run --locked python -m backend.app.hotel
       - run: uv run --locked pytest
