@@ -58,10 +58,10 @@ def create_app(settings: Settings | None = None, *, hotel_directory: Path | None
             async with asyncio.timeout(5):
                 async with app.state.pool.connection() as conn:
                     await conn.execute("SELECT 1")
-                    # Readiness also requires the initial migration.
+                    # Readiness also requires the guest-session schema.
                     row = await (
                         await conn.execute(
-                            "SELECT 1 FROM schema_migrations WHERE name = '001_foundation.sql'"
+                            "SELECT 1 FROM schema_migrations WHERE name = '002_guest_sessions.sql'"
                         )
                     ).fetchone()
                     if row is None:

@@ -35,7 +35,7 @@ uv run --locked uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --loop
 Invoke-RestMethod http://127.0.0.1:8000/api/health
 ```
 
-The health endpoint returns HTTP 200 only when PostgreSQL answers and the initial
+The health endpoint returns HTTP 200 only when PostgreSQL answers and the guest-session
 migration exists. It returns a safe HTTP 503 response on failure; it never calls a
 model. It has a five-second deadline. Database connection details stay private.
 The page can still load while PostgreSQL is unavailable.

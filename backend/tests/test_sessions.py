@@ -327,3 +327,20 @@ def test_failed_commit_never_reports_completion(guest_client):
     assert "event: done" not in response.text
     assert call(client, "GET", "/api/history", token).json()["turns"] == []
     assert call(client, "POST", "/api/conversation", token).status_code == 200
+
+
+def test_history_returns_latest_twenty_completed_turns(guest_client):
+    client = guest_client
+    token = new_guest(client)
+    store = GuestStore(client.app.state.pool)
+
+    async def fill_history():
+        for number in range(22):
+            turn = uuid4()
+            session, conversation = await store.admit(token, turn, f"question {number}")
+            await store.complete(session, conversation, turn, f"answer {number}")
+
+    client.portal.call(fill_history)
+    turns = call(client, "GET", "/api/history", token).json()["turns"]
+    assert len(turns) == 20
+    assert [turn["question"] for turn in turns] == [f"question {n}" for n in range(2, 22)]
