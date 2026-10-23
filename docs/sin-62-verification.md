@@ -43,12 +43,29 @@ Manor data, Europe/Kyiv, the existing session API and PLAN task scope remain in 
 
 ## Live acceptance remains open
 
-No paid model calls or cloud changes were made in this task run. The user selected
-Gemini 3.8 Flash. Google Cloud project, location, access method and approved spending
-limit are still needed before a live check. The command in README runs four small
-cases and stops on failure without automatic retry. Review known facts, missing
-prices and refusal to claim availability or booking success. Check the local
-website against the real model as well.
+Recovered the earlier user-confirmed settings from the previous SIN-62 task:
+project `smart-hotels-system`, location `global`, local ADC and the existing $2
+monthly Vertex limit. The user confirmed Gemini 3.8 Flash in this chat. Explicit
+command approvals covered the bounded live checks. No Cloud services, IAM, account
+settings or spending limit were changed. Credentials and tokens were not inspected.
+
+The arrival case passed with the real model: check-in 15:00, checkout 11:00,
+Europe/Kyiv, the correct arrival source, fictional demo label and no false action.
+It used three model calls and 1,537 total tokens. The saved answer was manually
+reviewed against the hotel record.
+
+The next case, breakfast, failed. The SDK traceback reports `httpx.ReadTimeout`
+while waiting for response headers. ADK surfaced a generic RuntimeError, which is
+what the safe smoke report saved. No provider HTTP status, usage, model-call count
+or exact elapsed time was captured for this failed case. Its usage and cost remain
+unknown, not zero. No retry was made. The sequence stopped before unknown-price,
+booking or real browser checks. No claim is made about the timeout's cause.
+
+The real-browser check script is ready and passes JavaScript syntax validation,
+but was not executed because the preceding live case failed. Fixture-based browser
+checks passed as described above. The live-smoke command stops on failure without
+automatic retry. Remaining live acceptance: breakfast, missing prices, refusal to
+claim availability or booking success, and the local website with the real model.
 
 SIN-62 and M1 remain incomplete until that evidence exists and the user accepts and
 merges the PR. Stub mode remains the default. Source links identify records read;
