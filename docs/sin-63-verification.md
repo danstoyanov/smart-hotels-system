@@ -125,3 +125,7 @@ README.md and this report contained invalid UTF-8. Hypothesis: Windows default
 encoding wrote new en dashes as single-byte Windows characters. Change only the
 invalid bytes to UTF-8, preserving valid existing text. Repeat strict UTF-8 reads
 and the format check before pushing. Application code and SQL are unchanged.
+
+The UTF-8 correction passed strict decoding and format. Its diff check then found
+an extra carriage return from Windows newline conversion in README.md. Change only
+document line endings to LF, repeat diff/format checks, then push the correction.
