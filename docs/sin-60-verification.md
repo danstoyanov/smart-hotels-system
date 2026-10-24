@@ -1,5 +1,9 @@
 # SIN-60 verification
 
+**Closure — 24 October 2026:** PR #3 is merged and SIN-60 is Done. The text below
+records development checks and the review state at that time. It is historical;
+the old pending-merge wording is superseded. See [M1 handover](m1-handover.md).
+
 Checked on Windows on 23 October 2026 with Python 3.13.2 and the locked dependencies.
 
 - `uv sync --locked`: passed; no dependency changes.

@@ -182,14 +182,8 @@ For each completed task, record only:
 
 Keep this plan focused on future development. Historical audits and detailed work logs do not belong here.
 
-### T02 — SIN-59
+### M1 accepted — 2026-10-24
 
-- Result: Same-origin website/FastAPI, local PostgreSQL, configuration examples, locked Python dependencies, migration command and CI checks are ready for review.
-- Check: Windows startup passed; migrations applied once and safely repeated. Seven tests passed against a separate disposable PostgreSQL database, including rollback and database failure. Lint, formatting, JavaScript syntax and desktop/mobile checks passed.
-- Next: Review and merge the SIN-59 PR. Model integration and hotel data remain in later tasks.
-
-### T03 — SIN-60
-
-- Result: Versioned local demo hotel files, validated backend reads and read-only API routes provide rooms, amenities, complete policies and inventory fixtures. Unknown facts are explicit; the edit/reload guide preserves source versions.
-- Check: Hotel validation, lint, formatting, JavaScript syntax and 32 local tests passed. Two PostgreSQL tests were skipped locally because Docker is unavailable; the PR CI runs them with a separate database. Focused checks cover invalid data, safe reload, old citations and HTTP results.
-- Next: Review the SIN-60 PR and its CI result. User acceptance and merge are required before Done.
+- Result: T01–T05 (SIN-58–SIN-62) are Done. The local Royal Crest Manor website has versioned hotel data, private PostgreSQL-backed conversations and a Gemini/ADK assistant with saved source references. PR #6 was merged into main at `d8438fdc08cb26ce1c2314d6311ecb532ac855f2`.
+- Check: The final review read the plan, code, structure, recorded development evidence and merge state. No tests, server or model calls were run during the review or this documentation update. The earlier foreground acceptance report records a successful real-model answer and source/history recovery after refresh.
+- Next: SIN-63 (T06), full-stay availability search, after explicit execution approval. M2 and M3 remain planned. Read [the M1 handover](docs/m1-handover.md) for the current layout, evidence and limits.

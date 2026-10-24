@@ -1,5 +1,10 @@
 # SIN-62 timeout comparison — 24 October 2026
 
+**Historical investigation:** This report describes an earlier point in T05.
+The later [foreground acceptance](sin-62-foreground-browser.md) passed, the user
+merged PR #6 and SIN-62 is Done. Earlier In Progress/unmerged statements below
+are historical. See [M1 handover](m1-handover.md). No investigation was rerun.
+
 ## Result
 
 The immediate failure is a provider-request read timeout before response headers.

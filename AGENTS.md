@@ -2,7 +2,7 @@
 
 ## Start and scope
 
-- Read the current Linear issue, PLAN.md sections 1 and 3–5, this file and brief.md. Read DESIGN.md if present.
+- Read the current Linear issue, PLAN.md sections 1 and 3–5, this file, brief.md and docs/m1-handover.md. Read DESIGN.md if present.
 - PLAN.md section 2 is architecture guidance, not a feature checklist. Keep the plan focused on future work.
 - REFERENCE.md is a pointer only. Consult the example project only when the user asks.
 - Build one demo hotel with local `hotel/` data, FastAPI, PostgreSQL, ADK and Gemini. Use clear Python and browser JavaScript.

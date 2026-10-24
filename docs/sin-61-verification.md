@@ -1,5 +1,10 @@
 # SIN-61 verification
 
+**Closure — 24 October 2026:** PRs #4 and #5 are merged and SIN-61 is Done.
+The sections below describe the T04 implementation and its checks at the time;
+T05 later added the real model. Old pending-merge statements are historical.
+See [M1 handover](m1-handover.md) for current scope and limits.
+
 ## Result
 
 Guest cookies own database-backed conversations. Refresh restores completed turns;

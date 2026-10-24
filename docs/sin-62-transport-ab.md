@@ -1,5 +1,10 @@
 # SIN-62 controlled transport comparison — 24 October 2026
 
+**Closure:** SIN-62 is Done and PR #6 is merged. This report preserves the earlier
+comparison and the acceptance gaps that existed then. They were closed by the
+later [foreground acceptance](sin-62-foreground-browser.md). See
+[M1 handover](m1-handover.md) for the current baseline. No comparison was rerun.
+
 ## Result
 
 Changed the existing T05 adapter to use aiohttp by default. HTTPX remains an
@@ -97,4 +102,4 @@ The separately approved foreground real-browser test passed with one user reques
 and one model call, including answer/source persistence and refresh. See
 [the foreground report](sin-62-foreground-browser.md). The earlier remaining-check
 section is historical; no requested T05 technical check remains unverified.
-User acceptance and merge are still pending.
+User acceptance and merge were later completed on 24 October 2026.
