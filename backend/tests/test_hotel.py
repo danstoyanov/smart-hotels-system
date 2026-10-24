@@ -29,7 +29,7 @@ def test_complete_reads_and_unknowns(hotel_dir):
     assert store.get_rooms()["status"] == "unavailable"
     store.reload()
     rooms = store.get_rooms()
-    assert rooms["source"] == {"source_id": "royal-crest-demo", "version": 1, "demo": True}
+    assert rooms["source"] == {"source_id": "royal-crest-demo", "version": 2, "demo": True}
     assert rooms["hotel"] == {
         "name": "Royal Crest Manor",
         "language": "en",
@@ -83,38 +83,38 @@ def test_invalid_candidate_keeps_last_valid_snapshot(hotel_dir, change):
 def test_safe_version_reload_preserves_old_sources(hotel_dir):
     store = HotelStore(hotel_dir)
     store.reload()
-    assert store.reload()["version"] == 1
+    assert store.reload()["version"] == 2
     original = store.get_policy("arrival")
-    old_path = hotel_dir / "revisions/royal-crest-demo.v1.json"
+    old_path = hotel_dir / "revisions/royal-crest-demo.v2.json"
     data = json.loads(old_path.read_text(encoding="utf-8"))
-    data["version"] = 2
+    data["version"] = 3
     data["policies"][0]["body"] = "Revised fictional demo policy. Check-in starts at 16:00."
-    new_path = hotel_dir / "revisions/royal-crest-demo.v2.json"
+    new_path = hotel_dir / "revisions/royal-crest-demo.v3.json"
     new_path.write_text(json.dumps(data), encoding="utf-8")
     catalogue_path = hotel_dir / "catalogue.json"
     catalogue = json.loads(catalogue_path.read_text(encoding="utf-8"))
-    catalogue["active_version"] = 2
+    catalogue["active_version"] = 3
     catalogue["sources"].append(
         {
             "source_id": "royal-crest-demo",
-            "version": 2,
-            "file": "revisions/royal-crest-demo.v2.json",
+            "version": 3,
+            "file": "revisions/royal-crest-demo.v3.json",
         }
     )
     catalogue_path.write_text(json.dumps(catalogue), encoding="utf-8")
-    assert store.reload()["version"] == 2
+    assert store.reload()["version"] == 3
     assert "16:00" in store.get_policy("arrival")["data"][0]["body"]
-    assert store.read("policies", "arrival", source_id="royal-crest-demo", version=1) == original
+    assert store.read("policies", "arrival", source_id="royal-crest-demo", version=2) == original
     # Earlier citations also work after a new process starts.
     restarted = HotelStore(hotel_dir)
     restarted.reload()
     assert (
-        restarted.read("policies", "arrival", source_id="royal-crest-demo", version=1) == original
+        restarted.read("policies", "arrival", source_id="royal-crest-demo", version=2) == original
     )
     update_source(hotel_dir, lambda d: d["rooms"][0].update(name="Changed without version"))
     with pytest.raises(HotelDataError, match="unchanged"):
         store.reload()
-    assert store.catalogue()["active"]["version"] == 2
+    assert store.catalogue()["active"]["version"] == 3
 
 
 @pytest.mark.parametrize("file_value", ["../outside.json", "revisions/missing.json"])
@@ -157,7 +157,7 @@ def test_invalid_tool_input_is_clear(hotel_dir, args, kwargs):
 def test_http_reads_revisions_and_no_reload_endpoint(hotel_dir):
     app = create_app(Settings(_env_file=None), hotel_directory=hotel_dir)
     with TestClient(app, backend_options={"loop_factory": new_loop}) as client:
-        assert client.get("/api/hotel/catalogue").json()["active"]["version"] == 1
+        assert client.get("/api/hotel/catalogue").json()["active"]["version"] == 2
         assert client.get("/api/hotel/rooms/manor-suite").json()["data"][0]["capacity"] == 2
         assert client.get("/api/hotel/amenities").status_code == 200
         assert client.get("/api/hotel/policies/prices").json()["status"] == "unknown"
@@ -195,17 +195,17 @@ def test_failed_new_revision_does_not_publish_or_drop_old_citations(hotel_dir):
     before = store.get_policy("arrival")
     path = hotel_dir / "catalogue.json"
     catalogue = json.loads(path.read_text(encoding="utf-8"))
-    catalogue["active_version"] = 2
+    catalogue["active_version"] = 3
     catalogue["sources"].append(
-        {"source_id": "royal-crest-demo", "version": 2, "file": "missing-v2.json"}
+        {"source_id": "royal-crest-demo", "version": 3, "file": "missing-v3.json"}
     )
     path.write_text(json.dumps(catalogue), encoding="utf-8")
     with pytest.raises(HotelDataError):
         store.reload()
     assert store.get_policy("arrival") == before
-    assert store.catalogue()["active"]["version"] == 1
+    assert store.catalogue()["active"]["version"] == 2
     # Fixing the failed candidate allows a safe retry.
-    catalogue["active_version"] = 1
-    catalogue["sources"] = catalogue["sources"][:1]
+    catalogue["active_version"] = 2
+    catalogue["sources"] = catalogue["sources"][:2]
     path.write_text(json.dumps(catalogue), encoding="utf-8")
     assert store.reload()["status"] == "ok"

@@ -64,6 +64,41 @@ async function read(path) {
 function errorText(target, message) {
   target.replaceChildren(node("p", "notice error", message));
 }
+async function bookingRead(path, options = {}) {
+  const response = await fetch(path, {
+    cache: "no-store",
+    credentials: "same-origin",
+    signal: AbortSignal.timeout(10000),
+    ...options,
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    const error = new Error(data.detail || "Demo reservation is unavailable.");
+    error.status = response.status;
+    throw error;
+  }
+  return data;
+}
+function renderBooking(target, booking) {
+  const room = state.rooms.find((item) => item.id === booking.room_id);
+  const card = node("div", "review-card confirmation-card");
+  if (room) card.append(image(room));
+  const text = node("div", "review-copy");
+  text.append(
+    node("span", "eyebrow", "Demo reservation confirmed"),
+    node("h2", "", room?.name || booking.room_id),
+    node("p", "", `${booking.check_in} to ${booking.check_out} · ${booking.guests} guests`),
+    node("p", "booking-reference", `Reference: ${booking.reference}`),
+    node("p", "small-note", booking.message),
+    node("p", "small-note", "No price or payment is part of this demo."),
+    link("Return to rooms", "/#rooms", "button button-outline"),
+  );
+  card.append(text);
+  target.replaceChildren(card);
+  $("#review-title").textContent = "Your demo reservation";
+  $(".review-lead").textContent =
+    "Your selected room is reserved in this fictional demo. This is not a real hotel booking.";
+}
 function renderCatalogue() {
   const list = $("#room-list");
   list.replaceChildren(...state.rooms.map(roomCard));
@@ -201,6 +236,18 @@ async function renderReview() {
     node("p", "notice", "Checking this selection against the demo inventory…"),
   );
   const params = new URLSearchParams(location.search);
+  const reference = params.get("reference");
+  if (reference) {
+    try {
+      const booking = await bookingRead(
+        `/api/bookings/${encodeURIComponent(reference)}`,
+      );
+      renderBooking(target, booking);
+    } catch {
+      errorText(target, "Demo reservation not found for this guest session.");
+    }
+    return;
+  }
   const id = params.get("room");
   const checkIn = params.get("check_in");
   const checkOut = params.get("check_out");
@@ -217,7 +264,26 @@ async function renderReview() {
     check_out: checkOut,
     guests,
   });
+  const storageKey = `demo-booking:${query.toString()}:${id}`;
+  let pending;
   try {
+    pending = JSON.parse(sessionStorage.getItem(storageKey) || "null");
+  } catch {
+    pending = null;
+  }
+  try {
+    if (pending?.attempted && pending.request_id) {
+      try {
+        const booking = await bookingRead(
+          `/api/bookings/by-request/${encodeURIComponent(pending.request_id)}`,
+        );
+        history.replaceState(null, "", `/review?reference=${encodeURIComponent(booking.reference)}`);
+        renderBooking(target, booking);
+        return;
+      } catch (error) {
+        if (error.status !== 404) throw error;
+      }
+    }
     const data = await read(`/api/availability?${query}`);
     const room = data.rooms?.find((item) => item.id === id);
     if (data.status !== "ok" || !room) {
@@ -249,6 +315,42 @@ async function renderReview() {
         "No price or currency is set. No room is held and no reservation is created.",
       ),
     );
+    const confirm = node("button", "button button-gold", "Confirm demo reservation");
+    confirm.type = "button";
+    const status = node("p", "notice", "Confirmation saves one demo reservation for this browser session.");
+    status.setAttribute("role", "status");
+    confirm.addEventListener("click", async () => {
+      confirm.disabled = true;
+      status.textContent = "Saving your demo reservation…";
+      let requestId = pending?.request_id;
+      if (!requestId) requestId = crypto.randomUUID();
+      pending = { request_id: requestId, attempted: true };
+      sessionStorage.setItem(storageKey, JSON.stringify(pending));
+      try {
+        await bookingRead("/api/session", { method: "POST" });
+        const booking = await bookingRead("/api/bookings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            request_id: requestId,
+            room_id: id,
+            check_in: checkIn,
+            check_out: checkOut,
+            guests: Number(guests),
+            confirmed: true,
+          }),
+        });
+        history.replaceState(null, "", `/review?reference=${encodeURIComponent(booking.reference)}`);
+        renderBooking(target, booking);
+      } catch (error) {
+        status.textContent =
+          error.status === 409
+            ? `${error.message} Search again, or reload to check this request.`
+            : "The result is unclear. Reload this page or retry; the same request ID will be used.";
+        confirm.disabled = false;
+      }
+    });
+    text.append(confirm, status);
     text.append(
       link("Choose different dates", "/#availability", "button button-outline"),
     );

@@ -10,6 +10,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from psycopg_pool import PoolTimeout
 
+from backend.app.bookings import booking_routes
 from backend.app.chat import guest_routes, stub_reply
 from backend.app.db import create_pool
 from backend.app.hotel import HotelDataError, HotelStore
@@ -38,11 +39,17 @@ def create_app(settings: Settings | None = None, *, hotel_directory: Path | None
 
     app.state.reply = stub_reply
     app.include_router(guest_routes(settings))
+    app.include_router(booking_routes(settings))
 
     @app.middleware("http")
     async def private_cache(request: Request, call_next):
         response = await call_next(request)
-        if request.url.path in {"/api/session", "/api/history", "/api/conversation", "/api/chat"}:
+        if request.url.path in {
+            "/api/session",
+            "/api/history",
+            "/api/conversation",
+            "/api/chat",
+        } or request.url.path.startswith("/api/bookings"):
             response.headers["Cache-Control"] = "no-store"
         return response
 

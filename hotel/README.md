@@ -5,19 +5,21 @@ information about a real business. Initial language: English (`en`). Property da
 and times use `Europe/Kyiv`. Do not add credentials, private contact details or guest data.
 
 `catalogue.json` lists complete JSON revisions and selects one active revision.
-`revisions/royal-crest-demo.v1.json` contains two rooms, three amenities, six policies
-and fourteen explicit inventory nights, 1–7 November 2026. The Garden Room is closed
+`revisions/royal-crest-demo.v2.json` is active. It keeps the two rooms, three amenities,
+six policies and fourteen explicit inventory nights from v1, and describes the new
+demo reservation step. V1 remains available for older citations. The Garden Room is closed
 on 5 November. A missing night is unknown, never assumed open. These are fixtures;
 the full-stay search imports them into PostgreSQL. Reading or searching never
-holds rooms or creates reservations.
+holds rooms or creates reservations. Only explicit confirmation on the review page
+can create a demo reservation.
 
 ## Edit, validate and reload
 
-1. Copy the active file to a new file, for example `revisions/royal-crest-demo.v2.json`.
-2. Increase its `version` to `2`. Edit room facts, amenities, full policy bodies or
+1. Copy the active file to a new file, for example `revisions/royal-crest-demo.v3.json`.
+2. Increase its `version` to `3`. Edit room facts, amenities, full policy bodies or
    individual inventory nights. Keep `demo: true`. Keep old files unchanged.
 3. Add the new source ID, version and file to `catalogue.json.sources`. Keep older
-   entries so their citations remain readable. Set `active_version` to `2`.
+   entries so their citations remain readable. Set `active_version` to `3`.
 4. Run `uv run --locked python -m backend.app.hotel`. Exit code 0 means the complete
    catalogue passed validation; exit code 1 means invalid or missing data. The
    command reports schema field errors without changing the running application.
@@ -100,4 +102,6 @@ nights stay unknown; a closed night rules a room out. Room capacity includes eve
 person. See [the availability contract](../README.md#full-stay-availability-sin-63).
 The database import also rejects changed room/inventory data under a loaded
 source ID/version, across restarts. Old imported versions remain available for
-rollback by selecting their unchanged catalogue revision. No public write API exists.
+rollback by selecting their unchanged catalogue revision. The hotel data API has no
+write route. The separate reservation API requires an owned guest session and
+explicit confirmation.
