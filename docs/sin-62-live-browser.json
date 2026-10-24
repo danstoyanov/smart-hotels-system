@@ -1,0 +1,101 @@
+{
+  "mode": "real Vertex API, no fixtures",
+  "model": "gemini-3.8-flash",
+  "transport": "aiohttp",
+  "user_requests": 1,
+  "max_model_calls": 8,
+  "automatic_retries": false,
+  "elapsed_seconds": 10.516,
+  "turns": [
+    {
+      "question": "Is breakfast included and when is it served?",
+      "answer": "Breakfast is included at Royal Crest Manor and is served daily from 07:00 to 10:00. Please note that special dietary arrangements require staff confirmation, which cannot be arranged through this demo.",
+      "sources": [
+        {
+          "url": "/api/hotel/amenities/breakfast?source_id=royal-crest-demo&version=1",
+          "demo": true,
+          "title": "Breakfast",
+          "version": 1,
+          "source_id": "royal-crest-demo"
+        }
+      ]
+    }
+  ],
+  "checks": [
+    "send",
+    "saved answer and sources",
+    "source route",
+    "refresh",
+    "desktop",
+    "mobile",
+    "reset",
+    "no page errors"
+  ],
+  "launch": "foreground FastAPI server in active exec session 74328",
+  "server_recorded_chat_posts": 1,
+  "diagnostics": {
+    "elapsed_seconds": 7.887,
+    "phase": "completed",
+    "model_calls_attempted": 1,
+    "model_calls": [
+      {
+        "number": 1,
+        "started_seconds": 1.427,
+        "completed": true,
+        "reported_usage": {
+          "input_tokens": 825,
+          "output_tokens": 44,
+          "total_tokens": 869
+        },
+        "request_sha256": "6bc9fde28ccff50cebd5e8f044ca9e78cd54a1377bcc9a3ca12abc8deb29e94f",
+        "first_response_seconds": 7.376,
+        "duration_seconds": 6.459
+      }
+    ],
+    "tool_steps": [
+      {
+        "name": "read_information",
+        "model_call": 0,
+        "completed": true
+      }
+    ],
+    "events": [
+      {
+        "kind": "transport_selected",
+        "elapsed_seconds": 0.0,
+        "transport": "aiohttp"
+      },
+      {
+        "kind": "catalogue_loaded",
+        "elapsed_seconds": 0.0,
+        "status": "ok"
+      },
+      {
+        "kind": "records_prepared",
+        "elapsed_seconds": 0.001,
+        "count": 1
+      },
+      {
+        "kind": "model_started",
+        "elapsed_seconds": 1.427,
+        "model_call": 1
+      },
+      {
+        "kind": "model_completed",
+        "elapsed_seconds": 7.886,
+        "model_call": 1
+      }
+    ],
+    "failure": null,
+    "reported_usage": {
+      "input_tokens": 825,
+      "output_tokens": 44,
+      "thinking_tokens": null,
+      "total_tokens": 869
+    },
+    "usage_complete": true,
+    "cost_usd": null
+  },
+  "reviewed_against_hotel_record": true,
+  "review_notes": "Matches demo breakfast record: included, 07:00-10:00, dietary needs require staff confirmation; correct version-1 Breakfast source. Desktop/mobile screenshots visually inspected."
+}

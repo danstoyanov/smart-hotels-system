@@ -1,0 +1,90 @@
+{
+  "mode": "real local Vertex API; no fixtures",
+  "case": "arrival",
+  "outcome": "failed; safe error displayed; no incomplete answer saved",
+  "diagnostics": {
+    "elapsed_seconds": 63.37,
+    "phase": "model",
+    "model_calls_attempted": 1,
+    "model_calls": [
+      {
+        "number": 1,
+        "started_seconds": 0.529,
+        "completed": false,
+        "reported_usage": null
+      }
+    ],
+    "tool_steps": [
+      {
+        "name": "read_information",
+        "model_call": 0,
+        "completed": true
+      }
+    ],
+    "events": [
+      {
+        "kind": "catalogue_loaded",
+        "elapsed_seconds": 0,
+        "status": "ok"
+      },
+      {
+        "kind": "records_prepared",
+        "elapsed_seconds": 0.001,
+        "count": 1
+      },
+      {
+        "kind": "model_started",
+        "elapsed_seconds": 0.529,
+        "model_call": 1
+      },
+      {
+        "kind": "http_request",
+        "elapsed_seconds": 3.235,
+        "model_call": 1,
+        "bytes": 4418,
+        "contents": 1,
+        "parts": 1,
+        "roles": [
+          "user"
+        ],
+        "functions": []
+      },
+      {
+        "kind": "failure",
+        "elapsed_seconds": 63.36,
+        "phase": "model",
+        "category": "ReadTimeout",
+        "causes": [
+          "ReadTimeout",
+          "ReadTimeout",
+          "TimeoutError",
+          "CancelledError",
+          "Exception"
+        ],
+        "http_code": null,
+        "status": "HTTP_READ_TIMEOUT"
+      }
+    ],
+    "failure": {
+      "phase": "model",
+      "category": "ReadTimeout",
+      "causes": [
+        "ReadTimeout",
+        "ReadTimeout",
+        "TimeoutError",
+        "CancelledError",
+        "Exception"
+      ],
+      "http_code": null,
+      "status": "HTTP_READ_TIMEOUT"
+    },
+    "reported_usage": {
+      "input_tokens": null,
+      "output_tokens": null,
+      "thinking_tokens": null,
+      "total_tokens": null
+    },
+    "usage_complete": false,
+    "cost_usd": null
+  }
+}

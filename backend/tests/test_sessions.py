@@ -293,8 +293,9 @@ def test_commit_precedes_result_and_model_holds_no_connection(guest_client):
         )
 
 
-def test_vertex_route_uses_owned_history_and_saves_sources(guest_client, monkeypatch):
+def test_vertex_route_uses_owned_history_and_saves_sources(guest_client, monkeypatch, caplog):
     from backend.app.agent import Reply
+    from backend.app.diagnostics import AssistantFailure, InvocationDiagnostics
 
     client = guest_client
     first, second = new_guest(client), new_guest(client)
@@ -353,7 +354,9 @@ def test_vertex_route_uses_owned_history_and_saves_sources(guest_client, monkeyp
         assert calls[1] == []
 
         async def broken(*args):
-            raise RuntimeError("private provider details")
+            diagnostic = InvocationDiagnostics()
+            diagnostic.fail(RuntimeError("private provider details"))
+            raise AssistantFailure(diagnostic.finish())
 
         monkeypatch.setattr("backend.app.chat.generate_reply", broken)
         response = call(
@@ -365,6 +368,9 @@ def test_vertex_route_uses_owned_history_and_saves_sources(guest_client, monkeyp
         )
         assert "event: error" in response.text
         assert "private provider" not in response.text
+        assert "model_calls_attempted" not in response.text
+        assert "Assistant failed:" in caplog.text
+        assert "private provider details" not in caplog.text
         assert "event: done" not in response.text
         assert len(call(vertex, "GET", "/api/history", first).json()["turns"]) == 2
         assert call(vertex, "POST", "/api/conversation", first).status_code == 200

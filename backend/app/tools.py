@@ -1,6 +1,7 @@
 """Read-only hotel tools with invocation-local snapshots and evidence budgets."""
 
 import json
+import re
 from urllib.parse import urlencode
 
 
@@ -16,6 +17,83 @@ class HotelTools:
         self.characters = 0
         self.sources = {}
 
+    def prepare_context(self, question: str, previous_question: str = "") -> list[dict]:
+        """Read likely records locally; unmatched questions retain the normal tools.
+
+        This small English demo lookup selects records, never generates an answer.
+        Every selected record still passes the normal evidence and call budgets.
+        """
+        aliases = {
+            "cost": "price",
+            "costs": "price",
+            "prices": "price",
+            "fees": "fee",
+            "kids": "child",
+            "children": "child",
+            "pets": "pet",
+            "checkin": "arrival",
+            "checkout": "departure",
+        }
+        stop = {
+            "the",
+            "and",
+            "for",
+            "can",
+            "could",
+            "would",
+            "does",
+            "what",
+            "when",
+            "how",
+            "are",
+            "about",
+            "with",
+            "this",
+            "that",
+            "hotel",
+            "demo",
+            "room",
+            "rooms",
+            "per",
+            "night",
+            "please",
+            "tell",
+            "have",
+            "has",
+            "you",
+            "your",
+        }
+
+        def words(text):
+            text = re.sub(r"check[ -]+in", "checkin", text.casefold())
+            text = re.sub(r"check[ -]+out", "checkout", text)
+            text = text.replace("how much", "price")
+            return {
+                aliases.get(word, word)
+                for word in re.findall(r"[a-z]{3,}", text)
+                if word not in stop
+            }
+
+        query = words(question)
+        if len(query) < 2:
+            query |= words(previous_question)
+        ranked = []
+        for section, result in self.sections.items():
+            for row in result["data"]:
+                title = row.get("title", row.get("name", ""))
+                names = words(row["id"] + " " + title)
+                body = words(row.get("body", row.get("description", "")))
+                score = 3 * len(query & names) + len(query & body)
+                if score:
+                    ranked.append((score, section, row["id"]))
+        ranked.sort(key=lambda item: -item[0])
+        threshold = ranked[0][0] / 2 if ranked else 0
+        return [
+            self.read_information(section, item_id)
+            for score, section, item_id in ranked[:4]
+            if score >= threshold
+        ]
+
     def admit(self):
         self.calls += 1
         return self.calls <= 8
@@ -26,7 +104,7 @@ class HotelTools:
             return {"status": "limit_reached"}
         if not self.sections:
             return {"status": "unavailable"}
-        return {
+        result = {
             "status": "ok",
             "sections": {
                 key: [
@@ -36,6 +114,9 @@ class HotelTools:
                 for key, result in self.sections.items()
             },
         }
+        if len(json.dumps(result, ensure_ascii=False)) > 6000:
+            return {"status": "limit_reached"}
+        return result
 
     def read_information(self, section: str, item_id: str) -> dict:
         """Read one complete hotel record using IDs from list_information.

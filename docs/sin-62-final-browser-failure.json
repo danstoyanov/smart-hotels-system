@@ -1,0 +1,84 @@
+{
+  "outcome": "failed",
+  "name": "Error",
+  "message": "Reply interrupted. Reload history, then try again.",
+  "stack": "Error: Reply interrupted. Reload history, then try again.\n    at C:\\Users\\Dan Stoyanov\\.codex\\worktrees\\sin-62-assistant-integration\\smart-hotels-system\\frontend\\tests\\assistant-live.browser.cjs:29:13",
+  "diagnostics": {
+    "elapsed_seconds": 64.519,
+    "phase": "model",
+    "model_calls_attempted": 1,
+    "model_calls": [
+      {
+        "number": 1,
+        "started_seconds": 1.31,
+        "completed": false,
+        "reported_usage": null,
+        "request_sha256": "6bc9fde28ccff50cebd5e8f044ca9e78cd54a1377bcc9a3ca12abc8deb29e94f"
+      }
+    ],
+    "tool_steps": [
+      {
+        "name": "read_information",
+        "model_call": 0,
+        "completed": true
+      }
+    ],
+    "events": [
+      {
+        "kind": "transport_selected",
+        "elapsed_seconds": 0.0,
+        "transport": "aiohttp"
+      },
+      {
+        "kind": "catalogue_loaded",
+        "elapsed_seconds": 0.001,
+        "status": "ok"
+      },
+      {
+        "kind": "records_prepared",
+        "elapsed_seconds": 0.001,
+        "count": 1
+      },
+      {
+        "kind": "model_started",
+        "elapsed_seconds": 1.31,
+        "model_call": 1
+      },
+      {
+        "kind": "failure",
+        "elapsed_seconds": 64.498,
+        "phase": "model",
+        "category": "TimeoutError",
+        "causes": [
+          "TimeoutError",
+          "CancelledError"
+        ],
+        "http_code": null,
+        "status": "MODEL_TIMEOUT"
+      }
+    ],
+    "failure": {
+      "phase": "model",
+      "category": "TimeoutError",
+      "causes": [
+        "TimeoutError",
+        "CancelledError"
+      ],
+      "http_code": null,
+      "status": "MODEL_TIMEOUT"
+    },
+    "reported_usage": {
+      "input_tokens": null,
+      "output_tokens": null,
+      "thinking_tokens": null,
+      "total_tokens": null
+    },
+    "usage_complete": false,
+    "cost_usd": null
+  },
+  "mode": "real browser, real Vertex Gemini, no fixtures",
+  "user_requests": 1,
+  "automatic_retries": false,
+  "max_model_calls": 8,
+  "server_recorded_chat_posts": 1
+}

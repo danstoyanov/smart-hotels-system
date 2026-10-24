@@ -1,5 +1,28 @@
 # SIN-62 verification
 
+## Current status — ready for final user acceptance
+
+The separately approved foreground real-browser attempt passed. One breakfast
+question produced a correct answer and Breakfast source v1; the real database
+saved them and refresh restored the same conversation and source links. The
+browser recorded one chat POST; the adapter made one model call in 7.887 seconds,
+with 869 reported tokens. The full browser journey took 10.516 seconds.
+
+See [the foreground acceptance report](sin-62-foreground-browser.md),
+[browser evidence](sin-62-live-browser.json), and live
+[desktop](screenshots/sin-62-final-live-desktop.png) /
+[mobile](screenshots/sin-62-final-live-mobile.png) screenshots.
+
+All requested T05 technical checks now have evidence. aiohttp and all Gemini
+settings are unchanged. No further tests or experiments followed this pass.
+Changes are prepared for commit to the existing PR #6 branch; the user gives
+final acceptance and merges. SIN-62 is not Done before that decision and merge.
+
+## Historical evidence
+
+The sections below retain earlier checks and failures. Their previous open
+acceptance statements are superseded by the foreground report above.
+
 ## Result
 
 Google ADK is connected behind a small adapter. Each invocation has separate working
@@ -71,3 +94,15 @@ SIN-62 and M1 remain incomplete until that evidence exists and the user accepts 
 merges the PR. Stub mode remains the default. Source links identify records read;
 they do not prove that every generated claim is supported. No account-wide monetary
 budget is implemented in T05.
+
+## Final browser attempt — 24 October 2026
+
+The separately approved one-question real-browser check failed. It submitted the
+breakfast question through the actual application. The model invocation raised
+`TimeoutError` (`MODEL_TIMEOUT`, phase `model`) after 64.519 seconds, with one
+attempted model call and no reported usage or provider HTTP status. The browser
+showed `Reply interrupted. Reload history, then try again.` No retry, further
+investigation, commit or push followed. aiohttp and all Gemini settings remain
+unchanged. T05 is not ready for acceptance; await the user's decision.
+See [the final attempt report](sin-62-final-browser-attempt.md) and
+[exact safe diagnostics](sin-62-final-browser-failure.json).

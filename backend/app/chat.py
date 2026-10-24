@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from backend.app.agent import generate_reply
+from backend.app.diagnostics import AssistantFailure
 from backend.app.sessions import COOKIE, SESSION_SECONDS, GuestStore
 
 
@@ -123,6 +124,7 @@ def guest_routes(settings):
                         reply = await generate_reply(
                             settings, request.app.state.hotel, body.message, previous["turns"]
                         )
+                        logging.info("Assistant completed: %s", json.dumps(reply.diagnostics))
                         parts.append(reply.answer)
                         sources = reply.sources
                     else:
@@ -141,7 +143,9 @@ def guest_routes(settings):
                     await guest_store.complete(session, conversation, body.turn_id, answer, sources)
                     yield event("result", result)
                     yield event("done", {})
-            except Exception:
+            except Exception as exc:
+                if isinstance(exc, AssistantFailure):
+                    logging.warning("Assistant failed: %s", json.dumps(exc.diagnostics))
                 yield event(
                     "error", {"message": "Reply interrupted. Reload history, then try again."}
                 )

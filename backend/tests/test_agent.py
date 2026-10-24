@@ -79,6 +79,9 @@ def test_tools_sources_unknown_isolation_and_bounds():
         first.list_information()
     assert first.read_information("policies", "arrival")["status"] == "limit_reached"
     assert HotelTools(HotelStore()).list_information()["status"] == "unavailable"
+    oversized = HotelTools(store)
+    oversized.sections["policies"]["data"][0]["title"] = "x" * 6001
+    assert oversized.list_information()["status"] == "limit_reached"
 
 
 def test_history_bounds_and_vertex_configuration():
@@ -106,12 +109,33 @@ def test_real_adk_tool_cycle_history_and_final_output():
     assert result.sources[0]["title"] == "Arrival and departure"
     assert result.usage["total_tokens"] == 42
     request_text = str(model.requests[0].contents)
+    instruction = str(model.requests[0].config.system_instruction)
+    assert "Catalogue data" in instruction and '"id": "arrival"' in instruction
+    assert "Records read by the application" in instruction
+    assert "Check-in starts at 15:00" in instruction
     assert "private prior question" in request_text
     assert "prior answer" in request_text
     assert "15:00" in str(model.requests[1].contents)
     fresh = ScriptedModel()
     asyncio.run(generate_reply(Settings(_env_file=None), hotel(), "hello", model_override=fresh))
     assert "private prior question" not in str(fresh.requests[0].contents)
+
+
+def test_prepared_context_reads_records_within_existing_budget():
+    tools = HotelTools(hotel())
+    assert any(
+        row.get("record", {}).get("id") == "arrival"
+        for row in tools.prepare_context("When can I check in and check out?")
+    )
+    prices = HotelTools(hotel())
+    context = prices.prepare_context("What does the Manor Suite cost per night?")
+    assert any(
+        row.get("record", {}).get("id") == "prices" and row["status"] == "unknown"
+        for row in context
+    )
+    assert len(context) <= 4 and prices.calls <= 4
+    assert prices.characters <= 24000
+    assert HotelTools(hotel()).prepare_context("nearest airport shuttle timetable?") == []
 
 
 @pytest.mark.parametrize("options", [{"fail": True}, {"empty": True}, {"loop": True}])

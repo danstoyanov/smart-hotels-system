@@ -186,6 +186,14 @@ tokens. The provider HTTP timeout is 60 seconds with one attempt; the invocation
 deadline is 85 seconds inside the API's 90-second deadline. These limits bound work;
 they are not a monetary budget or an account-wide spending control.
 
+The application loads the small catalogue locally and prepares up to four likely
+complete records using a bounded English text lookup over IDs, titles and bodies.
+These reads use the same tools, immutable snapshot, evidence limit and call budget.
+This removes model round trips for common questions; it does not generate answers.
+Unmatched questions retain the normal read tools and honest missing-data behavior.
+Catalogue titles alone never count as evidence. Changing hotel content does not
+require changing the lookup's business facts; it contains none.
+
 Tools expose rooms, amenities and policies. They cannot read inventory, make
 reservations or contact staff. The prompt requires current evidence and honest
 unknown answers. Source links come from records actually read, not model-generated
@@ -194,6 +202,22 @@ correct. The browser renders answers as plain text. Sources save atomically with
 answer and return in history after refresh. Model failures return a safe SSE error
 and do not save incomplete answers. Real replies are delivered as a completed result
 after model generation; provisional model tokens are not shown.
+
+Vertex mode uses aiohttp by default, with the locked Google GenAI extra.
+The existing smoke runner supports `--compare-transports --case breakfast` only
+after explicit `--approved-paid-calls` authorization. It runs exactly one HTTPX
+and one aiohttp execution, each capped at two model calls, without retries.
+See [the controlled A/B result](docs/sin-62-transport-ab.md). One successful pair
+is not a guarantee against future timeouts.
+
+Failures preserve safe server-side timing, phase, attempted model calls, completed
+tool steps, reported usage and provider error category/status. HTTPX comparison
+hooks record request size/structure and header timing; aiohttp uses model-phase
+timing. Neither diagnostic stores prompts, arguments, headers or credentials.
+Partial usage is labelled incomplete; missing usage and cost stay unknown. Guest
+responses contain only a safe error. Normal smoke reports preserve these diagnostics and
+stop on the first failure without retrying. A/B mode records both transports once. Do not enable SDK debug logging for
+real guest conversations.
 
 After explicit approval for paid calls, run the small live smoke check:
 
@@ -207,5 +231,6 @@ The command uses real Vertex calls, never retries a failed case, and writes an
 ignored `assistant-smoke.local.json`. Review each saved answer against the review
 notes in `evals/assistant-smoke.json`. The report does not claim live acceptance
 automatically. A scripted model in adapter tests verifies code contracts only.
-SIN-62 and M1 remain incomplete until representative live answers and the local
-website journey are checked within the approved budget.
+The requested T05 real-model and website journey checks are recorded in
+[the foreground acceptance report](docs/sin-62-foreground-browser.md). Final user
+acceptance and merge remain pending; do not mark SIN-62 Done before them.
