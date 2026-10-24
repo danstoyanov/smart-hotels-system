@@ -42,6 +42,7 @@ async def generate_reply(
     http_transport="aiohttp",
     max_model_calls=8,
     property_date=None,
+    availability=None,
 ):
     # Stub startup never initializes Google credentials or a client.
     from google import genai
@@ -59,7 +60,7 @@ async def generate_reply(
         raise ValueError("Invalid transport or model-call limit")
     diagnostic = InvocationDiagnostics()
     diagnostic.record("transport_selected", transport=http_transport)
-    tools = HotelTools(hotel)
+    tools = HotelTools(hotel, availability)
     instruction = Path(__file__).with_name("assistant_prompt.txt").read_text(encoding="utf-8")
     property_date = property_date or datetime.now(ZoneInfo(settings.hotel_timezone)).date()
     instruction += (
@@ -114,7 +115,7 @@ async def generate_reply(
             name="hotel_assistant",
             model=model,
             instruction=instruction,
-            tools=[tools.list_information, tools.read_information],
+            tools=[tools.list_information, tools.read_information, tools.search_availability],
             before_model_callback=diagnostic.before_model,
             after_model_callback=diagnostic.after_model,
             on_model_error_callback=diagnostic.on_model_error,

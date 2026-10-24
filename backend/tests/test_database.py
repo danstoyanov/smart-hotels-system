@@ -20,6 +20,7 @@ def test_migrations_repeat_health_and_rollback(database_url, tmp_path):
                 ("001_foundation.sql",),
                 ("002_guest_sessions.sql",),
                 ("003_answer_sources.sql",),
+                ("004_inventory.sql",),
             }
 
         # Include the original file, then test a failed new migration transaction.
@@ -28,7 +29,7 @@ def test_migrations_repeat_health_and_rollback(database_url, tmp_path):
         original = (MIGRATIONS / "001_foundation.sql").read_text()
         for path in MIGRATIONS.glob("*.sql"):
             (tmp_path / path.name).write_text(path.read_text())
-        bad = tmp_path / "004_failure.sql"
+        bad = tmp_path / "005_failure.sql"
         bad.write_text("CREATE TABLE rollback_probe (id int); SELECT 1 / 0;")
         with pytest.raises(psycopg.errors.DivisionByZero):
             await migrate(database_url, tmp_path)

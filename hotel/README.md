@@ -8,7 +8,8 @@ and times use `Europe/Kyiv`. Do not add credentials, private contact details or 
 `revisions/royal-crest-demo.v1.json` contains two rooms, three amenities, six policies
 and fourteen explicit inventory nights, 1–7 November 2026. The Garden Room is closed
 on 5 November. A missing night is unknown, never assumed open. These are fixtures;
-this task does not search availability, hold rooms or create reservations.
+the full-stay search imports them into PostgreSQL. Reading or searching never
+holds rooms or creates reservations.
 
 ## Edit, validate and reload
 
@@ -20,7 +21,8 @@ this task does not search availability, hold rooms or create reservations.
 4. Run `uv run --locked python -m backend.app.hotel`. Exit code 0 means the complete
    catalogue passed validation; exit code 1 means invalid or missing data. The
    command reports schema field errors without changing the running application.
-5. Restart the local server to load the files. With `scripts/start.ps1`, stop with
+5. Run migrations and `uv run --locked python -m backend.app.inventory` to import
+   the active room/inventory revision into PostgreSQL. Restart the local server. With `scripts/start.ps1`, stop with
    Ctrl+C and run it again. Uvicorn's normal Python reload does not watch JSON files.
    For application code that needs an in-process reload, call
    `app.state.hotel.reload()` from trusted local code. It validates all files before
@@ -90,3 +92,12 @@ uses check-in 15:00, checkout 11:00, staff confirmation for special arrangements
 capacity including children/infants and example flexible/non-refundable terms.
 Currency, room prices and service fees are deliberately unset. The reference's
 Bali location, timezone, service prices and implemented booking claims do not apply.
+
+
+For availability, use `/api/availability` or the agent's `search_availability` tool,
+not the raw inventory read. Both use the same PostgreSQL full-stay query. Missing
+nights stay unknown; a closed night rules a room out. Room capacity includes every
+person. See [the availability contract](../README.md#full-stay-availability-sin-63).
+The database import also rejects changed room/inventory data under a loaded
+source ID/version, across restarts. Old imported versions remain available for
+rollback by selecting their unchanged catalogue revision. No public write API exists.

@@ -6,7 +6,8 @@ from urllib.parse import urlencode
 
 
 class HotelTools:
-    def __init__(self, hotel):
+    def __init__(self, hotel, availability=None):
+        self.availability = availability
         active = hotel.catalogue().get("active")
         self.sections = (
             {key: hotel.read(key, **active) for key in ("rooms", "amenities", "policies")}
@@ -156,3 +157,22 @@ class HotelTools:
                 }
             )
         )
+
+    async def search_availability(self, check_in: str, check_out: str, guests: int) -> dict:
+        """Search every night for one room fitting all guests. No room is held.
+
+        Args:
+            check_in: Exact arrival date, YYYY-MM-DD, in the property timezone.
+            check_out: Exact checkout date, YYYY-MM-DD; this night is excluded.
+            guests: Total people, including children and infants.
+        """
+        if not self.admit():
+            return {"status": "limit_reached"}
+        if self.availability is None:
+            return {"status": "unavailable"}
+        result = await self.availability.search(check_in, check_out, guests)
+        size = len(json.dumps(result, ensure_ascii=False))
+        if self.characters + size > 24000:
+            return {"status": "limit_reached"}
+        self.characters += size
+        return result
