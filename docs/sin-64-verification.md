@@ -9,6 +9,10 @@ chat session, history and SSE code remains in place. Hotel facts come from
 `hotel/` through the backend. The page does not show sample prices, awards,
 reviews, locations or services from the design reference.
 
+The chat now opens from a fixed Ask button on every page. It keeps one shared
+conversation window and uses the same session, history and chat API. The window
+can be opened and closed with the keyboard, and Escape returns focus to the button.
+
 ## Check
 
 - Confirmed SIN-63 is Done in Linear and PR #8 is merged before starting.
@@ -28,6 +32,14 @@ reviews, locations or services from the design reference.
 - Screenshots: [mobile 375 px](screenshots/sin-64-375.png),
   [desktop 1440 px](screenshots/sin-64-1440.png), and
   [selection review](screenshots/sin-64-review.png).
+- Follow-up chat change: `uv sync --locked` and `scripts/check.ps1` passed
+  (48 Python tests, 15 database tests skipped, three SSE tests). The guest
+  browser check passed at 375, 768 and 1440 px, including the fixed button,
+  keyboard open/close, focus and overflow. The chat browser check passed on
+  desktop and mobile with controlled API replies for send, history, reset,
+  stop and error recovery. The assistant browser check passed for safe text,
+  source links, history and reset in the window. [Open chat at 375 px](screenshots/sin-64-chat-375.png)
+  and [open chat at 1440 px](screenshots/sin-64-chat-1440.png) show the result.
 
 ## Limits and next step
 

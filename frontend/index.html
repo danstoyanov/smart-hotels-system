@@ -20,7 +20,7 @@
         <div class="nav-links">
           <a href="/#rooms">Rooms</a><a href="/#amenities">Amenities</a
           ><a href="/#policies">Stay information</a
-          ><a href="/#chat">Concierge</a>
+          ><button id="nav-chat" type="button">Concierge</button>
         </div>
         <a class="button button-gold nav-cta" href="/#availability"
           >Check availability</a
@@ -171,77 +171,62 @@
         </p>
         <div id="review-detail" role="status">Checking this selection…</div>
       </section>
-      <section
-        class="chat-section section-space"
-        id="chat"
-        aria-labelledby="chat-heading"
+    </main>
+    <div class="concierge-widget">
+      <button
+        id="chat-launcher"
+        class="chat-launcher"
+        type="button"
+        aria-label="Open concierge chat"
+        aria-controls="chat"
+        aria-expanded="false"
       >
-        <div class="wrap chat-layout">
-          <div class="chat-copy">
-            <span class="eyebrow">Your demo concierge</span>
+        <span class="launcher-orb" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none" focusable="false">
+            <path d="M16 3.5 18.7 13.3 28.5 16l-9.8 2.7L16 28.5l-2.7-9.8L3.5 16l9.8-2.7L16 3.5Z" fill="currentColor" />
+          </svg>
+        </span>
+        <span class="launcher-bubble" aria-hidden="true">Ask</span>
+      </button>
+      <section
+        id="chat"
+        class="chat-window"
+        role="dialog"
+        aria-labelledby="chat-heading"
+        hidden
+      >
+        <div class="chat-window-top">
+          <div>
             <h2 id="chat-heading">Ask about your stay</h2>
-            <p>
-              Ask about rooms, breakfast, policies or availability. The
-              assistant uses demo hotel information and shows the sources it
-              reads.
-            </p>
-            <p>
-              Replies may contain mistakes. Avoid sensitive information.
-              Conversations last up to 24 hours in this browser.
-            </p>
-            <p id="chat-mode" class="small-note"></p>
           </div>
-          <div class="chat-panel">
-            <div class="chat-heading">
-              <h3>Your conversation</h3>
-              <button id="reset" class="text-button" type="button" disabled>
-                New conversation
-              </button>
+          <button id="chat-close" class="chat-close" type="button" aria-label="Close concierge chat">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="m5 5 14 14M19 5 5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+          </button>
+        </div>
+        <div class="chat-window-body">
+          <p class="chat-intro">Our demo concierge can help with rooms, breakfast, policies and availability. Replies may contain mistakes.</p>
+          <div class="chat-heading">
+            <h3>Your conversation</h3>
+            <button id="reset" class="text-button" type="button" disabled>New conversation</button>
+          </div>
+          <p id="chat-empty">Your completed messages will appear here.</p>
+          <div id="chat-log" role="log" aria-label="Conversation history" aria-live="off"></div>
+        </div>
+        <div class="chat-window-bottom">
+          <form id="chat-form">
+            <label for="message">Your message</label>
+            <textarea id="message" name="message" rows="2" maxlength="2000" required disabled></textarea>
+            <div class="chat-actions">
+              <button id="send" class="button button-dark" type="submit" disabled>Send message</button>
+              <button id="stop" class="button button-dark" type="button" hidden>Stop reply</button>
+              <button id="retry-chat" class="text-button" type="button">Reload chat</button>
             </div>
-            <p id="chat-empty">Your completed messages will appear here.</p>
-            <div
-              id="chat-log"
-              role="log"
-              aria-label="Conversation history"
-              aria-live="off"
-            ></div>
-            <form id="chat-form">
-              <label for="message">Your message</label
-              ><textarea
-                id="message"
-                name="message"
-                rows="3"
-                maxlength="2000"
-                required
-                disabled
-              ></textarea>
-              <div class="chat-actions">
-                <button
-                  id="send"
-                  class="button button-dark"
-                  type="submit"
-                  disabled
-                >
-                  Send message</button
-                ><button
-                  id="stop"
-                  class="button button-dark"
-                  type="button"
-                  hidden
-                >
-                  Stop reply</button
-                ><button id="retry-chat" class="text-button" type="button">
-                  Reload chat
-                </button>
-              </div>
-            </form>
-            <p id="chat-status" role="status" aria-live="polite">
-              Loading your conversation…
-            </p>
-          </div>
+          </form>
+          <p id="chat-status" role="status" aria-live="polite">Loading your conversation…</p>
+          <p class="chat-privacy">Avoid sensitive information. Conversations last up to 24 hours in this browser.</p>
         </div>
       </section>
-    </main>
+    </div>
     <footer>
       <div class="wrap footer-inner">
         <div>

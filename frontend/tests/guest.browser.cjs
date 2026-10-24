@@ -108,13 +108,34 @@ function payload(section) {
         ),
       );
       assert.equal(await page.locator("#message").isEnabled(), true);
+      const launcher = page.getByRole("button", { name: "Open concierge chat" });
+      assert.equal(await launcher.isVisible(), true);
+      assert.equal(await page.locator("#chat").isVisible(), false);
+      assert.equal(await launcher.locator(".launcher-bubble").textContent(), "Ask");
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      assert.equal(await launcher.isVisible(), true);
+      await page.evaluate(() => window.scrollTo(0, 0));
       if (width === 375 || width === 1440) {
-        await page.evaluate(() => window.scrollTo(0, 0));
         await page.screenshot({
           path: path.join(screenshots, `sin-64-${width}.png`),
           fullPage: true,
         });
       }
+      await launcher.focus();
+      await page.keyboard.press("Enter");
+      assert.equal(await page.locator("#chat").isVisible(), true);
+      assert.equal(await page.locator("#message").evaluate((element) => element === document.activeElement), true);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+      if (width === 375 || width === 1440) {
+        await page.screenshot({
+          path: path.join(screenshots, `sin-64-chat-${width}.png`),
+        });
+      }
+      await page.keyboard.press("Escape");
+      assert.equal(await page.locator("#chat").isVisible(), false);
+      assert.equal(await launcher.evaluate((element) => element === document.activeElement), true);
+      await page.reload();
+      await page.getByRole("heading", { name: "Rooms at the manor" }).waitFor();
       await page.keyboard.press("Tab");
       assert.equal(
         await page.evaluate(() => document.activeElement?.className),
