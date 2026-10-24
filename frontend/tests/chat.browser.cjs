@@ -40,6 +40,7 @@ const fs = require('node:fs');
         return route.abort();
       });
       await page.goto(process.env.CHAT_TEST_ORIGIN || 'http://127.0.0.1:8061');
+      await page.getByRole('button', { name: 'Open concierge chat' }).click();
       await page.getByRole('button', { name: 'Send message' }).waitFor();
       await page.waitForFunction(() => !document.querySelector('#send').disabled);
       await page.getByLabel('Your message', { exact: true }).fill('<img src=x onerror=alert(1)> Hello from my browser.');
@@ -48,6 +49,7 @@ const fs = require('node:fs');
       assert.equal(await page.locator('#chat-log img').count(), 0);
       await page.reload();
       await page.waitForFunction(() => !document.querySelector('#send').disabled);
+      await page.getByRole('button', { name: 'Open concierge chat' }).click();
       assert.equal(await page.locator('.chat-message').count(), 2);
       // Use ordinary guest copy for the review screenshots.
       turns[0].question = 'Hello, I would like to try the conversation.';

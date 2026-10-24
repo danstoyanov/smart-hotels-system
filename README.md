@@ -280,3 +280,29 @@ invocation call/evidence budgets. Search never holds or reserves a room.
 The stub remains a plain demo reply; offline ADK tests prove tool wiring, not live
 Gemini answer quality. No new guest pages, booking flow or reservation writes are
 part of T06. See [verification](docs/sin-63-verification.md).
+
+
+## Guest website and review (SIN-64)
+
+The same-origin site now has room cards, room details at `/rooms/{room_id}`, a
+full-stay availability form, and a read-only selection page at `/review`.
+Room names, capacities, amenities and policies load from `/api/hotel/*`.
+The search and review use `GET /api/availability`; review checks the selected
+room again. It does not hold or reserve inventory. No prices or currency are set.
+The owned chat still uses the existing session, history and SSE routes.
+The interface shows loading, empty and error messages. Hotel text is inserted as
+plain text, never as HTML.
+
+The user-supplied visual references are kept in `design/`. Generated local
+photographs and their prompts are documented in
+[asset notes](docs/sin-64-assets.md). See
+[SIN-64 verification](docs/sin-64-verification.md) for checks and screenshots.
+The browser check uses controlled API responses so it does not write to the
+application database. To run it after installing Playwright and Chrome locally:
+
+```powershell
+node frontend/tests/guest.browser.cjs
+```
+
+Demo reservation confirmation is planned for T08. This page does not create a
+reservation or call Gemini.

@@ -8,8 +8,36 @@ const reset = document.querySelector('#reset');
 const retry = document.querySelector('#retry-chat');
 const log = document.querySelector('#chat-log');
 const status = document.querySelector('#chat-status');
+const launcher = document.querySelector('#chat-launcher');
+const windowPanel = document.querySelector('#chat');
+const close = document.querySelector('#chat-close');
+const navChat = document.querySelector('#nav-chat');
+const windowBody = document.querySelector('.chat-window-body');
 let controller;
 let ready = false;
+
+function openChat() {
+  windowPanel.hidden = false;
+  launcher.hidden = true;
+  launcher.setAttribute('aria-expanded', 'true');
+  windowBody.scrollTop = windowBody.scrollHeight;
+  (ready ? input : close).focus();
+}
+
+function closeChat() {
+  windowPanel.hidden = true;
+  launcher.hidden = false;
+  launcher.setAttribute('aria-expanded', 'false');
+  launcher.focus();
+}
+
+launcher.addEventListener('click', openChat);
+navChat.addEventListener('click', openChat);
+close.addEventListener('click', closeChat);
+windowPanel.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeChat();
+});
+if (location.hash === '#chat') openChat();
 
 function controls(busy) {
   send.disabled = busy || !ready;
@@ -73,6 +101,7 @@ async function history() {
     message('Demo assistant', turn.answer, turn.sources || []);
   }
   document.querySelector('#chat-empty').hidden = data.turns.length > 0;
+  windowBody.scrollTop = windowBody.scrollHeight;
 }
 
 async function initialize() {
@@ -129,7 +158,7 @@ form.addEventListener('submit', async event => {
   } finally {
     controller = undefined;
     controls(false);
-    if (ready) input.focus();
+    if (ready && !windowPanel.hidden) input.focus();
   }
 });
 
