@@ -121,6 +121,11 @@ def create_app(settings: Settings | None = None, *, hotel_directory: Path | None
     async def index():
         return FileResponse(ROOT / "frontend" / "index.html")
 
+    @app.get("/rooms/{room_id}", include_in_schema=False)
+    @app.get("/review", include_in_schema=False)
+    async def guest_page(room_id: str | None = None):
+        return FileResponse(ROOT / "frontend" / "index.html")
+
     app.mount("/assets", StaticFiles(directory=ROOT / "frontend" / "assets"), name="assets")
     return app
 

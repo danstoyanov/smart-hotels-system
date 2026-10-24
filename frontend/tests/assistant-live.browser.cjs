@@ -18,6 +18,7 @@ const fs = require('node:fs');
     const origin = process.env.CHAT_TEST_ORIGIN || 'http://127.0.0.1:8073';
     await page.goto(origin);
     await page.waitForFunction(() => !document.querySelector('#send').disabled);
+    await page.getByRole('button', { name: 'Open concierge chat' }).click();
     await page.getByLabel('Your message', { exact: true }).fill('Is breakfast included and when is it served?');
     await page.getByRole('button', { name: 'Send message' }).click();
     await page.waitForFunction(() => /Reply saved|Reply interrupted|session expired/i.test(
@@ -46,6 +47,7 @@ const fs = require('node:fs');
     assert.equal((await response.json()).source.version, source.version);
     await page.reload();
     await page.waitForFunction(() => !document.querySelector('#send').disabled);
+    await page.getByRole('button', { name: 'Open concierge chat' }).click();
     assert.equal(await page.locator('#chat-log a').count(), history.turns[0].sources.length);
     const restored = await page.evaluate(async () => (await fetch('/api/history')).json());
     assert.deepEqual(restored.turns, history.turns);
