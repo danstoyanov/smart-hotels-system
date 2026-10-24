@@ -69,7 +69,7 @@ def test_tools_sources_unknown_isolation_and_bounds():
     result["record"]["body"] = "changed"
     assert "changed" not in first.read_information("policies", "prices")["record"]["body"]
     source = next(iter(first.sources.values()))
-    assert source["url"].endswith("source_id=royal-crest-demo&version=1")
+    assert source["url"].endswith("source_id=royal-crest-demo&version=2")
     assert second.sources == {}
     assert first.read_information("inventory", "x")["status"] == "invalid_input"
     assert first.read_information("policies", "missing")["status"] == "not_found"

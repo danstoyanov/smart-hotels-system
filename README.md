@@ -4,7 +4,7 @@ A local foundation for Royal Crest Manor, a fictional demo hotel. FastAPI serves
 website and API on the same origin. PostgreSQL holds application state. Local
 `hotel/` files provide validated demo rooms, amenities, policies and inventory fixtures.
 The chat supports Google ADK and Gemini through Vertex AI, with a local stub by
-default. Reservation operations are not available yet.
+default. Guests can confirm clearly labelled demo reservations after reviewing a stay.
 
 **M1 accepted — 24 October 2026.** SIN-58–SIN-62 are Done. PR #6 was merged into
 `main` at `d8438fdc08cb26ce1c2314d6311ecb532ac855f2`. Start from the current
@@ -304,5 +304,28 @@ application database. To run it after installing Playwright and Chrome locally:
 node frontend/tests/guest.browser.cjs
 ```
 
-Demo reservation confirmation is planned for T08. This page does not create a
-reservation or call Gemini.
+## Demo reservations (SIN-65)
+
+Search and `/review` do not hold a room. The review page checks the selected stay
+and offers **Confirm demo reservation**. The guest must choose that action before
+`POST /api/bookings` can save a reservation. This route requires the same-origin
+Origin header, an owned guest session cookie, a client request UUID and
+`confirmed: true`. The Ask chat has no booking tool.
+
+The database transaction checks dates in the property timezone, total guest count,
+room capacity, every inventory night and existing reservations before insert. A
+room-level lock and a PostgreSQL exclusion constraint prevent overlapping stays.
+The request UUID gives one result for repeat requests with the same guest and
+selection. The browser keeps it across a refresh and reads the result after a lost
+response. A changed payload or another guest using that UUID gets HTTP 409.
+
+`GET /api/bookings/{reference}` and `GET /api/bookings/by-request/{request_id}`
+require the owning session. A reference alone gives no access. Sessions expire after
+24 hours; this demo has no account recovery. Reservations have no price, payment,
+staff message or real hotel integration. Importing the same `hotel/` fixture again
+does not release booked nights. Publishing a new fixture version with the same room
+IDs also keeps those nights booked.
+
+Run `scripts/test.ps1` for disposable PostgreSQL checks and
+`node frontend/tests/booking.browser.cjs` for the controlled Chrome journey. The
+browser check needs local Playwright and Chrome and does not write to PostgreSQL.
