@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from backend.app.agent import generate_reply
 from backend.app.diagnostics import AssistantFailure
+from backend.app.inventory import Availability
 from backend.app.sessions import COOKIE, SESSION_SECONDS, GuestStore
 
 
@@ -122,7 +123,13 @@ def guest_routes(settings):
                     if settings.assistant_mode == "vertex":
                         previous = await guest_store.history(request.cookies.get(COOKIE))
                         reply = await generate_reply(
-                            settings, request.app.state.hotel, body.message, previous["turns"]
+                            settings,
+                            request.app.state.hotel,
+                            body.message,
+                            previous["turns"],
+                            availability=Availability(
+                                request.app.state.pool, request.app.state.hotel
+                            ),
                         )
                         logging.info("Assistant completed: %s", json.dumps(reply.diagnostics))
                         parts.append(reply.answer)

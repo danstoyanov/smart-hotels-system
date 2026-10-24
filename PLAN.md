@@ -186,4 +186,4 @@ Keep this plan focused on future development. Historical audits and detailed wor
 
 - Result: T01–T05 (SIN-58–SIN-62) are Done. The local Royal Crest Manor website has versioned hotel data, private PostgreSQL-backed conversations and a Gemini/ADK assistant with saved source references. PR #6 was merged into main at `d8438fdc08cb26ce1c2314d6311ecb532ac855f2`.
 - Check: The final review read the plan, code, structure, recorded development evidence and merge state. No tests, server or model calls were run during the review or this documentation update. The earlier foreground acceptance report records a successful real-model answer and source/history recovery after refresh.
-- Next: SIN-63 (T06), full-stay availability search, after explicit execution approval. M2 and M3 remain planned. Read [the M1 handover](docs/m1-handover.md) for the current layout, evidence and limits.
+- Next: Complete SIN-63 (T06) review and acceptance. T07 and T08 remain separate work; M2 and M3 are not complete. Read [the M1 handover](docs/m1-handover.md) for the current layout, evidence and limits.

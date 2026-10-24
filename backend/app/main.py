@@ -13,6 +13,7 @@ from psycopg_pool import PoolTimeout
 from backend.app.chat import guest_routes, stub_reply
 from backend.app.db import create_pool
 from backend.app.hotel import HotelDataError, HotelStore
+from backend.app.inventory import Availability
 from backend.app.settings import ROOT, Settings
 
 
@@ -71,6 +72,14 @@ def create_app(settings: Settings | None = None, *, hotel_directory: Path | None
                 {"status": "unavailable", "database": "unavailable"}, status_code=503
             )
         return {"status": "ok", "database": "ok"}
+
+    @app.get("/api/availability")
+    async def availability(check_in: str, check_out: str, guests: int):
+        result = await Availability(app.state.pool, app.state.hotel).search(
+            check_in, check_out, guests
+        )
+        code = {"invalid_input": 422, "unavailable": 503}.get(result["status"], 200)
+        return JSONResponse(result, status_code=code, headers={"Cache-Control": "no-store"})
 
     @app.get("/api/site")
     async def site():

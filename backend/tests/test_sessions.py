@@ -313,7 +313,10 @@ def test_vertex_route_uses_owned_history_and_saves_sources(guest_client, monkeyp
         "url": "/api/hotel/policies/arrival?source_id=royal-crest-demo&version=1",
     }
 
-    async def adapter(settings, hotel, message, history):
+    async def adapter(settings, hotel, message, history, *, availability):
+        from backend.app.inventory import Availability
+
+        assert isinstance(availability, Availability)
         calls.append(history)
         async with client.app.state.pool.connection() as conn:
             assert (await (await conn.execute("SELECT 1")).fetchone()) == (1,)
@@ -353,7 +356,7 @@ def test_vertex_route_uses_owned_history_and_saves_sources(guest_client, monkeyp
         )
         assert calls[1] == []
 
-        async def broken(*args):
+        async def broken(*args, **kwargs):
             diagnostic = InvocationDiagnostics()
             diagnostic.fail(RuntimeError("private provider details"))
             raise AssistantFailure(diagnostic.finish())

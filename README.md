@@ -34,10 +34,11 @@ share that origin. The server binds to loopback only. Stop it with Ctrl+C.
 If your PowerShell policy blocks scripts, use a one-process override:
 `powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`.
 
-`start.ps1` runs migrations before starting the server. To run each step directly:
+`start.ps1` runs migrations and loads the active demo inventory before starting the server. To run each step directly:
 
 ```powershell
 uv run --locked python -m backend.app.db
+uv run --locked python -m backend.app.inventory
 uv run --locked uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --loop backend.app.runtime:new_loop --reload
 Invoke-RestMethod http://127.0.0.1:8000/api/health
 ```
@@ -199,8 +200,8 @@ Unmatched questions retain the normal read tools and honest missing-data behavio
 Catalogue titles alone never count as evidence. Changing hotel content does not
 require changing the lookup's business facts; it contains none.
 
-Tools expose rooms, amenities and policies. They cannot read inventory, make
-reservations or contact staff. The prompt requires current evidence and honest
+Tools expose rooms, amenities, policies and read-only full-stay availability.
+They cannot make reservations or contact staff. The prompt requires current evidence and honest
 unknown answers. Source links come from records actually read, not model-generated
 URLs. They are labelled as records read, not a guarantee that every answer claim is
 correct. The browser renders answers as plain text. Sources save atomically with the
@@ -240,3 +241,42 @@ The requested T05 real-model and website journey checks are recorded in
 [the foreground acceptance report](docs/sin-62-foreground-browser.md). User
 acceptance and merge are complete. Earlier timeout reports remain historical
 evidence; they do not reopen M1. This documentation update ran no tests or model calls.
+
+
+## Full-stay availability (SIN-63)
+
+After migrations, `python -m backend.app.inventory` loads the active validated
+`hotel/` revision into PostgreSQL. Use `uv run --locked` as shown above.
+The import is atomic and repeatable. A changed room or night under the same source
+ID/version is rejected; publish a new version and rerun the import instead.
+`start.ps1` performs this step. An unimported active source returns HTTP 503 for
+search; ordinary hotel information reads still work from files.
+
+Example: `GET /api/availability?check_in=2026-11-01&check_out=2026-11-03&guests=2`.
+Use exact YYYY-MM-DD dates and a total of 1–20 people, including children and infants.
+Check-in must be today or later in the property timezone. Checkout must be later,
+with at most 366 nights. The limit bounds a single search; it is not a hotel policy.
+The accepted fixtures cover only 1–7 November 2026 and do not roll forward.
+After these dates pass, publish a new demo revision to try future stays.
+
+The query includes check-in night and excludes checkout night. Every requested
+night must be present and open, and one room must fit the whole party. Results
+include complete room facts, demo/source labels, stay dates and property timezone:
+
+- `ok`: `rooms` contains only confirmed full-stay matches.
+- `no_match`: no capacity-suitable room can cover the stay.
+- `unknown_inventory`: no match is confirmed and at least one suitable room has
+  missing nights. A known closed night already rules a room out.
+- `unknown_room_ids`: suitable rooms whose full stay cannot be confirmed. This can
+  also be nonempty when another room matches.
+- `invalid_input` (HTTP 422) or `unavailable` (HTTP 503): correct the request or try
+  again later. Other result states use HTTP 200. Responses use `Cache-Control: no-store`.
+
+The API and `search_availability` agent tool call the same service and PostgreSQL
+function. Both validate dates and total guests; SQL also checks them independently
+using the stored property timezone. The model must request missing details and use
+tool results instead of calculating availability. Tool calls use the existing
+invocation call/evidence budgets. Search never holds or reserves a room.
+The stub remains a plain demo reply; offline ADK tests prove tool wiring, not live
+Gemini answer quality. No new guest pages, booking flow or reservation writes are
+part of T06. See [verification](docs/sin-63-verification.md).
