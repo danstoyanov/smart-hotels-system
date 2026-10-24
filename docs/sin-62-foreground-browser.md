@@ -1,5 +1,10 @@
 # SIN-62 foreground browser acceptance — 24 October 2026
 
+**Closure:** The user accepted M1 and merged PR #6 on 24 October 2026.
+SIN-62 is Done; main commit is `d8438fdc08cb26ce1c2314d6311ecb532ac855f2`.
+The results below are the recorded development run, not a new execution.
+See [M1 handover](m1-handover.md).
+
 ## Result: requested acceptance flow passed
 
 The existing FastAPI application ran in the foreground in an active execution
@@ -66,6 +71,5 @@ checks and the real website persistence/refresh journey. Earlier offline and
 live checks are recorded in the existing verification and transport reports;
 they were not rerun for this final attempt.
 
-The changes are prepared for commit on the existing T05 branch for PR #6.
-Final acceptance and merge belong to the user. No new PR or merge was made;
-do not mark SIN-62 Done before acceptance and merge.
+PR #6 was later accepted and merged by the user. SIN-62 and M1 are complete.
+The closure documentation update made no new model call or acceptance run.

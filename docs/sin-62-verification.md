@@ -1,6 +1,10 @@
 # SIN-62 verification
 
-## Current status — ready for final user acceptance
+## Current status — accepted and merged
+
+SIN-62 is Done. PR #6 was merged on 24 October 2026 into main at
+`d8438fdc08cb26ce1c2314d6311ecb532ac855f2`. See [M1 handover](m1-handover.md).
+This closure update ran no tests or model calls.
 
 The separately approved foreground real-browser attempt passed. One breakfast
 question produced a correct answer and Breakfast source v1; the real database
@@ -15,8 +19,8 @@ See [the foreground acceptance report](sin-62-foreground-browser.md),
 
 All requested T05 technical checks now have evidence. aiohttp and all Gemini
 settings are unchanged. No further tests or experiments followed this pass.
-Changes are prepared for commit to the existing PR #6 branch; the user gives
-final acceptance and merges. SIN-62 is not Done before that decision and merge.
+User acceptance and merge are complete. The evidence below records earlier
+development attempts and does not change this closure status.
 
 ## Historical evidence
 

@@ -6,6 +6,11 @@ website and API on the same origin. PostgreSQL holds application state. Local
 The chat supports Google ADK and Gemini through Vertex AI, with a local stub by
 default. Reservation operations are not available yet.
 
+**M1 accepted — 24 October 2026.** SIN-58–SIN-62 are Done. PR #6 was merged into
+`main` at `d8438fdc08cb26ce1c2314d6311ecb532ac855f2`. Start from the current
+`origin/main`; [M1 handover](docs/m1-handover.md) records the delivered scope,
+evidence, limits and next task, SIN-63. M2 and M3 remain planned.
+
 ## Requirements
 
 - Python 3.13 (uv can install it), uv 0.13.4 and Node.js 22 for the JavaScript check.
@@ -232,5 +237,6 @@ ignored `assistant-smoke.local.json`. Review each saved answer against the revie
 notes in `evals/assistant-smoke.json`. The report does not claim live acceptance
 automatically. A scripted model in adapter tests verifies code contracts only.
 The requested T05 real-model and website journey checks are recorded in
-[the foreground acceptance report](docs/sin-62-foreground-browser.md). Final user
-acceptance and merge remain pending; do not mark SIN-62 Done before them.
+[the foreground acceptance report](docs/sin-62-foreground-browser.md). User
+acceptance and merge are complete. Earlier timeout reports remain historical
+evidence; they do not reopen M1. This documentation update ran no tests or model calls.

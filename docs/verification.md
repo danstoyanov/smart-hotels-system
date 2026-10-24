@@ -1,5 +1,9 @@
 # SIN-59 verification
 
+**Closure — 24 October 2026:** PR #2 is merged and SIN-59 is Done. The checks
+below are historical development evidence; none were rerun for this update.
+See [M1 handover](m1-handover.md) for current scope and next work.
+
 Checked on Windows on 23 October 2026 with Python 3.13.2, uv 0.13.4,
 Node.js 22.21.0, Docker Desktop 4.96.3 and Docker Compose 5.6.1.
 

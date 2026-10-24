@@ -1,5 +1,9 @@
 # SIN-62 final browser acceptance attempt — 24 October 2026
 
+**Historical failed attempt:** A later [foreground acceptance run](sin-62-foreground-browser.md)
+passed. PR #6 is now merged and SIN-62 is Done. The failure evidence below is
+preserved without rerunning it. See [M1 handover](m1-handover.md).
+
 ## Outcome: failed; stopped
 
 The user explicitly approved one paid browser-submitted question, up to eight
