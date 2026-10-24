@@ -1,0 +1,197 @@
+{
+  "model": "gemini-3.8-flash",
+  "project": "smart-hotels-system",
+  "location": "global",
+  "api_version": "v1",
+  "question": "Is breakfast included and when is it served?",
+  "property_date": "2026-10-24",
+  "max_agent_runs": 2,
+  "max_model_calls_per_run": 2,
+  "automatic_retries": false,
+  "live_complete": false,
+  "results": [
+    {
+      "transport": "httpx",
+      "outcome": "failed",
+      "diagnostics": {
+        "elapsed_seconds": 66.32,
+        "phase": "model",
+        "model_calls_attempted": 1,
+        "model_calls": [
+          {
+            "number": 1,
+            "started_seconds": 1.759,
+            "completed": false,
+            "reported_usage": null,
+            "request_sha256": "6bc9fde28ccff50cebd5e8f044ca9e78cd54a1377bcc9a3ca12abc8deb29e94f"
+          }
+        ],
+        "tool_steps": [
+          {
+            "name": "read_information",
+            "model_call": 0,
+            "completed": true
+          }
+        ],
+        "events": [
+          {
+            "kind": "transport_selected",
+            "elapsed_seconds": 0.0,
+            "transport": "httpx"
+          },
+          {
+            "kind": "catalogue_loaded",
+            "elapsed_seconds": 0.001,
+            "status": "ok"
+          },
+          {
+            "kind": "records_prepared",
+            "elapsed_seconds": 0.001,
+            "count": 1
+          },
+          {
+            "kind": "model_started",
+            "elapsed_seconds": 1.759,
+            "model_call": 1
+          },
+          {
+            "kind": "http_request",
+            "elapsed_seconds": 5.998,
+            "model_call": 1,
+            "bytes": 4182,
+            "contents": 1,
+            "parts": 1,
+            "roles": [
+              "user"
+            ],
+            "functions": []
+          },
+          {
+            "kind": "failure",
+            "elapsed_seconds": 66.268,
+            "phase": "model",
+            "category": "ReadTimeout",
+            "causes": [
+              "ReadTimeout",
+              "ReadTimeout",
+              "TimeoutError",
+              "CancelledError",
+              "Exception"
+            ],
+            "http_code": null,
+            "status": "HTTP_READ_TIMEOUT"
+          }
+        ],
+        "failure": {
+          "phase": "model",
+          "category": "ReadTimeout",
+          "causes": [
+            "ReadTimeout",
+            "ReadTimeout",
+            "TimeoutError",
+            "CancelledError",
+            "Exception"
+          ],
+          "http_code": null,
+          "status": "HTTP_READ_TIMEOUT"
+        },
+        "reported_usage": {
+          "input_tokens": null,
+          "output_tokens": null,
+          "thinking_tokens": null,
+          "total_tokens": null
+        },
+        "usage_complete": false,
+        "cost_usd": null
+      },
+      "wall_elapsed_seconds": 67.573
+    },
+    {
+      "transport": "aiohttp",
+      "outcome": "completed",
+      "answer": "Breakfast is included in this demo and is served daily from 07:00 to 10:00. Please note that any special dietary arrangements require staff confirmation, though live staff contact is unavailable in this fictional demo.",
+      "sources": [
+        {
+          "source_id": "royal-crest-demo",
+          "version": 1,
+          "demo": true,
+          "title": "Breakfast",
+          "url": "/api/hotel/amenities/breakfast?source_id=royal-crest-demo&version=1"
+        }
+      ],
+      "usage": {
+        "model_calls": 1,
+        "total_tokens": 872
+      },
+      "diagnostics": {
+        "elapsed_seconds": 7.149,
+        "phase": "completed",
+        "model_calls_attempted": 1,
+        "model_calls": [
+          {
+            "number": 1,
+            "started_seconds": 0.627,
+            "completed": true,
+            "reported_usage": {
+              "input_tokens": 825,
+              "output_tokens": 47,
+              "total_tokens": 872
+            },
+            "request_sha256": "6bc9fde28ccff50cebd5e8f044ca9e78cd54a1377bcc9a3ca12abc8deb29e94f",
+            "first_response_seconds": 6.515,
+            "duration_seconds": 6.521
+          }
+        ],
+        "tool_steps": [
+          {
+            "name": "read_information",
+            "model_call": 0,
+            "completed": true
+          }
+        ],
+        "events": [
+          {
+            "kind": "transport_selected",
+            "elapsed_seconds": 0.0,
+            "transport": "aiohttp"
+          },
+          {
+            "kind": "catalogue_loaded",
+            "elapsed_seconds": 0.0,
+            "status": "ok"
+          },
+          {
+            "kind": "records_prepared",
+            "elapsed_seconds": 0.001,
+            "count": 1
+          },
+          {
+            "kind": "model_started",
+            "elapsed_seconds": 0.627,
+            "model_call": 1
+          },
+          {
+            "kind": "model_completed",
+            "elapsed_seconds": 7.148,
+            "model_call": 1
+          }
+        ],
+        "failure": null,
+        "reported_usage": {
+          "input_tokens": 825,
+          "output_tokens": 47,
+          "thinking_tokens": null,
+          "total_tokens": 872
+        },
+        "usage_complete": true,
+        "cost_usd": null
+      },
+      "reviewed": true,
+      "wall_elapsed_seconds": 7.149,
+      "review_notes": "Compared with royal-crest-demo v1 breakfast: included; 07:00-10:00; dietary arrangements require staff; fictional demo and no staff contact. Correct Breakfast source/version. No model-based grading call."
+    }
+  ],
+  "same_first_model_request": true,
+  "conclusion": "HTTPX timed out before headers; aiohttp answered with the same first model request. This supports aiohttp as the local runtime mitigation. One pair does not prove the underlying cause or eliminate future timeouts.",
+  "production_transport_selected": "aiohttp"
+}

@@ -35,7 +35,7 @@ async function api(path, options = {}) {
   return response;
 }
 
-function message(label, text) {
+function message(label, text, sources = []) {
   const item = document.createElement('div');
   item.className = 'chat-message';
   const name = document.createElement('strong');
@@ -43,6 +43,24 @@ function message(label, text) {
   const body = document.createElement('p');
   body.textContent = text;
   item.append(name, body);
+  if (sources.length) {
+    const links = document.createElement('ul');
+    links.setAttribute('aria-label', 'Hotel information read');
+    for (const source of sources) {
+      // Only local, versioned hotel records become links. Model text stays plain text.
+      if (typeof source.url !== 'string'
+          || !/^\/api\/hotel\/(rooms|amenities|policies)\/[a-z0-9-]+\?source_id=[a-z0-9-]+&version=[1-9][0-9]*$/.test(source.url)) continue;
+      const row = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = source.url;
+      link.textContent = `${source.title} · demo source v${source.version}`;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      row.append(link);
+      links.append(row);
+    }
+    item.append(links);
+  }
   log.append(item);
   return body;
 }
@@ -52,7 +70,7 @@ async function history() {
   log.replaceChildren();
   for (const turn of data.turns) {
     message('You', turn.question);
-    message('Demo assistant', turn.answer);
+    message('Demo assistant', turn.answer, turn.sources || []);
   }
   document.querySelector('#chat-empty').hidden = data.turns.length > 0;
 }
@@ -64,7 +82,10 @@ async function initialize() {
     await api('/api/session', { method: 'POST' });
     await history();
     ready = true;
-    status.textContent = 'Chat ready. Replies use a demo stub for now.';
+    const site = await (await api('/api/site')).json();
+    status.textContent = site.assistant_mode === 'vertex'
+      ? 'Chat ready. Ask about rooms, amenities or policies. Replies use AI and may contain mistakes.'
+      : 'Chat ready. Local stub mode is active; AI answers are not enabled.';
   } catch (error) {
     ready = false;
     status.textContent = error.message;
@@ -82,7 +103,7 @@ form.addEventListener('submit', async event => {
   document.querySelector('#chat-empty').hidden = true;
   message('You · sending', question);
   const answer = message('Demo assistant · provisional', '');
-  status.textContent = 'Writing a demo reply…';
+  status.textContent = 'Checking hotel information…';
   let result = false;
   let done = false;
   try {

@@ -293,6 +293,89 @@ def test_commit_precedes_result_and_model_holds_no_connection(guest_client):
         )
 
 
+def test_vertex_route_uses_owned_history_and_saves_sources(guest_client, monkeypatch, caplog):
+    from backend.app.agent import Reply
+    from backend.app.diagnostics import AssistantFailure, InvocationDiagnostics
+
+    client = guest_client
+    first, second = new_guest(client), new_guest(client)
+    call(
+        client,
+        "POST",
+        "/api/chat",
+        first,
+        json={"turn_id": str(uuid4()), "message": "my earlier question"},
+    )
+    calls = []
+    source = {
+        "title": "Arrival",
+        "version": 1,
+        "url": "/api/hotel/policies/arrival?source_id=royal-crest-demo&version=1",
+    }
+
+    async def adapter(settings, hotel, message, history):
+        calls.append(history)
+        async with client.app.state.pool.connection() as conn:
+            assert (await (await conn.execute("SELECT 1")).fetchone()) == (1,)
+        return Reply("offline adapter result", [source])
+
+    monkeypatch.setattr("backend.app.chat.generate_reply", adapter)
+    app = create_app(
+        Settings(
+            _env_file=None,
+            database_url=client.app.state.pool.conninfo,
+            app_origin=ORIGIN,
+            assistant_mode="vertex",
+            google_cloud_project="offline",
+            google_cloud_location="global",
+        )
+    )
+    with TestClient(app, backend_options={"loop_factory": new_loop}) as vertex:
+        response = call(
+            vertex,
+            "POST",
+            "/api/chat",
+            first,
+            json={"turn_id": str(uuid4()), "message": "follow up"},
+        )
+        assert "event: result" in response.text
+        assert response.text.index("event: result") < response.text.index("event: done")
+        assert calls[0][0]["question"] == "my earlier question"
+        turn = call(vertex, "GET", "/api/history", first).json()["turns"][-1]
+        assert turn["answer"] == "offline adapter result"
+        assert turn["sources"] == [source]
+        call(
+            vertex,
+            "POST",
+            "/api/chat",
+            second,
+            json={"turn_id": str(uuid4()), "message": "another guest"},
+        )
+        assert calls[1] == []
+
+        async def broken(*args):
+            diagnostic = InvocationDiagnostics()
+            diagnostic.fail(RuntimeError("private provider details"))
+            raise AssistantFailure(diagnostic.finish())
+
+        monkeypatch.setattr("backend.app.chat.generate_reply", broken)
+        response = call(
+            vertex,
+            "POST",
+            "/api/chat",
+            first,
+            json={"turn_id": str(uuid4()), "message": "will fail"},
+        )
+        assert "event: error" in response.text
+        assert "private provider" not in response.text
+        assert "model_calls_attempted" not in response.text
+        assert "Assistant failed:" in caplog.text
+        assert "private provider details" not in caplog.text
+        assert "event: done" not in response.text
+        assert len(call(vertex, "GET", "/api/history", first).json()["turns"]) == 2
+        assert call(vertex, "POST", "/api/conversation", first).status_code == 200
+
+
 def test_concurrent_admission_allows_one_turn(guest_client):
     from fastapi import HTTPException
 

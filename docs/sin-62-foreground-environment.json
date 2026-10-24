@@ -1,0 +1,68 @@
+{
+  "launch": "foreground process in a live exec session; no detached Start-Process",
+  "python": "3.13.2",
+  "versions": {
+    "google-adk": "2.13.0",
+    "google-genai": "2.33.0",
+    "aiohttp": "3.14.5",
+    "uvicorn": "0.54.0"
+  },
+  "settings": {
+    "model": "gemini-3.8-flash",
+    "project": "smart-hotels-system",
+    "location": "global",
+    "api_version": "v1",
+    "transport": "aiohttp",
+    "temperature": 0.2,
+    "thinking": "LOW",
+    "http_timeout_ms": 60000,
+    "max_model_calls": 8,
+    "provider_attempts": 1
+  },
+  "network_environment": {
+    "HTTP_PROXY": {
+      "present": false,
+      "sha256": null
+    },
+    "HTTPS_PROXY": {
+      "present": false,
+      "sha256": null
+    },
+    "ALL_PROXY": {
+      "present": false,
+      "sha256": null
+    },
+    "NO_PROXY": {
+      "present": false,
+      "sha256": null
+    },
+    "SSL_CERT_FILE": {
+      "present": false,
+      "sha256": null
+    },
+    "SSL_CERT_DIR": {
+      "present": false,
+      "sha256": null
+    },
+    "GOOGLE_VERTEX_BASE_URL": {
+      "present": false,
+      "sha256": null
+    },
+    "GOOGLE_GENAI_USE_ENTERPRISE": {
+      "present": false,
+      "sha256": null
+    },
+    "GOOGLE_GENAI_USE_VERTEXAI": {
+      "present": false,
+      "sha256": null
+    },
+    "GOOGLE_GENAI_HTTP_CLIENT": {
+      "present": false,
+      "sha256": null
+    },
+    "GOOGLE_APPLICATION_CREDENTIALS": {
+      "present": false,
+      "sha256": null
+    }
+  }
+}

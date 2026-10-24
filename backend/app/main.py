@@ -58,10 +58,10 @@ def create_app(settings: Settings | None = None, *, hotel_directory: Path | None
             async with asyncio.timeout(5):
                 async with app.state.pool.connection() as conn:
                     await conn.execute("SELECT 1")
-                    # Readiness also requires the guest-session schema.
+                    # Readiness also requires saved answer sources.
                     row = await (
                         await conn.execute(
-                            "SELECT 1 FROM schema_migrations WHERE name = '002_guest_sessions.sql'"
+                            "SELECT 1 FROM schema_migrations WHERE name = '003_answer_sources.sql'"
                         )
                     ).fetchone()
                     if row is None:
@@ -79,6 +79,7 @@ def create_app(settings: Settings | None = None, *, hotel_directory: Path | None
             "language": settings.hotel_language,
             "timezone": settings.hotel_timezone,
             "demo": True,
+            "assistant_mode": settings.assistant_mode,
         }
 
     def hotel_response(result):

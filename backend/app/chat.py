@@ -1,4 +1,4 @@
-"""Guest routes and provisional SSE. The model adapter arrives in T05."""
+"""Owned guest routes and SSE, with committed final answers and source references."""
 
 import asyncio
 import json
@@ -10,6 +10,8 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from backend.app.agent import generate_reply
+from backend.app.diagnostics import AssistantFailure
 from backend.app.sessions import COOKIE, SESSION_SECONDS, GuestStore
 
 
@@ -116,19 +118,34 @@ def guest_routes(settings):
                     yield event("turn_started", {"turn_id": str(body.turn_id)})
                     parts = []
                     size = 0
-                    async for part in request.app.state.reply(body.message):
-                        size += len(part)
-                        if size > 16000:
-                            raise RuntimeError("Reply too large")
-                        parts.append(part)
-                        yield event("text", {"text": part})
+                    sources = []
+                    if settings.assistant_mode == "vertex":
+                        previous = await guest_store.history(request.cookies.get(COOKIE))
+                        reply = await generate_reply(
+                            settings, request.app.state.hotel, body.message, previous["turns"]
+                        )
+                        logging.info("Assistant completed: %s", json.dumps(reply.diagnostics))
+                        parts.append(reply.answer)
+                        sources = reply.sources
+                    else:
+                        async for part in request.app.state.reply(body.message):
+                            size += len(part)
+                            if size > 16000:
+                                raise RuntimeError("Reply too large")
+                            parts.append(part)
+                            yield event("text", {"text": part})
                     answer = "".join(parts).strip()
                     if not answer:
                         raise RuntimeError("Empty reply")
-                    await guest_store.complete(session, conversation, body.turn_id, answer)
-                    yield event("result", {"turn_id": str(body.turn_id), "answer": answer})
+                    result = {"turn_id": str(body.turn_id), "answer": answer, "sources": sources}
+                    if len(json.dumps(result).encode("utf-8")) > 65536:
+                        raise RuntimeError("Result too large")
+                    await guest_store.complete(session, conversation, body.turn_id, answer, sources)
+                    yield event("result", result)
                     yield event("done", {})
-            except Exception:
+            except Exception as exc:
+                if isinstance(exc, AssistantFailure):
+                    logging.warning("Assistant failed: %s", json.dumps(exc.diagnostics))
                 yield event(
                     "error", {"message": "Reply interrupted. Reload history, then try again."}
                 )

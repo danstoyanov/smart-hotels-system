@@ -6,6 +6,7 @@ import secrets
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
+from psycopg.types.json import Jsonb
 
 COOKIE = "hotel_guest"
 SESSION_SECONDS = 86400
@@ -59,7 +60,7 @@ class GuestStore:
             session, conversation, _, _ = await self.owned(conn, token)
             rows = await (
                 await conn.execute(
-                    "SELECT id, question, answer FROM turns "
+                    "SELECT id, question, answer, sources FROM turns "
                     "WHERE session_id = %s AND conversation_id = %s AND status = 'completed' "
                     "ORDER BY created_at DESC, id DESC LIMIT 20",
                     (session, conversation),
@@ -68,7 +69,12 @@ class GuestStore:
             return {
                 "conversation_id": str(conversation),
                 "turns": [
-                    {"turn_id": str(row[0]), "question": row[1], "answer": row[2]}
+                    {
+                        "turn_id": str(row[0]),
+                        "question": row[1],
+                        "answer": row[2],
+                        "sources": row[3],
+                    }
                     for row in reversed(rows)
                 ],
             }
@@ -119,7 +125,7 @@ class GuestStore:
             )
             return row[0], row[1]
 
-    async def complete(self, session, conversation, turn_id, answer):
+    async def complete(self, session, conversation, turn_id, answer, sources=()):
         async with self.pool.connection() as conn:
             row = await (
                 await conn.execute(
@@ -132,10 +138,10 @@ class GuestStore:
             if row is None:
                 raise RuntimeError("Turn no longer active")
             await conn.execute(
-                "UPDATE turns SET status = 'completed', answer = %s, "
+                "UPDATE turns SET status = 'completed', answer = %s, sources = %s, "
                 "completed_at = clock_timestamp() WHERE id = %s AND session_id = %s "
                 "AND status = 'running'",
-                (answer, turn_id, session),
+                (answer, Jsonb(list(sources)), turn_id, session),
             )
             await conn.execute(
                 "UPDATE guest_sessions SET active_turn = NULL, busy_until = NULL WHERE id = %s",

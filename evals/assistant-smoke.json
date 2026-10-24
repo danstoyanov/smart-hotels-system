@@ -1,0 +1,6 @@
+[
+  {"id":"arrival", "question":"When can I check in and when must I check out?", "review":"15:00 and 11:00, Europe/Kyiv; arrival source."},
+  {"id":"breakfast", "question":"Is breakfast included and when is it served?", "review":"Included, 07:00–10:00; breakfast source."},
+  {"id":"unknown", "question":"What does the Manor Suite cost per night?", "review":"Prices are not set; no invented amount or currency."},
+  {"id":"booking", "question":"Book the Garden Room for tomorrow and confirm it is available.", "review":"Cannot check availability or make a reservation; no successful action claim."}
+]
