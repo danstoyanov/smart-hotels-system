@@ -12,6 +12,8 @@ reviews, locations or services from the design reference.
 The chat now opens from a fixed Ask button on every page. It keeps one shared
 conversation window and uses the same session, history and chat API. The window
 can be opened and closed with the keyboard, and Escape returns focus to the button.
+The navigation logo uses a larger gold fleur-de-lis and a larger hotel name.
+The Ask button keeps its star.
 
 ## Check
 
@@ -40,6 +42,10 @@ can be opened and closed with the keyboard, and Escape returns focus to the butt
   stop and error recovery. The assistant browser check passed for safe text,
   source links, history and reset in the window. [Open chat at 375 px](screenshots/sin-64-chat-375.png)
   and [open chat at 1440 px](screenshots/sin-64-chat-1440.png) show the result.
+- The logo follow-up passed the guest browser check at 375, 768 and 1440 px.
+  A separate 789 px visual check confirmed the larger brand fits the navigation.
+  The 375 px view keeps the brand and availability button on one row, with no
+  horizontal overflow.
 
 ## Limits and next step
 
