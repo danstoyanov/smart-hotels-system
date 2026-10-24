@@ -1,48 +1,256 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Royal Crest Manor · Demo</title>
-  <link rel="stylesheet" href="/assets/site.css">
-  <script type="module" src="/assets/site.js"></script>
-  <script type="module" src="/assets/chat.js"></script>
-</head>
-<body>
-  <header><a href="/" aria-label="Home">Royal Crest Manor</a><span>Fictional hotel · Demo</span></header>
-  <main>
-    <h1>A beginning,<br>with room to grow.</h1>
-    <p class="intro">Welcome to <span id="hotel-name">Royal Crest Manor</span>. This is the first step of our demo hotel website.</p>
-    <section aria-labelledby="status-heading">
-      <h2 id="status-heading">The foundation is here.</h2>
-      <p>Explore our fictional hotel's rooms, amenities and policies with the demo assistant. Availability search and demo reservations are coming later.</p>
-      <div class="connection">
-        <p id="status" role="status" aria-live="polite">Checking the connection…</p>
-        <button id="check" type="button">Check connection</button>
-      </div>
-      <noscript><p>Enable JavaScript to check the connection.</p></noscript>
-    </section>
-    <section class="chat" aria-labelledby="chat-heading">
-      <div class="chat-heading">
-        <h2 id="chat-heading">Your conversation</h2>
-        <button id="reset" type="button" disabled>New conversation</button>
-      </div>
-      <p>Ask about check-in, breakfast or room capacity. The assistant uses reviewed demo information and shows the records it reads. It cannot check availability or make reservations. This browser keeps your conversation for up to 24 hours. Avoid sharing sensitive information.</p>
-      <p id="chat-empty">Your completed messages will appear here.</p>
-      <div id="chat-log" role="log" aria-label="Conversation history" aria-live="off"></div>
-      <form id="chat-form">
-        <label for="message">Your message</label>
-        <textarea id="message" name="message" rows="3" maxlength="2000" required disabled></textarea>
-        <div class="chat-actions">
-          <button id="send" type="submit" disabled>Send message</button>
-          <button id="stop" type="button" hidden>Stop reply</button>
-          <button id="retry-chat" type="button">Reload chat</button>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#051b12" />
+    <title>Royal Crest Manor · Fictional demo</title>
+    <link rel="stylesheet" href="/assets/site.css" />
+    <script type="module" src="/assets/site.js"></script>
+    <script type="module" src="/assets/chat.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <nav class="nav-shell" aria-label="Main navigation">
+        <a class="brand" href="/" aria-label="Royal Crest Manor home"
+          ><span class="brand-mark" aria-hidden="true">✦</span
+          ><span id="brand-name">Royal Crest Manor</span></a
+        >
+        <div class="nav-links">
+          <a href="/#rooms">Rooms</a><a href="/#amenities">Amenities</a
+          ><a href="/#policies">Stay information</a
+          ><a href="/#chat">Concierge</a>
         </div>
-      </form>
-      <p id="chat-status" role="status" aria-live="polite">Loading your conversation…</p>
-      <noscript><p>Enable JavaScript to use the chat.</p></noscript>
-    </section>
-  </main>
-  <footer><span>One hotel. A work in progress.</span><span id="timezone">Europe/Kyiv</span></footer>
-</body>
+        <a class="button button-gold nav-cta" href="/#availability"
+          >Check availability</a
+        >
+      </nav>
+    </header>
+    <main id="main">
+      <div id="home-page">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-content wrap">
+            <span class="eyebrow light">Fictional hotel · Demo experience</span>
+            <h1 id="hero-title">A quieter way<br />to <em>stay awhile.</em></h1>
+            <p>
+              Explore Royal Crest Manor’s demo rooms, hotel information and
+              sample availability in one calm place.
+            </p>
+            <a class="button button-gold" href="#rooms"
+              >Explore the rooms <span aria-hidden="true">↗</span></a
+            >
+          </div>
+        </section>
+        <section
+          class="search-section wrap"
+          id="availability"
+          aria-labelledby="search-title"
+        >
+          <div class="search-intro">
+            <span class="eyebrow">Plan your stay</span>
+            <h2 id="search-title">Find a room for your dates</h2>
+            <p>
+              Sample inventory covers 1–7 November 2026. A search does not hold
+              a room.
+            </p>
+          </div>
+          <form id="availability-form" class="booking-bar">
+            <label
+              >Arrival
+              <input id="check-in" name="check_in" type="date" required
+            /></label>
+            <label
+              >Departure
+              <input id="check-out" name="check_out" type="date" required
+            /></label>
+            <label
+              >Guests
+              <input
+                id="guests"
+                name="guests"
+                type="number"
+                min="1"
+                max="20"
+                value="2"
+                required
+            /></label>
+            <button class="button button-dark" type="submit">
+              Check availability <span aria-hidden="true">→</span>
+            </button>
+          </form>
+          <div
+            id="availability-status"
+            class="notice"
+            role="status"
+            aria-live="polite"
+          >
+            Choose dates and guests to check the demo inventory.
+          </div>
+          <div id="availability-results" class="result-grid"></div>
+        </section>
+        <section
+          class="rooms-section section-space"
+          id="rooms"
+          aria-labelledby="rooms-title"
+        >
+          <div class="wrap">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">Private quarters</span>
+                <h2 id="rooms-title">Rooms at the manor</h2>
+                <p>Two fictional rooms from the reviewed demo hotel data.</p>
+              </div>
+              <span class="section-aside"
+                >No prices are published for this demo.</span
+              >
+            </div>
+            <div id="room-list" class="room-grid">
+              <p role="status">Loading rooms…</p>
+            </div>
+          </div>
+        </section>
+        <section
+          class="facts-section section-space"
+          id="amenities"
+          aria-labelledby="amenities-title"
+        >
+          <div class="wrap">
+            <div class="center-heading">
+              <span class="eyebrow">During your stay</span>
+              <h2 id="amenities-title">Simple comforts, clearly described</h2>
+              <p>
+                Only services recorded in the hotel’s demo information appear
+                here.
+              </p>
+            </div>
+            <div id="amenity-list" class="fact-grid">
+              <p role="status">Loading amenities…</p>
+            </div>
+          </div>
+        </section>
+        <section
+          class="policies-section section-space"
+          id="policies"
+          aria-labelledby="policies-title"
+        >
+          <div class="wrap">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">Good to know</span>
+                <h2 id="policies-title">Stay information</h2>
+              </div>
+            </div>
+            <div id="policy-list" class="policy-grid">
+              <p role="status">Loading stay information…</p>
+            </div>
+          </div>
+        </section>
+      </div>
+      <section
+        id="room-page"
+        class="inner-page wrap"
+        hidden
+        aria-labelledby="room-title"
+      >
+        <a class="back-link" href="/#rooms">← All rooms</a>
+        <div id="room-detail" role="status">Loading room…</div>
+      </section>
+      <section
+        id="review-page"
+        class="inner-page wrap"
+        hidden
+        aria-labelledby="review-title"
+      >
+        <a class="back-link" href="/#availability">← Change dates</a
+        ><span class="eyebrow">Demo stay</span>
+        <h1 id="review-title">Review your selection</h1>
+        <p class="review-lead">
+          This is a review only. No room is held or reserved. Booking
+          confirmation will be available in a later demo step.
+        </p>
+        <div id="review-detail" role="status">Checking this selection…</div>
+      </section>
+      <section
+        class="chat-section section-space"
+        id="chat"
+        aria-labelledby="chat-heading"
+      >
+        <div class="wrap chat-layout">
+          <div class="chat-copy">
+            <span class="eyebrow">Your demo concierge</span>
+            <h2 id="chat-heading">Ask about your stay</h2>
+            <p>
+              Ask about rooms, breakfast, policies or availability. The
+              assistant uses demo hotel information and shows the sources it
+              reads.
+            </p>
+            <p>
+              Replies may contain mistakes. Avoid sensitive information.
+              Conversations last up to 24 hours in this browser.
+            </p>
+            <p id="chat-mode" class="small-note"></p>
+          </div>
+          <div class="chat-panel">
+            <div class="chat-heading">
+              <h3>Your conversation</h3>
+              <button id="reset" class="text-button" type="button" disabled>
+                New conversation
+              </button>
+            </div>
+            <p id="chat-empty">Your completed messages will appear here.</p>
+            <div
+              id="chat-log"
+              role="log"
+              aria-label="Conversation history"
+              aria-live="off"
+            ></div>
+            <form id="chat-form">
+              <label for="message">Your message</label
+              ><textarea
+                id="message"
+                name="message"
+                rows="3"
+                maxlength="2000"
+                required
+                disabled
+              ></textarea>
+              <div class="chat-actions">
+                <button
+                  id="send"
+                  class="button button-dark"
+                  type="submit"
+                  disabled
+                >
+                  Send message</button
+                ><button
+                  id="stop"
+                  class="button button-dark"
+                  type="button"
+                  hidden
+                >
+                  Stop reply</button
+                ><button id="retry-chat" class="text-button" type="button">
+                  Reload chat
+                </button>
+              </div>
+            </form>
+            <p id="chat-status" role="status" aria-live="polite">
+              Loading your conversation…
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div class="wrap footer-inner">
+        <div>
+          <strong>Royal Crest Manor</strong>
+          <p>Fictional hotel · Demo only</p>
+        </div>
+        <p>Property time: <span id="timezone">Europe/Kyiv</span></p>
+        <a href="/#policies">Stay information</a>
+      </div>
+    </footer>
+  </body>
 </html>
