@@ -32,7 +32,7 @@ Run charges. Trial credit balance and expiry remain unverified.
 
 | Check | Actual result | Limit |
 | --- | --- | --- |
-| Base and setup | PR #13 was merged into `origin/main` at `44d791dc`; a separate `codex/sin-69-cloud-handover` worktree was created; `uv sync --locked` passed. | No application tests were run for the documentation change. |
+| Base and setup | PR #13 was merged into `origin/main` at `44d791dc`; a separate `codex/sin-69-cloud-handover` worktree was created; `uv sync --locked` passed. Both PR #14 CI check jobs passed on `da90131`. | No local application tests were run for the documentation and monitoring change. |
 | Database and backups | Cloud SQL `smart-hotel-demo-db` was `RUNNABLE`; automatic backups were off and the backup list was empty. | No restore check. |
 | Application rollback probe | Cloud Run revision `smart-hotel-demo-00003-zwv` was Ready and had 100% traffic. Previous revision `smart-hotel-demo-00002-mcx` was Ready, and its image digest `sha256:1bd45a0b04c6902bd3380880a2800be4879a9338ab65c2db1610e2253310f7a2` still existed. A temporary tag sent 0% normal traffic to the old revision; its signed-in `/api/health` returned `{"status":"ok","database":"ok"}`. The tag was removed, and the current revision again showed 100% as the only traffic target. | Live traffic was not switched. This proves an old-app health probe against the current database, not the full guest path or compatibility with future migrations. |
 | Health | A signed-in browser GET to `/api/health` returned `{"status":"ok","database":"ok"}`. | The health route does not call Gemini. |
