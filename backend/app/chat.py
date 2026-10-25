@@ -127,6 +127,7 @@ def guest_routes(settings):
                             request.app.state.hotel,
                             body.message,
                             previous["turns"],
+                            max_model_calls=5 if settings.cloud_demo else 8,
                             availability=Availability(
                                 request.app.state.pool, request.app.state.hotel
                             ),
