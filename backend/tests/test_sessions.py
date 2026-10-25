@@ -5,7 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 from starlette.requests import ClientDisconnect
 
-from backend.app.chat import GuestStream, event
+from backend.app.chat import GuestStream, event, stub_reply
 from backend.app.db import migrate
 from backend.app.main import create_app
 from backend.app.runtime import new_loop
@@ -258,6 +258,41 @@ def test_stub_failure_does_not_save_or_block(guest_client):
     assert "private error" not in response.text
     assert call(client, "GET", "/api/history", token).json()["turns"] == []
     assert call(client, "POST", "/api/conversation", token).status_code == 200
+
+
+def test_timeout_allows_new_turn_without_leaking_guest_text(guest_client, caplog):
+    client = guest_client
+    token = new_guest(client)
+    failed_id = str(uuid4())
+    secret = "PRIVATE GUEST MESSAGE"
+
+    async def timed_out(message):
+        raise TimeoutError(f"provider failed for {message}")
+        yield ""  # Keep this as an async generator.
+
+    client.app.state.reply = timed_out
+    failed = call(
+        client,
+        "POST",
+        "/api/chat",
+        token,
+        json={"turn_id": failed_id, "message": secret},
+    )
+    assert "event: error" in failed.text
+    assert "event: done" not in failed.text
+    assert secret not in failed.text
+    assert secret not in caplog.text
+    assert sql(client, "SELECT status FROM turns WHERE id = %s", (failed_id,)) == [("interrupted",)]
+    client.app.state.reply = stub_reply
+    retry = call(
+        client,
+        "POST",
+        "/api/chat",
+        token,
+        json={"turn_id": str(uuid4()), "message": "try again"},
+    )
+    assert "event: done" in retry.text
+    assert len(call(client, "GET", "/api/history", token).json()["turns"]) == 1
 
 
 def test_commit_precedes_result_and_model_holds_no_connection(guest_client):

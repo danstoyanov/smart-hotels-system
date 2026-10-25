@@ -42,6 +42,20 @@ def create_app(settings: Settings | None = None, *, hotel_directory: Path | None
     app.include_router(booking_routes(settings))
 
     @app.middleware("http")
+    async def request_body_limit(request: Request, call_next):
+        if request.method == "POST" and request.url.path.startswith("/api/"):
+            limit = 16384
+            size = 0
+            body = bytearray()
+            async for chunk in request.stream():
+                size += len(chunk)
+                if size > limit:
+                    return JSONResponse({"detail": "Request body is too large."}, status_code=413)
+                body.extend(chunk)
+            request._body = bytes(body)
+        return await call_next(request)
+
+    @app.middleware("http")
     async def private_cache(request: Request, call_next):
         response = await call_next(request)
         if request.url.path in {

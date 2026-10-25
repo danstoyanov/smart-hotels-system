@@ -49,6 +49,15 @@ def test_pages_and_public_configuration():
         assert "database_url" not in site
 
 
+@pytest.mark.parametrize("path", ["/api/chat", "/api/bookings", "/api/session"])
+def test_large_post_body_is_rejected_before_route(path):
+    app = create_app(Settings(_env_file=None))
+    with TestClient(app, backend_options={"loop_factory": new_loop}) as client:
+        response = client.post(path, content=b"x" * 16385)
+        assert response.status_code == 413
+        assert response.json() == {"detail": "Request body is too large."}
+
+
 @pytest.mark.parametrize("fail,code", [(False, 200), (True, 503)])
 def test_health_checks_database_and_hides_errors(fail, code):
     app = create_app(Settings(_env_file=None))
