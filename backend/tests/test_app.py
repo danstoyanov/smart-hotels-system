@@ -74,6 +74,31 @@ def test_invalid_timezone_is_rejected():
         Settings(_env_file=None, hotel_timezone="Invalid/Place")
 
 
+def test_cloud_demo_rejects_stub_or_insecure_origin():
+    with pytest.raises(ValidationError, match="Cloud demo requires"):
+        Settings(_env_file=None, cloud_demo=True)
+    with pytest.raises(ValidationError, match="Cloud demo requires"):
+        Settings(
+            _env_file=None,
+            cloud_demo=True,
+            assistant_mode="vertex",
+            google_cloud_project="demo-project",
+            google_cloud_location="global",
+            app_origin="http://example.com",
+            cookie_secure=True,
+        )
+    settings = Settings(
+        _env_file=None,
+        cloud_demo=True,
+        assistant_mode="vertex",
+        google_cloud_project="demo-project",
+        google_cloud_location="global",
+        app_origin="https://example.com",
+        cookie_secure=True,
+    )
+    assert settings.cloud_demo
+
+
 def test_windows_loop_uses_selector():
     import asyncio
     import sys

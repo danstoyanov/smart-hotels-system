@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     hotel_timezone: str = "Europe/Kyiv"
     app_origin: str = "http://127.0.0.1:8000"
     cookie_secure: bool = False
+    cloud_demo: bool = False
     assistant_mode: Literal["stub", "vertex"] = "stub"
     google_cloud_project: str = ""
     google_cloud_location: str = ""
@@ -29,6 +30,12 @@ class Settings(BaseSettings):
             for value in (self.google_cloud_project, self.google_cloud_location, self.gemini_model)
         ):
             raise ValueError("Vertex mode requires a project, location and model")
+        if self.cloud_demo and (
+            self.assistant_mode != "vertex"
+            or not self.cookie_secure
+            or not self.app_origin.startswith("https://")
+        ):
+            raise ValueError("Cloud demo requires Vertex mode, HTTPS origin and secure cookies")
         return self
 
     @field_validator("hotel_timezone")

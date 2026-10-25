@@ -123,7 +123,6 @@ async def generate_reply(
             after_tool_callback=diagnostic.after_tool,
             on_tool_error_callback=diagnostic.on_tool_error,
             generate_content_config=types.GenerateContentConfig(
-                temperature=0.2,
                 max_output_tokens=2048,
                 thinking_config=types.ThinkingConfig(thinking_level="LOW"),
             ),
