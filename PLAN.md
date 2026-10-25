@@ -188,8 +188,8 @@ Keep this plan focused on future development. Historical audits and detailed wor
 - Check: The final review read the plan, code, structure, recorded development evidence and merge state. No tests, server or model calls were run during the review or this documentation update. The earlier foreground acceptance report records a successful real-model answer and source/history recovery after refresh.
 - Next: M1 is closed. Read [the M1 handover](docs/m1-handover.md) for its evidence and limits.
 
-### M2 demo reservations under review — 2026-10-24
+### M2 guest journey accepted — 2026-10-24
 
-- Result: SIN-63 (T06) and SIN-64 (T07) are Done; PRs #8 and #9 are merged. SIN-65 (T08) adds explicit demo confirmation, safe repeat requests and owned lookup in [PR #10](https://github.com/danstoyanov/smart-hotels-system/pull/10).
-- Check: The [SIN-65 verification](docs/sin-65-verification.md) records disposable PostgreSQL and desktop/mobile browser checks. Human review and merge of T08 are pending.
-- Next: Review and accept SIN-65. Keep M2 open until PR #10 is merged and accepted; then continue with T09 safeguards and T10 core journey checks.
+- Result: SIN-63–SIN-65 (T06–T08) are Done; PRs #8–#10 are merged. The demo journey covers search, room details, review and explicit reservation confirmation.
+- Check: [SIN-64 verification](docs/sin-64-verification.md) and [SIN-65 verification](docs/sin-65-verification.md) record local and desktop/mobile checks. T08 used a separate disposable PostgreSQL database.
+- Next: M2 is closed. T09 safeguards and T10 journey checks remain before public access. Cloud setup and launch need separate approval.

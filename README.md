@@ -9,7 +9,8 @@ default. Guests can confirm clearly labelled demo reservations after reviewing a
 **M1 accepted — 24 October 2026.** SIN-58–SIN-62 are Done. PR #6 was merged into
 `main` at `d8438fdc08cb26ce1c2314d6311ecb532ac855f2`. Start from the current
 `origin/main`; [M1 handover](docs/m1-handover.md) records the delivered scope,
-evidence, limits and next task, SIN-63. M2 and M3 remain planned.
+evidence and limits. **M2 accepted — 24 October 2026.** SIN-63–SIN-65 are Done;
+PRs #8–#10 are merged. M3 remains planned.
 
 ## Requirements
 
