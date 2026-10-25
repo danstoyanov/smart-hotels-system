@@ -19,14 +19,14 @@ and the steps actually completed; it is not a production handover.
 | Service identity | Dedicated account with `roles/cloudsql.client` and `roles/aiplatform.user`; `roles/secretmanager.secretAccessor` on the database secret only |
 | App variables | `CLOUD_DEMO=true`, `ASSISTANT_MODE=vertex`, approved project/model/location, `HOTEL_NAME=Royal Crest Manor`, `HOTEL_LANGUAGE=en`, `HOTEL_TIMEZONE=Europe/Kyiv`, exact HTTPS `APP_ORIGIN`, `COOKIE_SECURE=true` |
 | Health | HTTP startup probe on `/api/health`; the endpoint checks the database and migration state with no model call |
-| Logs | Cloud Run request logs and safe application diagnostics in Cloud Logging; no guest text, credentials or SDK debug logs |
+| Logs | Cloud Run request logs and safe application warnings in Cloud Logging; no guest text, credentials or SDK debug logs |
 | Budget | Single-project $50 monthly USD alert budget; gross actual-spend email thresholds at 50%, 80% and 100% to `stoyanov.dann@gmail.com` |
 | Acceptance calls | At most five real Gemini requests during the deployed acceptance check; no automatic model retry |
 
 The Cloud Run instance maximum is a capacity setting, not a hard billing limit.
 Google Cloud can briefly exceed it during maintenance or a traffic surge. The
 app limits API POST bodies to 16 KiB, chat messages to 2,000 characters,
-model calls to eight per turn, output to 2,048 tokens and a chat turn to
+model calls to five per cloud-demo turn, output to 2,048 tokens and a chat turn to
 90 seconds. These limits apply per request, not across the billing account.
 
 ## Expected paid resources
@@ -113,7 +113,7 @@ backup setup. The `smart_hotels` database and user exist. Secret Manager secret
 account has Cloud SQL Client and Vertex AI User at project scope and Secret
 Accessor on this secret only.
 
-The image digest is
+The migration and import job image digest is
 `sha256:6ccd7d5918ef3538c0018dd7ef71e1f182a8c4b141db45f8674f6f787dc223af`.
 Migration execution `smart-hotel-demo-migrate-pkmk4` completed and logged all
 five migrations, from `001_foundation.sql` to `005_demo_bookings.sql`.
@@ -123,7 +123,9 @@ CLI joined two arguments; it made no schema change and the job was corrected.
 
 Cloud Run service `smart-hotel-demo` is Ready at
 <https://smart-hotel-demo-613644187384.europe-central2.run.app>. The running
-revision uses the exact image digest above, the Cloud SQL socket and secret,
+revision uses image digest
+`sha256:3b69b5ec6281e190cb2f440f54f1fc7e6bf03219910e8def08c38d2026f989f0`,
+the Cloud SQL socket and secret,
 Vertex `gemini-3.8-flash/global`, one vCPU and 1 GiB, request-based CPU,
 service and revision maximum 1 instance, concurrency 4, timeout 120 seconds,
 and a `/api/health` startup probe every 10 seconds with a 5-second timeout
@@ -131,12 +133,65 @@ and 12 allowed failures. The application origin is this exact HTTPS URL and
 its session cookie is secure. Cloud Run Invoker has only the IAP service agent;
 IAP Web App User has only `stoyanov.dann@gmail.com`.
 
-**Pending:** This project has no Google organization. It needs a one-time
-external OAuth client setup in Cloud Console before IAP can show Google sign-in.
-At this point, the real URL returned IAP HTTP 502, `Empty Google Account OAuth
-client ID(s)/secret(s).` The user was asked to do the Console setup without
-sharing the secret. The live guest journey, access and error checks remain
-unverified until the sign-in works.
+This project has no Google organization, so the user completed the one-time
+external consent screen and IAP Custom OAuth setup in Cloud Console with
+auto-generated credentials. The service-level client ID is
+`613644187384-b9ot6aadf298pl14np24i11muar2g2tk.apps.googleusercontent.com`;
+the client secret is not recorded here. Before this setup, IAP returned HTTP
+502 because the OAuth client was empty. After setup, an unauthenticated GET to
+`/api/health` returned HTTP 302 to Google sign-in. The approved user confirmed
+the site opened after sign-in, and Cloud Run logs showed HTTP 200 for the page's
+hotel and session API requests.
+
+The approved user then made one chat POST in the real browser. A screenshot
+showed a saved answer about breakfast, with `Breakfast - demo source v2`.
+`ASSISTANT_MODE=vertex` was active on this revision, so this was a live Gemini
+answer. The cloud code caps this turn at five model calls; the exact provider
+call count was not emitted in logs. A second screenshot showed Garden Room for
+1–3 November 2026 and two guests, with a confirmed **demo reservation**
+`DEM-7B3FF73C085B`. No price or payment was presented. Cloud Run request logs
+showed the chat POST HTTP 200, availability GET HTTP 200, history GET HTTP 200
+and booking POST HTTP 201. The user-provided screenshots were inspected but not
+copied into Git because their browser chrome contains personal items.
+
+The booking lookup from the original guest session returned HTTP 200. The
+same reference from a new private-browser guest session returned HTTP 404 and
+showed no booking data. An invalid date-range search returned HTTP 422. These
+results were checked in Cloud Run request logs; the user also showed the
+cross-session not-found screen. After F5 in the original browser, the user
+confirmed that the same demo reservation was still visible; logs showed a new
+booking lookup HTTP 200 and history GET HTTP 200. The serving revision logged
+no errors during this journey. A direct signed-in GET to `/api/health` returned
+`{"status":"ok","database":"ok"}` in the browser, and the Cloud Run log
+showed HTTP 200. Cloud Run also marked the revision Ready using that endpoint
+as its startup probe.
+
+## Checks and remaining limits
+
+- `uv sync --locked` completed. `scripts/test.ps1` passed with a separate
+  disposable PostgreSQL database: 70 Python and three JavaScript tests. The
+  temporary test database was removed. The built image passed a bundled hotel
+  data smoke check. The YAML files parsed, the local documentation links
+  resolved and `git diff --check` was clean.
+- One real browser chat question, availability search, room review and explicit
+  demo confirmation worked. The review page did not create the booking; the
+  booking POST returned HTTP 201 after confirmation. The user and request logs
+  checked cross-session isolation, invalid dates, reservation recovery and
+  health as recorded above.
+- The Google-managed login route was not usable in this project without an
+  organization. The custom OAuth setup was done once in Cloud Console. Only
+  the approved Google user has IAP Web App User, and only the IAP service agent
+  has Cloud Run Invoker. An unauthenticated request redirects to Google sign-in.
+- The Cloud Run maximum of one instance and five model calls per cloud turn
+  bound individual requests; neither is a complete spending stop. The one
+  acceptance chat turn cannot make more than five model calls, but the exact
+  provider call count was not emitted by application logs. Do not treat the
+  $50 budget as a cap: alerts do not automatically stop all spending.
+- Free Trial credit balance and expiry remain unverified. Cloud SQL compute
+  can use credit or accrue charges even with no visitors. Alert delivery has
+  not been triggered, so email receipt is unverified. Cloud SQL is a shared
+  core single-zone demo instance without a service SLA. Backups and rollback
+  procedures are T12 work, as is the final launch handover.
 
 ## Platform references
 

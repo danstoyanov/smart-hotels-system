@@ -46,7 +46,7 @@ spec:
             secretKeyRef:
               key: '1'
               name: smart-hotel-database-url
-        image: europe-central2-docker.pkg.dev/smart-hotels-system/smart-hotel-demo/hotel@sha256:6ccd7d5918ef3538c0018dd7ef71e1f182a8c4b141db45f8674f6f787dc223af
+        image: europe-central2-docker.pkg.dev/smart-hotels-system/smart-hotel-demo/hotel@sha256:3b69b5ec6281e190cb2f440f54f1fc7e6bf03219910e8def08c38d2026f989f0
         ports:
         - containerPort: 8080
           name: http1
