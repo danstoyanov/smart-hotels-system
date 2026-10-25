@@ -1,0 +1,68 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    run.googleapis.com/iap-enabled: 'true'
+    run.googleapis.com/ingress: all
+    run.googleapis.com/maxScale: '1'
+  labels:
+    cloud.googleapis.com/location: europe-central2
+  name: smart-hotel-demo
+  namespace: '613644187384'
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '1'
+        run.googleapis.com/cloudsql-instances: smart-hotels-system:europe-central2:smart-hotel-demo-db
+        run.googleapis.com/cpu-throttling: 'true'
+        run.googleapis.com/startup-cpu-boost: 'true'
+    spec:
+      containerConcurrency: 4
+      containers:
+      - env:
+        - name: CLOUD_DEMO
+          value: 'true'
+        - name: ASSISTANT_MODE
+          value: vertex
+        - name: GOOGLE_CLOUD_PROJECT
+          value: smart-hotels-system
+        - name: GOOGLE_CLOUD_LOCATION
+          value: global
+        - name: GEMINI_MODEL
+          value: gemini-3.8-flash
+        - name: HOTEL_NAME
+          value: Royal Crest Manor
+        - name: HOTEL_LANGUAGE
+          value: en
+        - name: HOTEL_TIMEZONE
+          value: Europe/Kyiv
+        - name: APP_ORIGIN
+          value: https://smart-hotel-demo-613644187384.europe-central2.run.app
+        - name: COOKIE_SECURE
+          value: 'true'
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              key: '1'
+              name: smart-hotel-database-url
+        image: europe-central2-docker.pkg.dev/smart-hotels-system/smart-hotel-demo/hotel@sha256:3b69b5ec6281e190cb2f440f54f1fc7e6bf03219910e8def08c38d2026f989f0
+        ports:
+        - containerPort: 8080
+          name: http1
+        resources:
+          limits:
+            cpu: '1'
+            memory: 1Gi
+        startupProbe:
+          failureThreshold: 12
+          httpGet:
+            path: /api/health
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 5
+      serviceAccountName: smart-hotel-demo@smart-hotels-system.iam.gserviceaccount.com
+      timeoutSeconds: 120
+  traffic:
+  - latestRevision: true
+    percent: 100

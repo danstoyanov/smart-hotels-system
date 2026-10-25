@@ -1,10 +1,12 @@
 import asyncio
+from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
 from starlette.requests import ClientDisconnect
 
+from backend.app.agent import Reply
 from backend.app.chat import GuestStream, event, stub_reply
 from backend.app.db import migrate
 from backend.app.main import create_app
@@ -98,6 +100,36 @@ def test_secure_cookie_configuration():
     for flag in ("httponly", "secure", "samesite=strict", "max-age=86400", "path=/"):
         assert flag in cookie
     assert "domain=" not in cookie
+
+
+def test_cloud_demo_caps_model_calls_per_turn(database_url):
+    origin = "https://testserver"
+    asyncio.run(migrate(database_url), loop_factory=new_loop)
+    settings = Settings(
+        _env_file=None,
+        database_url=database_url,
+        app_origin=origin,
+        cookie_secure=True,
+        cloud_demo=True,
+        assistant_mode="vertex",
+        google_cloud_project="demo-project",
+        google_cloud_location="global",
+    )
+    app = create_app(settings)
+    with TestClient(app, base_url=origin, backend_options={"loop_factory": new_loop}) as client:
+        assert client.post("/api/session", headers={"Origin": origin}).status_code == 200
+        with patch(
+            "backend.app.chat.generate_reply",
+            AsyncMock(return_value=Reply(answer="Grounded demo answer.")),
+        ) as model:
+            response = client.post(
+                "/api/chat",
+                headers={"Origin": origin},
+                json={"turn_id": str(uuid4()), "message": "What time is breakfast?"},
+            )
+        assert response.status_code == 200
+        assert "event: done" in response.text
+        assert model.await_args.kwargs["max_model_calls"] == 5
 
 
 def test_history_ownership_reset_and_duplicates(guest_client):
@@ -348,10 +380,11 @@ def test_vertex_route_uses_owned_history_and_saves_sources(guest_client, monkeyp
         "url": "/api/hotel/policies/arrival?source_id=royal-crest-demo&version=1",
     }
 
-    async def adapter(settings, hotel, message, history, *, availability):
+    async def adapter(settings, hotel, message, history, *, max_model_calls, availability):
         from backend.app.inventory import Availability
 
         assert isinstance(availability, Availability)
+        assert max_model_calls == 8
         calls.append(history)
         async with client.app.state.pool.connection() as conn:
             assert (await (await conn.execute("SELECT 1")).fetchone()) == (1,)

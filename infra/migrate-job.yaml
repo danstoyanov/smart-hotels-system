@@ -1,0 +1,37 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  labels:
+    cloud.googleapis.com/location: europe-central2
+  name: smart-hotel-demo-migrate
+  namespace: '613644187384'
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/cloudsql-instances: smart-hotels-system:europe-central2:smart-hotel-demo-db
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      taskCount: 1
+      template:
+        spec:
+          containers:
+          - args:
+            - -m
+            - backend.app.db
+            command:
+            - /app/.venv/bin/python
+            env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: '1'
+                  name: smart-hotel-database-url
+            image: europe-central2-docker.pkg.dev/smart-hotels-system/smart-hotel-demo/hotel@sha256:6ccd7d5918ef3538c0018dd7ef71e1f182a8c4b141db45f8674f6f787dc223af
+            resources:
+              limits:
+                cpu: '1'
+                memory: 1Gi
+          maxRetries: 0
+          serviceAccountName: smart-hotel-demo@smart-hotels-system.iam.gserviceaccount.com
+          timeoutSeconds: '300'

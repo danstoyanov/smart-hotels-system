@@ -110,6 +110,7 @@ def test_real_adk_tool_cycle_history_and_final_output():
     assert result.usage["total_tokens"] == 42
     request_text = str(model.requests[0].contents)
     instruction = str(model.requests[0].config.system_instruction)
+    assert model.requests[0].config.temperature is None
     assert "Catalogue data" in instruction and '"id": "arrival"' in instruction
     assert "Records read by the application" in instruction
     assert "Check-in starts at 15:00" in instruction
