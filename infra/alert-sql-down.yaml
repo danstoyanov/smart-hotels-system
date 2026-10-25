@@ -1,0 +1,25 @@
+displayName: Smart hotel demo - Cloud SQL down
+combiner: OR
+enabled: true
+notificationChannels:
+- projects/smart-hotels-system/notificationChannels/15735388054728012527
+documentation:
+  mimeType: text/markdown
+  content: >-
+    Cloud SQL reports that smart-hotel-demo-db is down. Check the instance
+    state, recent Cloud SQL operations, and the signed-in /api/health route.
+conditions:
+- displayName: Cloud SQL is down for three minutes
+  conditionThreshold:
+    filter: >-
+      resource.type="cloudsql_database" AND
+      resource.label."database_id"="smart-hotels-system:smart-hotel-demo-db" AND
+      metric.type="cloudsql.googleapis.com/database/up"
+    aggregations:
+    - alignmentPeriod: 60s
+      perSeriesAligner: ALIGN_MIN
+    comparison: COMPARISON_LT
+    thresholdValue: 1
+    duration: 180s
+    trigger:
+      count: 1
