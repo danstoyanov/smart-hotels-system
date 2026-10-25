@@ -10,7 +10,14 @@ default. Guests can confirm clearly labelled demo reservations after reviewing a
 `main` at `d8438fdc08cb26ce1c2314d6311ecb532ac855f2`. Start from the current
 `origin/main`; [M1 handover](docs/m1-handover.md) records the delivered scope,
 evidence and limits. **M2 accepted — 24 October 2026.** SIN-63–SIN-65 are Done;
-PRs #8–#10 are merged. M3 remains planned.
+PRs #8–#10 are merged. The M3 cloud demo is deployed, but its recovery
+handover is still open.
+
+The restricted cloud demo is at
+<https://smart-hotel-demo-613644187384.europe-central2.run.app>. See the
+[cloud operations runbook](infra/operations.md) and the
+[M3 handover draft](docs/m3-handover.md). Cloud SQL backups are not enabled,
+so the recovery acceptance check is still open.
 
 ## Requirements
 

@@ -1,0 +1,27 @@
+displayName: Smart hotel demo - Cloud Run 5xx
+combiner: OR
+enabled: true
+notificationChannels:
+- projects/smart-hotels-system/notificationChannels/15735388054728012527
+documentation:
+  mimeType: text/markdown
+  content: >-
+    Cloud Run returned a server error. Check the smart-hotel-demo service,
+    recent request and application logs, /api/health, and Cloud SQL state.
+conditions:
+- displayName: At least one Cloud Run 5xx response in five minutes
+  conditionThreshold:
+    filter: >-
+      resource.type="cloud_run_revision" AND
+      resource.label."service_name"="smart-hotel-demo" AND
+      metric.type="run.googleapis.com/request_count" AND
+      metric.label."response_code_class"="5xx"
+    aggregations:
+    - alignmentPeriod: 300s
+      perSeriesAligner: ALIGN_SUM
+      crossSeriesReducer: REDUCE_SUM
+    comparison: COMPARISON_GT
+    thresholdValue: 0
+    duration: 0s
+    trigger:
+      count: 1
