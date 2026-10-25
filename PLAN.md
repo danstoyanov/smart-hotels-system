@@ -169,6 +169,7 @@ The priority is a working end-to-end version. Improve it from actual use. A demo
 
 - Start with demo data from `hotel/`. Hotel name, language and timezone are configurable and can be changed later.
 - Before cloud setup: Google Cloud project, region, available Gemini model and spending limit.
+- The first cloud demo must have restricted access. Choose the approved-user sign-in method before T11 deployment. Access control alone does not cap cloud spending.
 - For the first version, use hotel information and demo inventory from `hotel/` through application tools; no external hotel integration is required.
 - Later, if needed: payments, guest accounts, multiple hotels, staff inbox, messaging channels and advanced scaling. These do not block the demo.
 

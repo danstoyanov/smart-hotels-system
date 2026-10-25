@@ -17,7 +17,7 @@
 
 ## Before public access
 
-- Agree on access restrictions and configure the deployment origin, HTTPS cookie and Cloud Run request timeout for the existing 90-second chat deadline.
+- The first cloud demo must have restricted access. Choose the approved-user sign-in method in T11, then configure the deployment origin, HTTPS cookie and Cloud Run request timeout for the existing 90-second chat deadline. Access control alone does not cap cloud spending.
 - Complete T10 journey checks and T11 deployment work. Set a spending limit and alerts before enabling Vertex in a public deployment.
 - Review fictional hotel content and demo inventory dates. The fixture only covers 1–7 November 2026. Reservations remain demo only; no real inventory or payment integration exists.
 - Set retention, backup and rollback procedures in T12. Guest sessions expire after 24 hours and have no account recovery.
