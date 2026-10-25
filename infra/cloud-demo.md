@@ -20,7 +20,7 @@ and the steps actually completed; it is not a production handover.
 | App variables | `CLOUD_DEMO=true`, `ASSISTANT_MODE=vertex`, approved project/model/location, `HOTEL_NAME=Royal Crest Manor`, `HOTEL_LANGUAGE=en`, `HOTEL_TIMEZONE=Europe/Kyiv`, exact HTTPS `APP_ORIGIN`, `COOKIE_SECURE=true` |
 | Health | HTTP startup probe on `/api/health`; the endpoint checks the database and migration state with no model call |
 | Logs | Cloud Run request logs and safe application warnings in Cloud Logging; no guest text, credentials or SDK debug logs |
-| Budget | Single-project $50 monthly USD alert budget; gross actual-spend email thresholds at 50%, 80% and 100% to `stoyanov.dann@gmail.com` |
+| Budget | Single-project $50 monthly USD alert budget; gross actual-spend email thresholds at 50%, 80% and 100% to `stoyanov.dann@gmail.com`. An older, separate $2 monthly Vertex AI spend cap remains configured. |
 | Acceptance calls | At most five real Gemini requests during the deployed acceptance check; no automatic model retry |
 
 The Cloud Run instance maximum is a capacity setting, not a hard billing limit.
@@ -95,15 +95,18 @@ The approved project is active and has billing enabled. The current billing
 account is open. The remaining trial credit and its expiry are not available
 through the CLI checks, so they are unverified. The user approved this deploy
 with that limit known. Google Cloud lists `gemini-3.8-flash` on the `global`
-endpoint. No paid model call has yet been made for SIN-68.
+endpoint. The live acceptance check later made one chat request to this model.
 
 On 25 October 2026, the required APIs were enabled. Budget
 `4944a252-e24c-4285-81f7-f8cfbfc85e93` was created for project
 `613644187384`, $50 USD per month, excluding credits when measuring spend,
 with current-spend thresholds 50%, 80% and 100%. It uses Monitoring email
 channel `15735388054728012527` for `stoyanov.dann@gmail.com`. The older
-service-specific $2 Hotel AI budget was inspected and left unchanged. Alert
-delivery has not been triggered or proven by an email yet.
+service-specific $2 Hotel AI budget was inspected and left unchanged. It is a
+configured spend cap for Vertex AI service `C7E2-9256-1C43`, not another
+project-wide alert budget. If enforced, it can pause Vertex AI use while other
+resources, including Cloud SQL, continue to run. Alert delivery has not been
+triggered or proven by an email yet.
 
 Cloud SQL `smart-hotel-demo-db` is RUNNABLE in `europe-central2`, PostgreSQL 16,
 single zone, `db-g1-small`, 10 GiB SSD, no automatic storage growth, no
@@ -186,7 +189,9 @@ as its startup probe.
   bound individual requests; neither is a complete spending stop. The one
   acceptance chat turn cannot make more than five model calls, but the exact
   provider call count was not emitted by application logs. Do not treat the
-  $50 budget as a cap: alerts do not automatically stop all spending.
+  $50 budget as a cap: alerts do not automatically stop all spending. The
+  separate $2 Vertex AI spend cap may pause chat model use, but it does not
+  cover Cloud SQL, Cloud Run or every project charge.
 - Free Trial credit balance and expiry remain unverified. Cloud SQL compute
   can use credit or accrue charges even with no visitors. Alert delivery has
   not been triggered, so email receipt is unverified. Cloud SQL is a shared
@@ -199,4 +204,5 @@ as its startup probe.
 - [Cloud Run health checks](https://cloud.google.com/run/docs/configuring/healthchecks)
 - [Cloud Run to Cloud SQL](https://cloud.google.com/sql/docs/postgres/connect-run)
 - [Budget alerts](https://cloud.google.com/billing/docs/how-to/budgets)
+- [Service spend caps](https://cloud.google.com/billing/docs/how-to/budgets-spend-caps)
 - [Custom budget email recipients](https://cloud.google.com/billing/docs/how-to/budgets-notification-recipients)
