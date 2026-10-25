@@ -80,7 +80,7 @@ backup create, restore, or live traffic switch command was run.
 | [SIN-66 — safeguards](https://linear.app/singularity-lab/issue/SIN-66/t09-complete-essential-safeguards) | [#11](https://github.com/danstoyanov/smart-hotels-system/pull/11) | Guest isolation, limits and safe errors |
 | [SIN-67 — journey checks](https://linear.app/singularity-lab/issue/SIN-67/t10-check-the-main-guest-journey) | [#12](https://github.com/danstoyanov/smart-hotels-system/pull/12) | Focused journey checks |
 | [SIN-68 — cloud demo](https://linear.app/singularity-lab/issue/SIN-68/t11-deploy-the-demo-to-google-cloud) | [#13](https://github.com/danstoyanov/smart-hotels-system/pull/13) | Restricted Cloud Run, Cloud SQL and Vertex demo |
-| [SIN-69 — operations](https://linear.app/singularity-lab/issue/SIN-69/t12-prepare-launch-and-handover) | PR pending review | Runbook, new guest check, 0%-traffic old-revision probe and operational policies; backups, restore and full traffic rollback remain open |
+| [SIN-69 — operations](https://linear.app/singularity-lab/issue/SIN-69/t12-prepare-launch-and-handover) | [#14, in review](https://github.com/danstoyanov/smart-hotels-system/pull/14) | Runbook, new guest check, 0%-traffic old-revision probe and operational policies; backups, restore and full traffic rollback remain open |
 
 All listed PRs through #13 were confirmed merged in GitHub. SIN-69 remains In
 Progress until the missing recovery work is approved, carried out safely and
