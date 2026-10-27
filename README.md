@@ -137,15 +137,17 @@ Ctrl+C. Stop the database with `docker compose stop db`.
    [Vertex mode](#optional-use-real-gemini-through-vertex-ai) the real assistant
    answers from the hotel information and links its sources.
 2. **Search for a stay.** Choose arrival and departure dates and the number of
-   guests. The demo inventory covers only the nights of **1–7 November 2026**:
-   - 2 guests, 1–3 November: rooms are available.
+   guests. The demo inventory covers only the nights of **1–7 November 2026**.
+   On a new database you should see:
+   - 2 guests, 1–3 November: Garden Room and Manor Suite are available.
    - The Garden Room is closed on 5 November.
    - 5 guests: no room fits the party.
    - Dates after 7 November: inventory is unknown, so nothing is offered.
 3. **Review and confirm.** Open a room, go to the review page and press
    **Confirm demo reservation**. You get a demo reference such as `DEM-…`.
    Refresh the page: the reservation is still visible to you, but not to another
-   browser.
+   browser. Your demo reservations stay in the local database and keep those
+   nights booked for later searches.
 
 > **Note about dates.** Check-in must be today or later in the hotel timezone
 > (Europe/Kyiv). After 7 November 2026 the sample nights are in the past, and
@@ -286,7 +288,8 @@ Dockerfile           one container image for the cloud deployment
 - **The chat says "Open the chat from the hotel website."** Open the site at the
   exact `APP_ORIGIN` address, `http://127.0.0.1:8000` by default.
 - **Search finds no rooms.** Use dates from 1–7 November 2026 that are not in the
-  past. See [Try the demo](#try-the-demo).
+  past. Earlier demo reservations in your local database also keep their nights
+  booked. See [Try the demo](#try-the-demo) and *Reset local data* below.
 - **Dependency installation fails.** Check network access, then repeat
   `uv sync --locked`.
 - **Reset local data.** `docker compose down -v` removes the database container and
