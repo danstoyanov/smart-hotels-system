@@ -5,6 +5,9 @@ for the website design (task SIN-64). They are **not part of the application**:
 the app does not load, serve or import them.
 
 - `DESIGN.md` — colour, typography and spacing tokens that inspired the site styles.
+  It stays unchanged as the original reference. The design system the site really
+  uses is in the root [DESIGN.md](../DESIGN.md), with product context in
+  [PRODUCT.md](../PRODUCT.md) (SIN-92).
 - `code.html` and `screen.png` — a mock-up exported from a design tool.
 
 The mock-up loads images and scripts from remote addresses and contains invented

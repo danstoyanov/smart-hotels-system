@@ -6,7 +6,7 @@ task steps (Linear, branch, PR, reports). Rules for one task belong in its Linea
 ## Read first
 
 - The current Linear issue, PLAN.md sections 1 and 3–6, this file, brief.md,
-  docs/m3-handover.md and design/DESIGN.md (for visual work).
+  docs/m3-handover.md, and PRODUCT.md and DESIGN.md (for visual work).
 - PLAN.md section 2 describes the current architecture; it is not a feature checklist.
   Keep PLAN.md focused on future work.
 - REFERENCE.md is a pointer only. Consult the example project only when the user asks.
