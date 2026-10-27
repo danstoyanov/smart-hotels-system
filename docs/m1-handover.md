@@ -34,10 +34,10 @@ schema and full feature set are not the current implementation. Sections 1 and
 ## Acceptance evidence
 
 - T01: [PR #1](https://github.com/danstoyanov/smart-hotels-system/pull/1), `brief.md` and `AGENTS.md`.
-- T02: [PR #2](https://github.com/danstoyanov/smart-hotels-system/pull/2) and [foundation verification](verification.md).
-- T03: [PR #3](https://github.com/danstoyanov/smart-hotels-system/pull/3) and [hotel-data verification](sin-60-verification.md).
-- T04: [PR #4](https://github.com/danstoyanov/smart-hotels-system/pull/4), [cleanup PR #5](https://github.com/danstoyanov/smart-hotels-system/pull/5) and [session verification](sin-61-verification.md).
-- T05: [PR #6](https://github.com/danstoyanov/smart-hotels-system/pull/6), [foreground acceptance](sin-62-foreground-browser.md) and [browser evidence](sin-62-live-browser.json).
+- T02: [PR #2](https://github.com/danstoyanov/smart-hotels-system/pull/2) and [foundation verification](history/verification.md).
+- T03: [PR #3](https://github.com/danstoyanov/smart-hotels-system/pull/3) and [hotel-data verification](history/sin-60-verification.md).
+- T04: [PR #4](https://github.com/danstoyanov/smart-hotels-system/pull/4), [cleanup PR #5](https://github.com/danstoyanov/smart-hotels-system/pull/5) and [session verification](history/sin-61-verification.md).
+- T05: [PR #6](https://github.com/danstoyanov/smart-hotels-system/pull/6), [foreground acceptance](history/sin-62-foreground-browser.md) and [browser evidence](history/sin-62-live-browser.json).
 
 The final recorded real-browser flow returned a grounded breakfast answer, saved
 the answer and versioned source in PostgreSQL, opened the source and restored the

@@ -2,7 +2,7 @@
 
 **Historical failed attempt:** A later [foreground acceptance run](sin-62-foreground-browser.md)
 passed. PR #6 is now merged and SIN-62 is Done. The failure evidence below is
-preserved without rerunning it. See [M1 handover](m1-handover.md).
+preserved without rerunning it. See [M1 handover](../m1-handover.md).
 
 ## Outcome: failed; stopped
 

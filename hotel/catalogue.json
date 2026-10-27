@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "active_source_id": "royal-crest-demo",
-  "active_version": 2,
+  "active_version": 3,
   "sources": [
     {
       "source_id": "royal-crest-demo",
@@ -12,6 +12,11 @@
       "source_id": "royal-crest-demo",
       "version": 2,
       "file": "revisions/royal-crest-demo.v2.json"
+    },
+    {
+      "source_id": "royal-crest-demo",
+      "version": 3,
+      "file": "revisions/royal-crest-demo.v3.json"
     }
   ]
 }

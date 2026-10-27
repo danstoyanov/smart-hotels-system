@@ -10,7 +10,7 @@ reservation.
 > dates in `hotel/` are invented sample data. Reservations are clearly labelled
 > demo reservations: there are no prices, no payments and no real hotel booking.
 
-![Review page of the demo hotel website](docs/screenshots/sin-67-review-1440.png)
+![Review page of the demo hotel website](docs/images/guest-review-desktop.png)
 
 ## Contents
 
@@ -137,12 +137,13 @@ Ctrl+C. Stop the database with `docker compose stop db`.
    [Vertex mode](#optional-use-real-gemini-through-vertex-ai) the real assistant
    answers from the hotel information and links its sources.
 2. **Search for a stay.** Choose arrival and departure dates and the number of
-   guests. The demo inventory covers only the nights of **1–7 November 2026**.
-   On a new database you should see:
-   - 2 guests, 1–3 November: Garden Room and Manor Suite are available.
-   - The Garden Room is closed on 5 November.
+   guests. The demo inventory covers the nights from **1 November 2026 to
+   30 June 2027**. On a new database you should see:
+   - 2 guests, 1–3 December 2026: Garden Room and Manor Suite are available.
+   - 2 guests, 23–27 December 2026: only Manor Suite. The Garden Room is closed
+     on 24 and 25 December (and on 5 November).
    - 5 guests: no room fits the party.
-   - Dates after 7 November: inventory is unknown, so nothing is offered.
+   - Dates from 1 July 2027: inventory is unknown, so nothing is offered.
 3. **Review and confirm.** Open a room, go to the review page and press
    **Confirm demo reservation**. You get a demo reference such as `DEM-…`.
    Refresh the page: the reservation is still visible to you, but not to another
@@ -150,7 +151,7 @@ Ctrl+C. Stop the database with `docker compose stop db`.
    nights booked for later searches.
 
 > **Note about dates.** Check-in must be today or later in the hotel timezone
-> (Europe/Kyiv). After 7 November 2026 the sample nights are in the past, and
+> (Europe/Kyiv). After 30 June 2027 the sample nights are in the past, and
 > every search returns no rooms. To test later dates, publish a new demo data
 > revision as described in [hotel/README.md](hotel/README.md).
 
@@ -205,8 +206,8 @@ ASSISTANT_MODE=stub uv run --locked uvicorn backend.app.main:app --host 127.0.0.
 NODE_PATH=.local/node_modules node frontend/tests/journey.browser.cjs
 ```
 
-These scripts use fixed November 2026 dates, so they only pass while those dates
-are in the future. They save screenshots in `.local/screenshots/`, which Git ignores.
+These scripts use fixed dates (the journey check uses December 2026 and July 2027),
+so they need new dates once those dates are in the past. They save screenshots in `.local/screenshots/`, which Git ignores.
 
 ## Configuration
 
@@ -287,8 +288,8 @@ Dockerfile           one container image for the cloud deployment
   `uv run --locked python -m backend.app.inventory`.
 - **The chat says "Open the chat from the hotel website."** Open the site at the
   exact `APP_ORIGIN` address, `http://127.0.0.1:8000` by default.
-- **Search finds no rooms.** Use dates from 1–7 November 2026 that are not in the
-  past. Earlier demo reservations in your local database also keep their nights
+- **Search finds no rooms.** Use dates between 1 November 2026 and 30 June 2027
+  that are not in the past. Earlier demo reservations in your local database also keep their nights
   booked. See [Try the demo](#try-the-demo) and *Reset local data* below.
 - **Dependency installation fails.** Check network access, then repeat
   `uv sync --locked`.
@@ -313,7 +314,8 @@ Known limits:
 - Guest sessions are browser cookies that last 24 hours. There are no guest accounts.
 - Source links show which records the assistant read. They do not prove that every
   sentence of an answer is correct.
-- The demo inventory covers only 1–7 November 2026.
+- The local demo inventory covers 1 November 2026 to 30 June 2027 (data revision v3).
+  The cloud demo still runs revision v2 (1–7 November 2026) until its next approved update.
 
 [PLAN.md](PLAN.md) describes the goal and task order. [brief.md](brief.md) records
 the confirmed demo choices.
@@ -327,7 +329,7 @@ the confirmed demo choices.
 | [infra/operations.md](infra/operations.md) | Cloud deployment, updates and common failures |
 | [infra/cloud-demo.md](infra/cloud-demo.md) | Approved cloud configuration and acceptance record |
 | [docs/m1-handover.md](docs/m1-handover.md), [docs/m3-handover.md](docs/m3-handover.md) | Milestone handovers with evidence and limits |
-| `docs/sin-*-verification.md` | Check records for each task |
+| [docs/history/](docs/history/README.md) | Check records for each task |
 | [AGENTS.md](AGENTS.md) | Lasting rules for coding agents in this repository |
 | [docs/workflow.md](docs/workflow.md) | Task checklist, Linear issue template and milestone review |
 
