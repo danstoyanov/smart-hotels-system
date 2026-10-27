@@ -21,6 +21,8 @@ let needsReload = false;
 
 function openChat() {
   windowPanel.hidden = false;
+  // On phones site.css turns this into a full-screen sheet and locks page scroll.
+  document.documentElement.classList.add('chat-open');
   launcher.hidden = true;
   launcher.setAttribute('aria-expanded', 'true');
   windowBody.scrollTop = windowBody.scrollHeight;
@@ -29,6 +31,7 @@ function openChat() {
 
 function closeChat() {
   windowPanel.hidden = true;
+  document.documentElement.classList.remove('chat-open');
   launcher.hidden = false;
   launcher.setAttribute('aria-expanded', 'false');
   launcher.focus();
@@ -43,6 +46,19 @@ document.addEventListener('click', event => {
 close.addEventListener('click', closeChat);
 windowPanel.addEventListener('keydown', event => {
   if (event.key === 'Escape') closeChat();
+  if (event.key !== 'Tab') return;
+  // Keep keyboard focus inside the open chat; Escape or the close button leaves it.
+  const focusable = [...windowPanel.querySelectorAll('a[href], button, textarea')]
+    .filter(element => !element.disabled && element.getClientRects().length);
+  const first = focusable[0];
+  const last = focusable.at(-1);
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
 });
 if (location.hash === '#chat') openChat();
 

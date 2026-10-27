@@ -203,11 +203,21 @@ button:disabled {
 }
 .nav-links a,
 .nav-links button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   text-decoration: none;
   text-transform: uppercase;
   font-size: var(--text-label);
   font-weight: 700;
   letter-spacing: 0.1em;
+}
+.nav-toggle,
+.nav-links .nav-menu-only {
+  display: none;
+}
+.nav-cta {
+  min-height: 44px;
 }
 .nav-links button {
   border: 0;
@@ -275,7 +285,7 @@ button:disabled {
       rgba(5, 27, 18, 0.48) 43%,
       rgba(5, 27, 18, 0.05) 100%
     ),
-    url("/assets/images/manor-hero.png") center/cover;
+    url("/assets/images/manor-hero.webp") center/cover;
   display: flex;
   align-items: center;
   color: white;
@@ -1129,7 +1139,7 @@ button:disabled {
   color: #fff;
   background:
     linear-gradient(90deg, rgba(5, 27, 18, 0.96) 0%, rgba(5, 27, 18, 0.85) 55%, rgba(5, 27, 18, 0.7) 100%),
-    url("/assets/images/manor-hero.png") center 70%/cover;
+    url("/assets/images/manor-hero.webp") center 70%/cover;
 }
 .cta-inner {
   display: flex;
@@ -1195,10 +1205,24 @@ button:disabled {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  padding: 18px 0 28px;
+  /* Room for the fixed concierge launcher, so it never covers the last line. */
+  padding: 18px 104px 112px 0;
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: var(--text-label);
+}
+.error-state {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+  padding: 28px;
+  border: 1px solid var(--card-line);
+  border-radius: var(--radius-card);
+  background: #fff;
+}
+.error-state .notice {
+  margin: 0;
+  font-size: var(--text-input);
 }
 @media (max-width: 1100px) {
   .nav-links {
@@ -1293,27 +1317,56 @@ button:disabled {
     width: 27px;
     height: 27px;
   }
+  /* Phones: the links fold behind a Menu button instead of scrolling sideways. */
   .nav-cta {
+    display: none;
+  }
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-left: auto;
+    padding: 0 18px;
+    border: 1px solid var(--green);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--green);
     font-size: var(--text-label);
-    padding: 8px 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
   .nav-links {
-    overflow: auto;
-    justify-content: start;
-    gap: 22px;
-    padding: 5px 0;
+    display: none;
   }
-  .nav-links a,
-  .nav-links button {
-    white-space: nowrap;
+  .nav-shell.is-open .nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .nav-shell.is-open .nav-links > * {
+    padding: 0 4px;
+    border-top: 1px solid var(--line);
+  }
+  .nav-links .nav-menu-only {
+    display: inline-flex;
   }
   .hero {
-    min-height: 660px;
+    min-height: 620px;
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(5, 27, 18, 0.78) 0%,
+        rgba(5, 27, 18, 0.48) 43%,
+        rgba(5, 27, 18, 0.05) 100%
+      ),
+      url("/assets/images/manor-hero-900.webp");
     background-position: 62% center;
   }
   .hero-content {
-    padding-top: 185px;
-    padding-bottom: 130px;
+    padding-top: 130px;
+    padding-bottom: 120px;
   }
   .hero h1 {
     font-size: clamp(2.6rem, 11vw, 4rem);
@@ -1381,11 +1434,40 @@ button:disabled {
     right: max(16px, env(safe-area-inset-right));
     bottom: max(16px, env(safe-area-inset-bottom));
   }
+  .chat-launcher,
+  .launcher-orb {
+    width: 56px;
+    height: 56px;
+  }
+  .launcher-orb svg {
+    width: 26px;
+    height: 26px;
+  }
+  .footer-bottom {
+    padding-right: 0;
+    padding-bottom: 88px;
+  }
+  /* Phones: the open chat is a full-screen sheet and the page behind stops scrolling. */
+  .chat-open,
+  .chat-open body {
+    overflow: hidden;
+  }
+  .chat-open .concierge-widget {
+    inset: 0;
+  }
   .chat-window {
-    height: min(640px, calc(100dvh - 32px));
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+  }
+  .chat-window-top {
+    padding-top: max(20px, env(safe-area-inset-top));
+  }
+  .chat-window-bottom {
+    padding-bottom: max(15px, env(safe-area-inset-bottom));
   }
   .inner-page {
-    padding-top: 160px;
+    padding-top: 120px;
   }
   .detail-photo {
     min-height: 280px;

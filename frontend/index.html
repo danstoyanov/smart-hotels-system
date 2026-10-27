@@ -25,10 +25,20 @@
           </span
           ><span id="brand-name">Royal Crest Manor</span></a
         >
-        <div class="nav-links">
+        <button
+          id="nav-toggle"
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-links"
+        >
+          Menu
+        </button>
+        <div id="nav-links" class="nav-links">
           <a href="/#rooms">Rooms</a><a href="/#amenities">Amenities</a
           ><a href="/#policies">Stay information</a
-          ><button id="nav-chat" type="button">Concierge</button>
+          ><button id="nav-chat" type="button">Concierge</button
+          ><a class="nav-menu-only" href="/#availability">Check availability</a>
         </div>
         <a class="button button-dark nav-cta" href="/#availability"
           >Check availability</a
@@ -259,6 +269,7 @@
         id="chat"
         class="chat-window"
         role="dialog"
+        aria-modal="true"
         aria-labelledby="chat-heading"
         hidden
       >

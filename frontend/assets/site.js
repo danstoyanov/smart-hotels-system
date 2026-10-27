@@ -1,10 +1,11 @@
 const $ = (selector) => document.querySelector(selector);
+// Room photos come in two WebP widths; the browser picks one with srcset.
 const images = {
-  "manor-suite": "/assets/images/manor-suite.png",
-  "garden-room": "/assets/images/garden-room.png",
+  "manor-suite": "/assets/images/manor-suite",
+  "garden-room": "/assets/images/garden-room",
 };
 // Only amenities with a matching local photograph get a photo card.
-const amenityImages = { terrace: "/assets/images/manor-hero.png" };
+const amenityImages = { terrace: "/assets/images/manor-hero-900.webp" };
 const iconPaths = {
   bed: "M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 14h18M7 10V7.5A1.5 1.5 0 0 1 8.5 6h2A1.5 1.5 0 0 1 12 7.5V10M12 10V7.5A1.5 1.5 0 0 1 13.5 6h2A1.5 1.5 0 0 1 17 7.5V10M3 18v2M21 18v2",
   guests: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM2.5 20a6.5 6.5 0 0 1 13 0M16 4.2a3.5 3.5 0 0 1 0 6.6M18 14a6.5 6.5 0 0 1 3.5 6",
@@ -85,7 +86,10 @@ function link(text, href, className = "") {
 }
 function image(room) {
   const el = document.createElement("img");
-  el.src = images[room.id];
+  const base = images[room.id];
+  el.src = `${base}-1200.webp`;
+  el.srcset = `${base}-640.webp 640w, ${base}-1200.webp 1200w`;
+  el.sizes = "(max-width: 850px) 100vw, 50vw";
   el.alt = `Illustration of the fictional ${room.name} interior`;
   el.loading = "lazy";
   el.width = 960;
@@ -200,8 +204,14 @@ async function read(path) {
     );
   return data;
 }
-function errorText(target, message) {
-  target.replaceChildren(node("p", "notice error", message));
+// Errors on their own page offer the next step, so the guest is never stuck.
+const searchAgain = ["Search available dates", "/#availability"];
+function errorText(target, message, action) {
+  const text = node("p", "notice error", message);
+  if (!action) return target.replaceChildren(text);
+  const box = node("div", "error-state");
+  box.append(text, link(action[0], action[1], "button button-dark"));
+  target.replaceChildren(box);
 }
 async function bookingRead(path, options = {}) {
   const response = await fetch(path, {
@@ -389,7 +399,7 @@ async function renderReview() {
       );
       renderBooking(target, booking);
     } catch {
-      errorText(target, "Demo reservation not found for this guest session.");
+      errorText(target, "Demo reservation not found for this guest session.", searchAgain);
     }
     return;
   }
@@ -401,6 +411,7 @@ async function renderReview() {
     errorText(
       target,
       "Choose dates and a room from the availability search first.",
+      searchAgain,
     );
     return;
   }
@@ -435,6 +446,7 @@ async function renderReview() {
       errorText(
         target,
         "This room is not available for the full stay. Please search again.",
+        searchAgain,
       );
       return;
     }
@@ -493,6 +505,7 @@ async function renderReview() {
     errorText(
       target,
       error.message || "Could not check availability. Try again.",
+      searchAgain,
     );
   }
 }
@@ -505,11 +518,33 @@ function renderRoute() {
     const id = decodeURIComponent(path.slice("/rooms/".length));
     const room = state.rooms.find((item) => item.id === id);
     if (room) roomDetail(room);
-    else errorText($("#room-detail"), "Room not found. Return to all rooms.");
+    else errorText($("#room-detail"), "This room is not part of the demo hotel.", ["See all rooms", "/#rooms"]);
   }
   if (path === "/review") renderReview();
 }
+// On phones the links sit behind a Menu button (shown by site.css only there).
+function setupMenu() {
+  const toggle = $("#nav-toggle");
+  const shell = $(".nav-shell");
+  const setOpen = (open) => {
+    shell.classList.toggle("is-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+  };
+  toggle.addEventListener("click", () =>
+    setOpen(!shell.classList.contains("is-open")),
+  );
+  $("#nav-links").addEventListener("click", (event) => {
+    if (event.target.closest("a, button")) setOpen(false);
+  });
+  shell.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && shell.classList.contains("is-open")) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+}
 async function init() {
+  setupMenu();
   $("#availability-form").addEventListener("submit", runSearch);
   // Inventory only adds dates and counts; the page still works without it.
   const inventory = read("/api/hotel/inventory").catch(() => null);
