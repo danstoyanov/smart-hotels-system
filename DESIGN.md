@@ -23,6 +23,24 @@ typography:
     fontWeight: 600
     lineHeight: 1.15
     letterSpacing: "-0.025em"
+  display-mobile:
+    fontFamily: "Playfair Display, Georgia, serif"
+    fontSize: "clamp(2.6rem, 11vw, 4rem)"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "-0.025em"
+  page-title:
+    fontFamily: "Playfair Display, Georgia, serif"
+    fontSize: "clamp(2.5rem, 4.5vw, 4rem)"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "-0.01em"
+  headline-cta:
+    fontFamily: "Playfair Display, Georgia, serif"
+    fontSize: "clamp(2.2rem, 4vw, 3.4rem)"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "-0.01em"
   headline:
     fontFamily: "Playfair Display, Georgia, serif"
     fontSize: "clamp(1.9rem, 3vw, 2.7rem)"
@@ -194,9 +212,11 @@ friendly sans for everything the guest has to read or tap. Both fonts are
 self-hosted variable fonts in `frontend/assets/fonts/`.
 
 ### Hierarchy
-- **Display** (600, fluid 2.6rem–5.1rem, 1.15): the hero `h1` only. Italic words
-  in Lantern Gold at weight 400 add warmth.
-- **Headline** (600, fluid 1.9rem–2.7rem, 1.15): section `h2` headings.
+- **Display** (600, fluid 2.6rem–5.1rem, 1.15): the hero `h1` only; on phones
+  `clamp(2.6rem, 11vw, 4rem)`. Italic words in Lantern Gold at weight 400 add warmth.
+- **Page Title** (600, fluid 2.5rem–4rem): the `h1` of the room and review pages.
+- **Headline** (600, fluid 1.9rem–2.7rem, 1.15): section `h2` headings. The dark
+  CTA band uses a larger step, fluid 2.2rem–3.4rem.
 - **Title Large** (600, 1.75rem): room titles, the search heading and review cards.
 - **Title** (600, 1.35rem): card and panel headings.
 - **Lead** (400, 1.125rem): hero text and the first paragraph of inner pages.
