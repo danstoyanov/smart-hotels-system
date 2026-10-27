@@ -99,7 +99,7 @@ Bali location, timezone, service prices and implemented booking claims do not ap
 For availability, use `/api/availability` or the agent's `search_availability` tool,
 not the raw inventory read. Both use the same PostgreSQL full-stay query. Missing
 nights stay unknown; a closed night rules a room out. Room capacity includes every
-person. See [the availability contract](../README.md#full-stay-availability-sin-63).
+person. See [the availability contract](../docs/technical-notes.md#full-stay-availability-sin-63).
 The database import also rejects changed room/inventory data under a loaded
 source ID/version, across restarts. Old imported versions remain available for
 rollback by selecting their unchanged catalogue revision. The hotel data API has no

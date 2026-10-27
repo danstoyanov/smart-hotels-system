@@ -1,339 +1,333 @@
 # Smart Hotels System
 
-A local foundation for Royal Crest Manor, a fictional demo hotel. FastAPI serves the
-website and API on the same origin. PostgreSQL holds application state. Local
-`hotel/` files provide validated demo rooms, amenities, policies and inventory fixtures.
-The chat supports Google ADK and Gemini through Vertex AI, with a local stub by
-default. Guests can confirm clearly labelled demo reservations after reviewing a stay.
+[![Checks](https://github.com/danstoyanov/smart-hotels-system/actions/workflows/checks.yml/badge.svg)](https://github.com/danstoyanov/smart-hotels-system/actions/workflows/checks.yml)
 
-**M1 accepted — 24 October 2026.** SIN-58–SIN-62 are Done. PR #6 was merged into
-`main` at `d8438fdc08cb26ce1c2314d6311ecb532ac855f2`. Start from the current
-`origin/main`; [M1 handover](docs/m1-handover.md) records the delivered scope,
-evidence and limits. **M2 accepted — 24 October 2026.** SIN-63–SIN-65 are Done;
-PRs #8–#10 are merged. The M3 cloud demo is deployed, but its recovery
-handover is still open.
+A website and AI concierge for one hotel. Guests can read about the hotel, ask
+questions in a chat, search for free rooms for a whole stay and confirm a demo
+reservation.
 
-The restricted cloud demo is at
-<https://smart-hotel-demo-613644187384.europe-central2.run.app>. See the
-[cloud operations runbook](infra/operations.md) and the
-[M3 handover draft](docs/m3-handover.md). Cloud SQL backups are not enabled,
-so the recovery acceptance check is still open.
+> **Demo only.** Royal Crest Manor is a fictional hotel. All rooms, policies and
+> dates in `hotel/` are invented sample data. Reservations are clearly labelled
+> demo reservations: there are no prices, no payments and no real hotel booking.
 
-## Requirements
+![Review page of the demo hotel website](docs/screenshots/sin-67-review-1440.png)
 
-- Python 3.13 (uv can install it), uv 0.13.4 and Node.js 22 for the JavaScript check.
-- Docker Desktop running with Linux containers and Docker Compose v2 or newer.
-- PowerShell 7 or Windows PowerShell 5.1.
+## Contents
 
-## First setup (PowerShell)
+- [Features](#features)
+- [Tech stack](#tech-stack)
+- [Quick start](#quick-start)
+- [Try the demo](#try-the-demo)
+- [Run the checks](#run-the-checks)
+- [Configuration](#configuration)
+- [Optional: use real Gemini through Vertex AI](#optional-use-real-gemini-through-vertex-ai)
+- [Project layout](#project-layout)
+- [Troubleshooting](#troubleshooting)
+- [Project status and limits](#project-status-and-limits)
+- [More documentation](#more-documentation)
 
-Run commands from the repository root. Do not overwrite an existing `.env`.
+## Features
 
-```powershell
+- **Hotel website** with room cards, room detail pages and a review page. It works
+  on desktop and mobile.
+- **AI concierge chat** that answers only from the hotel information in `hotel/`.
+  It shows the sources it read and says so when it does not know something.
+  Each browser keeps its own private conversation for 24 hours.
+- **Full-stay availability search.** A room is offered only when every night of
+  the stay is known to be open.
+- **Explicit demo reservations.** Search never holds a room. A reservation is saved
+  only after the guest presses **Confirm demo reservation**. A repeated request
+  does not create a second reservation.
+- **Safe local default.** The chat uses a local stub, so you need no cloud account
+  and make no paid model calls.
+
+## Tech stack
+
+| Part | Technology |
+| --- | --- |
+| Frontend | Static HTML, CSS and browser JavaScript (no build step, no npm packages) |
+| Backend | Python 3.13, FastAPI, Uvicorn |
+| Database | PostgreSQL 17 (local Docker container) |
+| AI assistant | Google ADK with Gemini on Vertex AI (optional; stub by default) |
+| Tooling | uv for Python and dependencies, Ruff, pytest, Node.js test runner |
+
+The website and the API are served by the same FastAPI app from one origin.
+
+## Quick start
+
+### Prerequisites
+
+- [Git](https://git-scm.com/)
+- [uv](https://docs.astral.sh/uv/) 0.13.4 or newer. uv installs Python 3.13 for you.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine
+  with Compose v2), running Linux containers.
+- [Node.js](https://nodejs.org/) 22, only for the JavaScript checks.
+- Windows: PowerShell 7 or Windows PowerShell 5.1. macOS/Linux: any POSIX shell.
+
+### 1. Get the code and install dependencies
+
+```bash
+git clone https://github.com/danstoyanov/smart-hotels-system.git
+cd smart-hotels-system
 uv python install 3.13
 uv sync --locked
+```
+
+### 2. Create your local settings
+
+Copy the example file. It contains only public local demo values. If you already
+have a `.env`, do not overwrite it.
+
+```powershell
+# Windows PowerShell
 Copy-Item .env.example .env
+```
+
+```bash
+# macOS / Linux
+cp .env.example .env
+```
+
+### 3. Start the database
+
+```bash
 docker compose up -d --wait db
+```
+
+This starts PostgreSQL on `127.0.0.1:5432`. Its data stays in a Docker volume
+between restarts.
+
+### 4. Start the app
+
+**Windows PowerShell:**
+
+```powershell
 .\scripts\start.ps1
 ```
 
-Open http://127.0.0.1:8000. The website, `/assets/*`, `/api/site` and `/api/health`
-share that origin. The server binds to loopback only. Stop it with Ctrl+C.
-If your PowerShell policy blocks scripts, use a one-process override:
+If your PowerShell policy blocks scripts, run it once with
 `powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`.
 
-`start.ps1` runs migrations and loads the active demo inventory before starting the server. To run each step directly:
+**macOS / Linux** (the same steps as `start.ps1`):
 
-```powershell
-uv run --locked python -m backend.app.db
-uv run --locked python -m backend.app.inventory
+```bash
+uv run --locked python -m backend.app.db          # apply database migrations
+uv run --locked python -m backend.app.inventory   # load demo rooms and nights
 uv run --locked uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --loop backend.app.runtime:new_loop --reload
-Invoke-RestMethod http://127.0.0.1:8000/api/health
 ```
 
-The health endpoint returns HTTP 200 only when PostgreSQL answers and the answer-source
-migration exists. It returns a safe HTTP 503 response on failure; it never calls a
-model. It has a five-second deadline. Database connection details stay private.
-The page can still load while PostgreSQL is unavailable.
+### 5. Open the site
+
+Open <http://127.0.0.1:8000>. Use exactly `127.0.0.1`, not `localhost`: the chat
+accepts requests only from the origin in `APP_ORIGIN`.
+
+Check that the API and database are ready:
+
+```bash
+curl http://127.0.0.1:8000/api/health
+```
+
+The answer should be `{"status":"ok","database":"ok"}`. Stop the server with
+Ctrl+C. Stop the database with `docker compose stop db`.
+
+## Try the demo
+
+1. **Ask the concierge.** Open the chat and ask, for example, "What time is
+   breakfast?". In the default stub mode you get a fixed demo reply. With
+   [Vertex mode](#optional-use-real-gemini-through-vertex-ai) the real assistant
+   answers from the hotel information and links its sources.
+2. **Search for a stay.** Choose arrival and departure dates and the number of
+   guests. The demo inventory covers only the nights of **1–7 November 2026**:
+   - 2 guests, 1–3 November: rooms are available.
+   - The Garden Room is closed on 5 November.
+   - 5 guests: no room fits the party.
+   - Dates after 7 November: inventory is unknown, so nothing is offered.
+3. **Review and confirm.** Open a room, go to the review page and press
+   **Confirm demo reservation**. You get a demo reference such as `DEM-…`.
+   Refresh the page: the reservation is still visible to you, but not to another
+   browser.
+
+> **Note about dates.** Check-in must be today or later in the hotel timezone
+> (Europe/Kyiv). After 7 November 2026 the sample nights are in the past, and
+> every search returns no rooms. To test later dates, publish a new demo data
+> revision as described in [hotel/README.md](hotel/README.md).
+
+## Run the checks
+
+**Windows PowerShell:**
+
+```powershell
+.\scripts\check.ps1   # lint, format, JavaScript and unit tests; database tests are skipped
+.\scripts\test.ps1    # the same checks plus real PostgreSQL tests in a disposable container
+```
+
+**macOS / Linux** (the same steps as the scripts and CI):
+
+```bash
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+node --check frontend/assets/site.js
+node --check frontend/assets/chat.js
+node --test frontend/tests/sse.test.mjs
+uv run --locked python -m backend.app.hotel   # validate the demo hotel data
+uv run --locked pytest
+```
+
+To include the PostgreSQL tests on macOS/Linux, start the disposable test database,
+run pytest against it, then remove it:
+
+```bash
+docker compose --profile test up -d --wait test-db
+TEST_DATABASE_URL=postgresql://smart_hotels:local_test_only@127.0.0.1:55433/smart_hotels_test uv run --locked pytest
+docker compose --profile test rm -s -f test-db
+```
+
+The test database is separate (port 55433, memory storage) and is removed after
+the run. Never point tests at a database with useful data. GitHub Actions runs the
+same checks with PostgreSQL on every push and pull request.
+
+### Optional browser checks
+
+`frontend/tests/*.browser.cjs` are Playwright scripts that drive local Chrome. They
+are not part of the scripts above. The full guest journey check needs the app
+running in stub mode against the **test** database (not your app database):
+
+```bash
+npm install --prefix .local playwright
+docker compose --profile test up -d --wait test-db
+export DATABASE_URL=postgresql://smart_hotels:local_test_only@127.0.0.1:55433/smart_hotels_test
+uv run --locked python -m backend.app.db
+uv run --locked python -m backend.app.inventory
+ASSISTANT_MODE=stub uv run --locked uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --loop backend.app.runtime:new_loop --no-access-log
+# in a second terminal:
+NODE_PATH=.local/node_modules node frontend/tests/journey.browser.cjs
+```
+
+These scripts use fixed November 2026 dates, so they only pass while those dates
+are in the future. They also overwrite screenshots in `docs/screenshots/`.
 
 ## Configuration
 
-`.env` is ignored by Git. `.env.example` has public local demo credentials only;
-never use them for a deployed database. Environment variables override `.env`.
+Settings are read from `.env` in the repository root. Environment variables
+override `.env`. `.env` is ignored by Git; never commit real credentials.
 
-| Setting | Default / purpose |
-| --- | --- |
-| `DATABASE_URL` | Local PostgreSQL connection; keep private outside this demo |
-| `HOTEL_NAME` | Royal Crest Manor |
-| `HOTEL_LANGUAGE` | `en` (initial interface copy is English) |
-| `HOTEL_TIMEZONE` | `Europe/Kyiv`, a validated IANA timezone |
+| Setting | Default | Purpose |
+| --- | --- | --- |
+| `DATABASE_URL` | local Docker database | PostgreSQL connection string |
+| `HOTEL_NAME` | `Royal Crest Manor` | Hotel name shown on the site |
+| `HOTEL_LANGUAGE` | `en` | Reply language for the assistant. The page text stays English. |
+| `HOTEL_TIMEZONE` | `Europe/Kyiv` | IANA timezone for hotel dates (not the server timezone) |
+| `APP_ORIGIN` | `http://127.0.0.1:8000` | Exact origin allowed to write sessions, chat and bookings |
+| `COOKIE_SECURE` | `false` | Set `true` when the site runs over HTTPS |
+| `ASSISTANT_MODE` | `stub` | `stub` (no model calls) or `vertex` (real Gemini) |
+| `GOOGLE_CLOUD_PROJECT` | empty | Your Google Cloud project, for Vertex mode |
+| `GOOGLE_CLOUD_LOCATION` | empty | Vertex AI location, for Vertex mode |
+| `GEMINI_MODEL` | `gemini-3.8-flash` | Gemini model, for Vertex mode |
+| `CLOUD_DEMO` | `false` | Only for the cloud deployment; needs Vertex, HTTPS and secure cookies |
 
-Changing language metadata does not translate the English page. Stub mode needs no
-Google credentials. Vertex mode uses the configured response language.
+Restart the server after you change a setting.
 
-## Migrations
+## Optional: use real Gemini through Vertex AI
 
-Add numbered SQL files to `backend/migrations/`; never edit an applied file.
-The migration command uses one transaction, a database advisory lock, and a checksum
-ledger. A repeat run makes no changes. A failed run rolls back the whole batch;
-fix the new file and run again. The initial migration creates only the ledger;
-feature tables belong to later tasks. Hotel information is read from local files
-and does not need a database seed. See [hotel/README.md](hotel/README.md) for editing,
-validation, reload commands and the `/api/hotel/*` read API.
+Vertex mode makes **paid** calls to Google Cloud in **your own** project. You need
+a Google Cloud project with the Vertex AI API enabled, access to the Gemini model,
+and a spending limit you are comfortable with.
 
-## Hotel information
+1. Sign in with Application Default Credentials. No API key is needed, and no
+   credentials are stored in the repository:
 
-Run `uv run --locked python -m backend.app.hotel` to validate the complete demo
-catalogue. FastAPI loads a validated snapshot at startup. Reads include a source ID,
-version and demo label. Missing facts are explicit; no model fills in the gaps.
-See [hotel/README.md](hotel/README.md) for the data format and safe version updates.
+   ```bash
+   gcloud auth application-default login
+   ```
 
-## Checks and disposable database
+2. Set these values in your private `.env`:
 
-```powershell
-.\scripts\check.ps1   # lint, format, JavaScript syntax and unit tests
-.\scripts\test.ps1    # same checks plus real PostgreSQL integration tests
-```
+   ```text
+   ASSISTANT_MODE=vertex
+   GOOGLE_CLOUD_PROJECT=your-project-id
+   GOOGLE_CLOUD_LOCATION=your-location
+   GEMINI_MODEL=gemini-3.8-flash
+   ```
 
-`test.ps1` starts a separate `test-db` container on loopback port 55433. Its database
-is `smart_hotels_test`, with memory-backed storage. The script removes this test
-container in `finally`, including after failure. It does not stop or reset `db`.
-Do not run two copies of this script at once.
+3. Restart the server.
 
-Container names are `smart-hotels-system-db-1` for the app database and
-`smart-hotels-system-test-db-1` for tests. The website/API runs on the host.
-The application database uses port 5432 and a named volume, so normal restarts keep its data.
+Each reply is bounded: at most eight model calls, 2,048 output tokens and a
+90-second deadline, with no automatic retry. These limits bound one reply; they
+are not a spending cap for your account. See
+[technical notes](docs/technical-notes.md#hotel-ai-assistant-sin-62) for details.
 
-Without `TEST_DATABASE_URL`, `check.ps1` reports the PostgreSQL tests as skipped.
-CI always supplies a separate PostgreSQL service and requires those tests.
-To use an existing disposable local database instead of Docker:
-
-```powershell
-$env:TEST_DATABASE_URL = "postgresql://USER:PASSWORD@127.0.0.1:5432/smart_hotels_test"
-.\scripts\check.ps1
-Remove-Item Env:TEST_DATABASE_URL
-```
-
-Use a dedicated empty database whose name ends in `_test`. Tests apply migrations
-and exercise rollback; never point tests at a database with useful data.
-Python versions and dependencies are recorded in `.python-version` and `uv.lock`.
-The frontend uses browser JavaScript without packages, so it has no npm lockfile.
-
-## Stop and troubleshoot
-
-- `docker compose stop db` stops the local database and keeps its data.
-- `docker compose down` removes containers but keeps the application volume.
-- If a port is occupied, stop the other service or change the Compose host port
-  and the matching URL in `.env` (or the test script).
-- If Docker cannot connect, start Docker Desktop and wait until its engine is ready.
-  After installing Docker, open a new terminal so it picks up the updated PATH.
-- If health returns 503, check `docker compose ps`, `.env`, and rerun migrations.
-- If dependency installation fails, check network access, then repeat `uv sync --locked`.
-
-See `brief.md` for approved demo choices and `PLAN.md` for the next tasks.
-
-## Guest conversations (SIN-61)
-
-Open the site at `APP_ORIGIN` (default `http://127.0.0.1:8000`). A different host,
-including `localhost` instead of `127.0.0.1`, requires a matching setting. All
-session/chat writes require this exact Origin. For HTTPS, set `COOKIE_SECURE=true`.
-The local HTTP default is false. Cookies are host-only, HttpOnly and SameSite=Strict.
-The database stores SHA-256 hashes of random 256-bit tokens, not the cookie values.
-
-- `POST /api/session` creates or reuses a session. Its fixed lifetime is 24 hours;
-  reuse does not extend it. An expired or invalid cookie starts a fresh session.
-- `GET /api/history` returns the current conversation's latest 20 completed turns,
-  oldest first. The cookie is the only ownership credential. No guest IDs are accepted.
-- `POST /api/conversation` starts a new conversation. Earlier history stays in the
-  database but is no longer returned. Reset is rejected while a reply is active.
-- `POST /api/chat` takes `{turn_id, message}` with a client-generated UUID and
-  1–2000 nonblank characters. It streams `turn_started`, optional `text`, committed `result`,
-  then `done` using fetch/SSE. Partial text is provisional. The browser uses plain
-  text rendering, so guest input cannot become HTML.
-
-Missing/expired cookies return 401 for history, reset and chat. Use Reload chat to
-start a new session; old history is not recovered. Duplicate UUIDs return a generic
-409 for every guest, including after reset. Reload history before retrying with a
-new UUID. This task does not add replay or a turn-status endpoint.
-
-Stop reply aborts fetch. Only complete answers enter history. Refresh reads saved
-history; it does not resume a running reply. If the database commit succeeded but
-the network lost the result, Reload chat restores the saved answer. A failed reply
-emits a safe `error` without `done`. A storage outage returns 503 before streaming,
-or a safe SSE error if streaming already started.
-
-Only one turn runs per session. Admission and completion use short transactions;
-model work holds no database connection. Replies have a 90-second deadline and a
-16,000-character output limit. Disconnect cleanup has a shielded five-second limit.
-If the process dies or cleanup cannot reach PostgreSQL, the two-minute busy lease
-expires; the next chat/reset marks the old turn interrupted. A stale worker cannot
-save over a later turn. Expiry during a reply also prevents saving the answer.
-
-Sessions are browser credentials, not guest accounts. People sharing a browser
-share its session. New conversation clears the visible conversation; it is not a
-data-deletion feature. Data retention and deployment controls belong to later tasks.
-
-## Hotel AI assistant (SIN-62)
-
-The default `ASSISTANT_MODE=stub` makes no model calls. To use the real assistant,
-first approve a Google Cloud project, location, Gemini model, access method and
-spending limit. Then set these values in your private `.env` or environment:
+## Project layout
 
 ```text
-ASSISTANT_MODE=vertex
-GOOGLE_CLOUD_PROJECT=your-approved-project
-GOOGLE_CLOUD_LOCATION=your-approved-location
-GEMINI_MODEL=gemini-3.8-flash
+frontend/            website pages, CSS, browser JavaScript and browser tests
+backend/app/         FastAPI app, chat, sessions, AI agent, hotel data, inventory, bookings
+backend/migrations/  ordered SQL migrations (never edit an applied file)
+backend/tests/       Python unit and PostgreSQL integration tests
+hotel/               fictional demo hotel data and inventory (see hotel/README.md)
+evals/               representative questions for live assistant checks
+scripts/             PowerShell helpers: start, check, test
+infra/               Google Cloud deployment files and operations runbook
+design/              visual design references
+docs/                technical notes, handovers and verification records
+compose.yaml         local PostgreSQL and the disposable test database
+Dockerfile           one container image for the cloud deployment
 ```
 
-Use Application Default Credentials (ADC) for the approved identity, for example
-`gcloud auth application-default login` for local use. Credentials stay outside
-the repository. No API key is needed. This task creates no cloud resources and
-does not enable services or change IAM permissions. Restart the server after
-configuration changes and run migrations for `003_answer_sources.sql`.
+## Troubleshooting
 
-The adapter creates a new ADK agent, runner, client, session and hotel-tool snapshot
-for every reply. Only the current guest's latest completed conversation is passed
-to the model, bounded to 20 turns and 16,000 characters. Each invocation allows at
-most eight model calls, eight tool calls, 24,000 evidence characters and 2,048 output
-tokens. The provider HTTP timeout is 60 seconds with one attempt; the invocation
-deadline is 85 seconds inside the API's 90-second deadline. These limits bound work;
-they are not a monetary budget or an account-wide spending control.
+- **Docker cannot connect.** Start Docker Desktop and wait until the engine is
+  ready. After installing Docker, open a new terminal.
+- **A port is already in use (5432 or 8000).** Stop the other service, or change the
+  host port in `compose.yaml` and the matching URL in `.env`.
+- **`/api/health` returns 503.** Check `docker compose ps` and `.env`, then run the
+  migrations again (`uv run --locked python -m backend.app.db`).
+- **Search returns HTTP 503.** The demo inventory is not loaded. Run
+  `uv run --locked python -m backend.app.inventory`.
+- **The chat says "Open the chat from the hotel website."** Open the site at the
+  exact `APP_ORIGIN` address, `http://127.0.0.1:8000` by default.
+- **Search finds no rooms.** Use dates from 1–7 November 2026 that are not in the
+  past. See [Try the demo](#try-the-demo).
+- **Dependency installation fails.** Check network access, then repeat
+  `uv sync --locked`.
+- **Reset local data.** `docker compose down -v` removes the database container and
+  its volume. This deletes all local sessions and demo reservations.
 
-The application loads the small catalogue locally and prepares up to four likely
-complete records using a bounded English text lookup over IDs, titles and bodies.
-These reads use the same tools, immutable snapshot, evidence limit and call budget.
-This removes model round trips for common questions; it does not generate answers.
-Unmatched questions retain the normal read tools and honest missing-data behavior.
-Catalogue titles alone never count as evidence. Changing hotel content does not
-require changing the lookup's business facts; it contains none.
+## Project status and limits
 
-Tools expose rooms, amenities, policies and read-only full-stay availability.
-They cannot make reservations or contact staff. The prompt requires current evidence and honest
-unknown answers. Source links come from records actually read, not model-generated
-URLs. They are labelled as records read, not a guarantee that every answer claim is
-correct. The browser renders answers as plain text. Sources save atomically with the
-answer and return in history after refresh. Model failures return a safe SSE error
-and do not save incomplete answers. Real replies are delivered as a completed result
-after model generation; provisional model tokens are not shown.
+All three planned stages are delivered:
 
-Vertex mode uses aiohttp by default, with the locked Google GenAI extra.
-The existing smoke runner supports `--compare-transports --case breakfast` only
-after explicit `--approved-paid-calls` authorization. It runs exactly one HTTPX
-and one aiohttp execution, each capped at two model calls, without retries.
-See [the controlled A/B result](docs/sin-62-transport-ab.md). One successful pair
-is not a guarantee against future timeouts.
+- **M1 — Local hotel assistant:** website with a Gemini-backed chat that answers from
+  hotel information. See the [M1 handover](docs/m1-handover.md).
+- **M2 — Reservation journey:** search → room details → review → confirmation.
+- **M3 — First cloud version:** a restricted demo on Google Cloud Run, Cloud SQL and
+  Vertex AI. Access is limited to approved users. See the
+  [M3 handover](docs/m3-handover.md).
 
-Failures preserve safe server-side timing, phase, attempted model calls, completed
-tool steps, reported usage and provider error category/status. HTTPX comparison
-hooks record request size/structure and header timing; aiohttp uses model-phase
-timing. Neither diagnostic stores prompts, arguments, headers or credentials.
-Partial usage is labelled incomplete; missing usage and cost stay unknown. Guest
-responses contain only a safe error. Normal smoke reports preserve these diagnostics and
-stop on the first failure without retrying. A/B mode records both transports once. Do not enable SDK debug logging for
-real guest conversations.
+Known limits:
 
-After explicit approval for paid calls, run the small live smoke check:
+- Fictional content only. No prices, currency, payments or real booking system.
+- One hotel. The guest pages are in English.
+- Guest sessions are browser cookies that last 24 hours. There are no guest accounts.
+- Source links show which records the assistant read. They do not prove that every
+  sentence of an answer is correct.
+- The demo inventory covers only 1–7 November 2026.
 
-```powershell
-uv run --locked python -m backend.smoke --approved-paid-calls --case arrival
-# Run all four cases only within the approved budget:
-uv run --locked python -m backend.smoke --approved-paid-calls
-```
+[PLAN.md](PLAN.md) describes the goal and task order. [brief.md](brief.md) records
+the confirmed demo choices.
 
-The command uses real Vertex calls, never retries a failed case, and writes an
-ignored `assistant-smoke.local.json`. Review each saved answer against the review
-notes in `evals/assistant-smoke.json`. The report does not claim live acceptance
-automatically. A scripted model in adapter tests verifies code contracts only.
-The requested T05 real-model and website journey checks are recorded in
-[the foreground acceptance report](docs/sin-62-foreground-browser.md). User
-acceptance and merge are complete. Earlier timeout reports remain historical
-evidence; they do not reopen M1. This documentation update ran no tests or model calls.
+## More documentation
 
+| Document | What it covers |
+| --- | --- |
+| [docs/technical-notes.md](docs/technical-notes.md) | API routes, sessions, chat streaming, assistant limits, availability rules and reservation safety |
+| [hotel/README.md](hotel/README.md) | Demo data format, validation and publishing a new data revision |
+| [infra/operations.md](infra/operations.md) | Cloud deployment, updates and common failures |
+| [infra/cloud-demo.md](infra/cloud-demo.md) | Approved cloud configuration and acceptance record |
+| [docs/m1-handover.md](docs/m1-handover.md), [docs/m3-handover.md](docs/m3-handover.md) | Milestone handovers with evidence and limits |
+| `docs/sin-*-verification.md` | Check records for each task |
+| [AGENTS.md](AGENTS.md) | Workflow rules for coding agents in this repository |
 
-## Full-stay availability (SIN-63)
+## License
 
-After migrations, `python -m backend.app.inventory` loads the active validated
-`hotel/` revision into PostgreSQL. Use `uv run --locked` as shown above.
-The import is atomic and repeatable. A changed room or night under the same source
-ID/version is rejected; publish a new version and rerun the import instead.
-`start.ps1` performs this step. An unimported active source returns HTTP 503 for
-search; ordinary hotel information reads still work from files.
-
-Example: `GET /api/availability?check_in=2026-11-01&check_out=2026-11-03&guests=2`.
-Use exact YYYY-MM-DD dates and a total of 1–20 people, including children and infants.
-Check-in must be today or later in the property timezone. Checkout must be later,
-with at most 366 nights. The limit bounds a single search; it is not a hotel policy.
-The accepted fixtures cover only 1–7 November 2026 and do not roll forward.
-After these dates pass, publish a new demo revision to try future stays.
-
-The query includes check-in night and excludes checkout night. Every requested
-night must be present and open, and one room must fit the whole party. Results
-include complete room facts, demo/source labels, stay dates and property timezone:
-
-- `ok`: `rooms` contains only confirmed full-stay matches.
-- `no_match`: no capacity-suitable room can cover the stay.
-- `unknown_inventory`: no match is confirmed and at least one suitable room has
-  missing nights. A known closed night already rules a room out.
-- `unknown_room_ids`: suitable rooms whose full stay cannot be confirmed. This can
-  also be nonempty when another room matches.
-- `invalid_input` (HTTP 422) or `unavailable` (HTTP 503): correct the request or try
-  again later. Other result states use HTTP 200. Responses use `Cache-Control: no-store`.
-
-The API and `search_availability` agent tool call the same service and PostgreSQL
-function. Both validate dates and total guests; SQL also checks them independently
-using the stored property timezone. The model must request missing details and use
-tool results instead of calculating availability. Tool calls use the existing
-invocation call/evidence budgets. Search never holds or reserves a room.
-The stub remains a plain demo reply; offline ADK tests prove tool wiring, not live
-Gemini answer quality. No new guest pages, booking flow or reservation writes are
-part of T06. See [verification](docs/sin-63-verification.md).
-
-
-## Guest website and review (SIN-64)
-
-The same-origin site now has room cards, room details at `/rooms/{room_id}`, a
-full-stay availability form, and a read-only selection page at `/review`.
-Room names, capacities, amenities and policies load from `/api/hotel/*`.
-The search and review use `GET /api/availability`; review checks the selected
-room again. It does not hold or reserve inventory. No prices or currency are set.
-The owned chat still uses the existing session, history and SSE routes.
-The interface shows loading, empty and error messages. Hotel text is inserted as
-plain text, never as HTML.
-
-The user-supplied visual references are kept in `design/`. Generated local
-photographs and their prompts are documented in
-[asset notes](docs/sin-64-assets.md). See
-[SIN-64 verification](docs/sin-64-verification.md) for checks and screenshots.
-The browser check uses controlled API responses so it does not write to the
-application database. To run it after installing Playwright and Chrome locally:
-
-```powershell
-node frontend/tests/guest.browser.cjs
-```
-
-## Demo reservations (SIN-65)
-
-Search and `/review` do not hold a room. The review page checks the selected stay
-and offers **Confirm demo reservation**. The guest must choose that action before
-`POST /api/bookings` can save a reservation. This route requires the same-origin
-Origin header, an owned guest session cookie, a client request UUID and
-`confirmed: true`. The Ask chat has no booking tool.
-
-The database transaction checks dates in the property timezone, total guest count,
-room capacity, every inventory night and existing reservations before insert. A
-room-level lock and a PostgreSQL exclusion constraint prevent overlapping stays.
-The request UUID gives one result for repeat requests with the same guest and
-selection. The browser keeps it across a refresh and reads the result after a lost
-response. A changed payload or another guest using that UUID gets HTTP 409.
-
-`GET /api/bookings/{reference}` and `GET /api/bookings/by-request/{request_id}`
-require the owning session. A reference alone gives no access. Sessions expire after
-24 hours; this demo has no account recovery. Reservations have no price, payment,
-staff message or real hotel integration. Importing the same `hotel/` fixture again
-does not release booked nights. Publishing a new fixture version with the same room
-IDs also keeps those nights booked.
-
-Run `scripts/test.ps1` for disposable PostgreSQL checks and
-`node frontend/tests/booking.browser.cjs` for the controlled Chrome journey. The
-browser check needs local Playwright and Chrome and does not write to PostgreSQL.
+No license has been chosen for this repository yet. Ask the owner before you
+reuse the code outside this project.
