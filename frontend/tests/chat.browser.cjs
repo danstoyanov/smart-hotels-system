@@ -53,7 +53,11 @@ const fs = require('node:fs');
       assert.equal(await page.locator('.chat-message').count(), 2);
       // Use ordinary guest copy for the review screenshots.
       turns[0].question = 'Hello, I would like to try the conversation.';
-      await page.getByRole('button', { name: 'Reload chat' }).click();
+      // "Reload chat" appears only after an error, so reload the page instead.
+      assert.equal(await page.getByRole('button', { name: 'Reload chat' }).isVisible(), false);
+      await page.reload();
+      await page.waitForFunction(() => !document.querySelector('#send').disabled);
+      await page.getByRole('button', { name: 'Open concierge chat' }).click();
       await page.waitForFunction(() => document.querySelector('#chat-log').textContent.includes('Hello, I would like'));
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
       await page.screenshot({ path: `.local/screenshots/sin-61-${name}.png`, fullPage: true });

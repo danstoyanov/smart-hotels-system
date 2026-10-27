@@ -1,10 +1,11 @@
 const $ = (selector) => document.querySelector(selector);
+// Room photos come in two WebP widths; the browser picks one with srcset.
 const images = {
-  "manor-suite": "/assets/images/manor-suite.png",
-  "garden-room": "/assets/images/garden-room.png",
+  "manor-suite": "/assets/images/manor-suite",
+  "garden-room": "/assets/images/garden-room",
 };
 // Only amenities with a matching local photograph get a photo card.
-const amenityImages = { terrace: "/assets/images/manor-hero.png" };
+const amenityImages = { terrace: "/assets/images/manor-hero-900.webp" };
 const iconPaths = {
   bed: "M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 14h18M7 10V7.5A1.5 1.5 0 0 1 8.5 6h2A1.5 1.5 0 0 1 12 7.5V10M12 10V7.5A1.5 1.5 0 0 1 13.5 6h2A1.5 1.5 0 0 1 17 7.5V10M3 18v2M21 18v2",
   guests: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM2.5 20a6.5 6.5 0 0 1 13 0M16 4.2a3.5 3.5 0 0 1 0 6.6M18 14a6.5 6.5 0 0 1 3.5 6",
@@ -72,6 +73,12 @@ function formatNight(night) {
     year: "numeric",
   });
 }
+function stayText(checkIn, checkOut, guests) {
+  const nights = Math.round(
+    (new Date(`${checkOut}T00:00:00`) - new Date(`${checkIn}T00:00:00`)) / 86400000,
+  );
+  return `${formatNight(checkIn)} – ${formatNight(checkOut)} · ${plural(nights, "night")} · ${plural(Number(guests), "guest")}`;
+}
 function link(text, href, className = "") {
   const el = node("a", className, text);
   el.href = href;
@@ -79,7 +86,10 @@ function link(text, href, className = "") {
 }
 function image(room) {
   const el = document.createElement("img");
-  el.src = images[room.id];
+  const base = images[room.id];
+  el.src = `${base}-1200.webp`;
+  el.srcset = `${base}-640.webp 640w, ${base}-1200.webp 1200w`;
+  el.sizes = "(max-width: 850px) 100vw, 50vw";
   el.alt = `Illustration of the fictional ${room.name} interior`;
   el.loading = "lazy";
   el.width = 960;
@@ -106,7 +116,6 @@ function roomCard(room) {
   );
   const footer = node("div", "room-footer");
   footer.append(
-    node("span", "price-note", "Price not published"),
     link(
       "View room →",
       `/rooms/${encodeURIComponent(room.id)}`,
@@ -132,6 +141,16 @@ function amenityCard(item) {
   return card;
 }
 const demoPrefix = "Fictional demo policy.";
+// Some policy clauses are notes for the concierge, not for guests. The hotel
+// data keeps them; the website does not show them.
+const assistantNote = /^(do not |this data reader )/i;
+function guestText(sentence) {
+  const clauses = sentence
+    .replace(/\.$/, "")
+    .split("; ")
+    .filter((clause) => !assistantNote.test(clause));
+  return clauses.length ? `${clauses.join("; ")}.` : "";
+}
 function policyCard(item) {
   const card = node("article", "policy-card");
   const head = node("div", "policy-head");
@@ -147,39 +166,31 @@ function policyCard(item) {
   const body = item.body.startsWith(demoPrefix)
     ? item.body.slice(demoPrefix.length).trim()
     : item.body;
-  const list = node("ul", "policy-points");
-  body
+  const points = body
     .split(/(?<=\.)\s+(?=[A-Z])/)
-    .forEach((sentence) => list.append(node("li", "", sentence)));
+    .map(guestText)
+    .filter(Boolean)
+    .map((sentence) => node("li", "", sentence));
+  // Long policies show two points first, so the section stays short on phones.
+  const list = node("ul", "policy-points");
+  list.append(...points.slice(0, 2));
   card.append(head, list);
+  if (points.length > 2) {
+    const more = node("details", "policy-more");
+    const rest = node("ul", "policy-points");
+    rest.append(...points.slice(2));
+    more.append(node("summary", "", `Show all ${points.length} points`), rest);
+    card.append(more);
+  }
   return card;
 }
 function renderInventory(nights) {
   const days = [...new Set((nights || []).map((item) => item.night))].sort();
-  const stats = [
-    ["Demo rooms", String(state.rooms.length), "From the reviewed demo data"],
-    [
-      "Largest room",
-      `${Math.max(0, ...state.rooms.map((room) => room.capacity))} guests`,
-      "Every person counts, infants too",
-    ],
-    ["Amenities", String(state.amenities.length), "Recorded for this hotel"],
-  ];
-  if (days.length) {
-    const range = `${formatNight(days[0])} – ${formatNight(days.at(-1))}`;
-    stats.push(["Sample nights", String(days.length), range]);
-    $("#inventory-note").textContent =
-      `Sample nights: ${range}. A search does not hold a room.`;
-    $("#footer-range").textContent = `Sample nights: ${range}`;
-  }
-  $("#stats-list").replaceChildren(
-    ...stats.map(([label, value, note]) => {
-      const item = node("div", "stat");
-      item.append(node("dt", "", label), node("dd", "stat-value", value));
-      item.append(node("dd", "stat-note", note));
-      return item;
-    }),
-  );
+  if (!days.length) return;
+  const range = `${formatNight(days[0])} – ${formatNight(days.at(-1))}`;
+  $("#inventory-note").textContent =
+    `Sample nights: ${range}. A search does not hold a room.`;
+  $("#footer-range").textContent = `Sample nights: ${range}`;
 }
 async function read(path) {
   const response = await fetch(path, {
@@ -193,8 +204,14 @@ async function read(path) {
     );
   return data;
 }
-function errorText(target, message) {
-  target.replaceChildren(node("p", "notice error", message));
+// Errors on their own page offer the next step, so the guest is never stuck.
+const searchAgain = ["Search available dates", "/#availability"];
+function errorText(target, message, action) {
+  const text = node("p", "notice error", message);
+  if (!action) return target.replaceChildren(text);
+  const box = node("div", "error-state");
+  box.append(text, link(action[0], action[1], "button button-dark"));
+  target.replaceChildren(box);
 }
 async function bookingRead(path, options = {}) {
   const response = await fetch(path, {
@@ -216,20 +233,39 @@ function renderBooking(target, booking) {
   const card = node("div", "review-card confirmation-card");
   if (room) card.append(image(room));
   const text = node("div", "review-copy");
+  // The reference is the one thing to keep, so it gets its own block.
+  const reference = node("p", "booking-reference");
+  reference.append(
+    node("span", "booking-reference-label", "Reference: "),
+    node("strong", "", booking.reference),
+  );
   text.append(
     node("span", "eyebrow", "Demo reservation confirmed"),
     node("h2", "", room?.name || booking.room_id),
-    node("p", "", `${booking.check_in} to ${booking.check_out} · ${booking.guests} guests`),
-    node("p", "booking-reference", `Reference: ${booking.reference}`),
+    node("p", "", stayText(booking.check_in, booking.check_out, booking.guests)),
+    reference,
     node("p", "small-note", booking.message),
-    node("p", "small-note", "No price or payment is part of this demo."),
     link("Return to rooms", "/#rooms", "button button-outline"),
   );
   card.append(text);
   target.replaceChildren(card);
   $("#review-title").textContent = "Your demo reservation";
   $(".review-lead").textContent =
-    "Your selected room is reserved in this fictional demo. This is not a real hotel booking.";
+    "Keep the reference. You can open this demo reservation again in this browser.";
+  markStepsDone();
+}
+const doneSteps = [
+  "Every night of the stay was available.",
+  "Your demo reservation is saved.",
+  "Only this browser session can open it.",
+];
+function markStepsDone() {
+  const steps = $(".review-steps");
+  steps.classList.add("is-done");
+  $("#steps-title").textContent = "Demo reservation saved";
+  steps.querySelectorAll("li span").forEach((item, index) => {
+    item.textContent = doneSteps[index];
+  });
 }
 function renderCatalogue() {
   const list = $("#room-list");
@@ -276,9 +312,9 @@ function roomDetail(room) {
     node(
       "p",
       "small-note",
-      "Prices are not published. Search the sample dates to review available rooms.",
+      "Search the sample nights to see which rooms are free for your stay.",
     ),
-    link("Check dates for this room →", "/#availability", "button button-dark"),
+    link("Search available dates →", "/#availability", "button button-dark"),
   );
   content.append(plan);
   layout.append(photo, content);
@@ -363,7 +399,7 @@ async function renderReview() {
       );
       renderBooking(target, booking);
     } catch {
-      errorText(target, "Demo reservation not found for this guest session.");
+      errorText(target, "Demo reservation not found for this guest session.", searchAgain);
     }
     return;
   }
@@ -375,6 +411,7 @@ async function renderReview() {
     errorText(
       target,
       "Choose dates and a room from the availability search first.",
+      searchAgain,
     );
     return;
   }
@@ -409,6 +446,7 @@ async function renderReview() {
       errorText(
         target,
         "This room is not available for the full stay. Please search again.",
+        searchAgain,
       );
       return;
     }
@@ -419,21 +457,9 @@ async function renderReview() {
       node("span", "eyebrow", "Available in demo inventory"),
       node("h2", "", room.name),
     );
-    text.append(
-      node(
-        "p",
-        "",
-        `${checkIn} to ${checkOut} · ${data.nights} night${data.nights === 1 ? "" : "s"} · ${guests} guest${guests === "1" ? "" : "s"}`,
-      ),
-    );
+    text.append(node("p", "", stayText(checkIn, checkOut, guests)));
     text.append(node("p", "", `Property timezone: ${data.timezone}`));
-    text.append(
-      node(
-        "p",
-        "small-note",
-        "No price or currency is set. No room is held and no reservation is created.",
-      ),
-    );
+    text.append(node("p", "small-note", "No price or currency is set."));
     const confirm = node("button", "button button-gold", "Confirm demo reservation");
     confirm.type = "button";
     const status = node("p", "notice", "Confirmation saves one demo reservation for this browser session.");
@@ -479,6 +505,7 @@ async function renderReview() {
     errorText(
       target,
       error.message || "Could not check availability. Try again.",
+      searchAgain,
     );
   }
 }
@@ -491,11 +518,33 @@ function renderRoute() {
     const id = decodeURIComponent(path.slice("/rooms/".length));
     const room = state.rooms.find((item) => item.id === id);
     if (room) roomDetail(room);
-    else errorText($("#room-detail"), "Room not found. Return to all rooms.");
+    else errorText($("#room-detail"), "This room is not part of the demo hotel.", ["See all rooms", "/#rooms"]);
   }
   if (path === "/review") renderReview();
 }
+// On phones the links sit behind a Menu button (shown by site.css only there).
+function setupMenu() {
+  const toggle = $("#nav-toggle");
+  const shell = $(".nav-shell");
+  const setOpen = (open) => {
+    shell.classList.toggle("is-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+  };
+  toggle.addEventListener("click", () =>
+    setOpen(!shell.classList.contains("is-open")),
+  );
+  $("#nav-links").addEventListener("click", (event) => {
+    if (event.target.closest("a, button")) setOpen(false);
+  });
+  shell.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && shell.classList.contains("is-open")) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+}
 async function init() {
+  setupMenu();
   $("#availability-form").addEventListener("submit", runSearch);
   // Inventory only adds dates and counts; the page still works without it.
   const inventory = read("/api/hotel/inventory").catch(() => null);
@@ -517,7 +566,6 @@ async function init() {
     renderCatalogue();
     renderInventory((await inventory)?.data);
   } catch {
-    $("#stats-list").replaceChildren();
     for (const selector of ["#room-list", "#amenity-list", "#policy-list"]) {
       errorText(
         $(selector),

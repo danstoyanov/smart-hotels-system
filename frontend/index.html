@@ -25,12 +25,22 @@
           </span
           ><span id="brand-name">Royal Crest Manor</span></a
         >
-        <div class="nav-links">
+        <button
+          id="nav-toggle"
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-links"
+        >
+          Menu
+        </button>
+        <div id="nav-links" class="nav-links">
           <a href="/#rooms">Rooms</a><a href="/#amenities">Amenities</a
           ><a href="/#policies">Stay information</a
-          ><button id="nav-chat" type="button">Concierge</button>
+          ><button id="nav-chat" type="button">Concierge</button
+          ><a class="nav-menu-only" href="/#availability">Check availability</a>
         </div>
-        <a class="button button-gold nav-cta" href="/#availability"
+        <a class="button button-dark nav-cta" href="/#availability"
           >Check availability</a
         >
       </nav>
@@ -46,8 +56,8 @@
               sample availability in one calm place.
             </p>
             <div class="hero-actions">
-              <a class="button button-gold" href="#rooms"
-                >Explore the rooms <span aria-hidden="true">↗</span></a
+              <a class="button button-gold" href="#availability"
+                >Find a room for your dates</a
               >
               <button class="button button-glass" type="button" data-open-chat>
                 Ask the concierge
@@ -61,7 +71,6 @@
           aria-labelledby="search-title"
         >
           <div class="search-intro">
-            <span class="eyebrow">Plan your stay</span>
             <h2 id="search-title">Find a room for your dates</h2>
             <p id="inventory-note">A search does not hold a room.</p>
           </div>
@@ -98,12 +107,6 @@
             Choose dates and guests to check the demo inventory.
           </div>
           <div id="availability-results" class="result-grid"></div>
-        </section>
-        <section class="stats-band wrap" aria-labelledby="stats-title">
-          <h2 id="stats-title" class="visually-hidden">The demo in numbers</h2>
-          <dl id="stats-list" class="stats-list">
-            <div><dt>Demo rooms</dt><dd>…</dd></div>
-          </dl>
         </section>
         <section
           class="rooms-section section-space"
@@ -221,8 +224,8 @@
         ><span class="eyebrow">Demo stay</span>
         <h1 id="review-title">Review your selection</h1>
         <p class="review-lead">
-          Review the demo stay before you confirm. A room is not held until
-          confirmation succeeds. This is not a real hotel booking.
+          Check the details, then confirm. Nothing is held until you do. This
+          is a demo, not a real hotel booking.
         </p>
         <div class="review-layout">
           <div id="review-detail" role="status">Checking this selection…</div>
@@ -242,7 +245,6 @@
                 <span>Only this browser session can open the demo reservation.</span>
               </li>
             </ol>
-            <p class="small-note">No price, payment or real hotel booking is part of this demo.</p>
           </aside>
         </div>
       </section>
@@ -267,6 +269,7 @@
         id="chat"
         class="chat-window"
         role="dialog"
+        aria-modal="true"
         aria-labelledby="chat-heading"
         hidden
       >
@@ -284,7 +287,14 @@
             <h3>Your conversation</h3>
             <button id="reset" class="text-button" type="button" disabled>New conversation</button>
           </div>
-          <p id="chat-empty">Your completed messages will appear here.</p>
+          <div id="chat-empty">
+            <p>Ask in your own words, or start with one of these:</p>
+            <div class="chat-starters">
+              <button class="starter" type="button" data-question="What time is breakfast?">What time is breakfast?</button>
+              <button class="starter" type="button" data-question="When can I check in and check out?">When can I check in and check out?</button>
+              <button class="starter" type="button" data-question="Can I bring a pet?">Can I bring a pet?</button>
+            </div>
+          </div>
           <div id="chat-log" role="log" aria-label="Conversation history" aria-live="off"></div>
         </div>
         <div class="chat-window-bottom">
@@ -294,7 +304,7 @@
             <div class="chat-actions">
               <button id="send" class="button button-dark" type="submit" disabled>Send message</button>
               <button id="stop" class="button button-dark" type="button" hidden>Stop reply</button>
-              <button id="retry-chat" class="text-button" type="button">Reload chat</button>
+              <button id="retry-chat" class="text-button" type="button" hidden>Reload chat</button>
             </div>
           </form>
           <p id="chat-status" role="status" aria-live="polite">Loading your conversation…</p>
