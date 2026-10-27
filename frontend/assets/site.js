@@ -13,6 +13,12 @@ const iconPaths = {
   breakfast: "M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9ZM17 10h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3",
   terrace: "M12 21V11M12 11c-4 0-7-3-7-8 4 0 7 3 7 8ZM12 11c4 0 7-3 7-8-4 0-7 3-7 8ZM5 21h14",
   sparkle: "M12 3l2 6.5 6.5 2.5-6.5 2-2 7-2-7-6.5-2L10 9.5Z",
+  arrival: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3 2",
+  pets: "M8 9.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM16 9.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM4.5 13.5a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6ZM19.5 13.5a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6ZM12 12c-3 0-5.5 3.5-5.5 6 0 1.5 1.2 2.5 2.7 2.5.9 0 1.8-.5 2.8-.5s1.9.5 2.8.5c1.5 0 2.7-1 2.7-2.5 0-2.5-2.5-6-5.5-6Z",
+  family: "M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2.5 20v-2a5.5 5.5 0 0 1 11 0v2M17 11a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM15 20v-1.5a4 4 0 0 1 7 0V20",
+  cancellation: "M4 6h16v14H4zM4 10h16M8 3v4M16 3v4M10 13l4 4M14 13l-4 4",
+  prices: "M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9-9-9ZM7.5 7.5h.01",
+  reservations: "M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3ZM9 12l2 2 4-4",
 };
 const state = { rooms: [], amenities: [], policies: [], search: null };
 
@@ -125,6 +131,29 @@ function amenityCard(item) {
     card.append(node("p", "fact-rooms", `Included with: ${rooms.join(", ")}`));
   return card;
 }
+const demoPrefix = "Fictional demo policy.";
+function policyCard(item) {
+  const card = node("article", "policy-card");
+  const head = node("div", "policy-head");
+  const symbol = node("span", "fact-symbol");
+  symbol.append(icon(item.id));
+  const known = item.status !== "unknown";
+  head.append(
+    symbol,
+    node("h3", "", item.title),
+    node("span", known ? "policy-tag" : "policy-tag muted", known ? "Demo policy" : "Not set"),
+  );
+  // The tag shows the demo label, so the repeated prefix is not shown twice.
+  const body = item.body.startsWith(demoPrefix)
+    ? item.body.slice(demoPrefix.length).trim()
+    : item.body;
+  const list = node("ul", "policy-points");
+  body
+    .split(/(?<=\.)\s+(?=[A-Z])/)
+    .forEach((sentence) => list.append(node("li", "", sentence)));
+  card.append(head, list);
+  return card;
+}
 function renderInventory(nights) {
   const days = [...new Set((nights || []).map((item) => item.night))].sort();
   const stats = [
@@ -210,13 +239,7 @@ function renderCatalogue() {
   amenities.replaceChildren(...state.amenities.map(amenityCard));
   if (!state.amenities.length) errorText(amenities, "No amenities are listed.");
   const policies = $("#policy-list");
-  policies.replaceChildren(
-    ...state.policies.map((item) => {
-      const card = node("article", "policy-card");
-      card.append(node("h3", "", item.title), node("p", "", item.body));
-      return card;
-    }),
-  );
+  policies.replaceChildren(...state.policies.map(policyCard));
   if (!state.policies.length)
     errorText(policies, "No stay information is listed.");
 }
