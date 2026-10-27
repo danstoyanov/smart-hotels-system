@@ -72,6 +72,12 @@ function formatNight(night) {
     year: "numeric",
   });
 }
+function stayText(checkIn, checkOut, guests) {
+  const nights = Math.round(
+    (new Date(`${checkOut}T00:00:00`) - new Date(`${checkIn}T00:00:00`)) / 86400000,
+  );
+  return `${formatNight(checkIn)} – ${formatNight(checkOut)} · ${plural(nights, "night")} · ${plural(Number(guests), "guest")}`;
+}
 function link(text, href, className = "") {
   const el = node("a", className, text);
   el.href = href;
@@ -106,7 +112,6 @@ function roomCard(room) {
   );
   const footer = node("div", "room-footer");
   footer.append(
-    node("span", "price-note", "Price not published"),
     link(
       "View room →",
       `/rooms/${encodeURIComponent(room.id)}`,
@@ -132,6 +137,16 @@ function amenityCard(item) {
   return card;
 }
 const demoPrefix = "Fictional demo policy.";
+// Some policy clauses are notes for the concierge, not for guests. The hotel
+// data keeps them; the website does not show them.
+const assistantNote = /^(do not |this data reader )/i;
+function guestText(sentence) {
+  const clauses = sentence
+    .replace(/\.$/, "")
+    .split("; ")
+    .filter((clause) => !assistantNote.test(clause));
+  return clauses.length ? `${clauses.join("; ")}.` : "";
+}
 function policyCard(item) {
   const card = node("article", "policy-card");
   const head = node("div", "policy-head");
@@ -149,6 +164,8 @@ function policyCard(item) {
     : item.body;
   const points = body
     .split(/(?<=\.)\s+(?=[A-Z])/)
+    .map(guestText)
+    .filter(Boolean)
     .map((sentence) => node("li", "", sentence));
   // Long policies show two points first, so the section stays short on phones.
   const list = node("ul", "policy-points");
@@ -215,17 +232,16 @@ function renderBooking(target, booking) {
   text.append(
     node("span", "eyebrow", "Demo reservation confirmed"),
     node("h2", "", room?.name || booking.room_id),
-    node("p", "", `${booking.check_in} to ${booking.check_out} · ${booking.guests} guests`),
+    node("p", "", stayText(booking.check_in, booking.check_out, booking.guests)),
     reference,
     node("p", "small-note", booking.message),
-    node("p", "small-note", "No price or payment is part of this demo."),
     link("Return to rooms", "/#rooms", "button button-outline"),
   );
   card.append(text);
   target.replaceChildren(card);
   $("#review-title").textContent = "Your demo reservation";
   $(".review-lead").textContent =
-    "Your selected room is reserved in this fictional demo. This is not a real hotel booking.";
+    "Keep the reference. You can open this demo reservation again in this browser.";
   markStepsDone();
 }
 const doneSteps = [
@@ -286,9 +302,9 @@ function roomDetail(room) {
     node(
       "p",
       "small-note",
-      "Prices are not published. Search the sample dates to review available rooms.",
+      "Search the sample nights to see which rooms are free for your stay.",
     ),
-    link("Check dates for this room →", "/#availability", "button button-dark"),
+    link("Search available dates →", "/#availability", "button button-dark"),
   );
   content.append(plan);
   layout.append(photo, content);
@@ -429,21 +445,9 @@ async function renderReview() {
       node("span", "eyebrow", "Available in demo inventory"),
       node("h2", "", room.name),
     );
-    text.append(
-      node(
-        "p",
-        "",
-        `${checkIn} to ${checkOut} · ${data.nights} night${data.nights === 1 ? "" : "s"} · ${guests} guest${guests === "1" ? "" : "s"}`,
-      ),
-    );
+    text.append(node("p", "", stayText(checkIn, checkOut, guests)));
     text.append(node("p", "", `Property timezone: ${data.timezone}`));
-    text.append(
-      node(
-        "p",
-        "small-note",
-        "No price or currency is set. No room is held and no reservation is created.",
-      ),
-    );
+    text.append(node("p", "small-note", "No price or currency is set."));
     const confirm = node("button", "button button-gold", "Confirm demo reservation");
     confirm.type = "button";
     const status = node("p", "notice", "Confirmation saves one demo reservation for this browser session.");

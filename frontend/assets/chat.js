@@ -13,8 +13,11 @@ const windowPanel = document.querySelector('#chat');
 const close = document.querySelector('#chat-close');
 const navChat = document.querySelector('#nav-chat');
 const windowBody = document.querySelector('.chat-window-body');
+const starters = document.querySelectorAll('.starter');
 let controller;
 let ready = false;
+// "Reload chat" is offered only after something went wrong.
+let needsReload = false;
 
 function openChat() {
   windowPanel.hidden = false;
@@ -48,7 +51,9 @@ function controls(busy) {
   input.disabled = busy || !ready;
   reset.disabled = busy || !ready;
   retry.disabled = busy;
+  retry.hidden = ready && !needsReload;
   stop.hidden = !busy;
+  for (const starter of starters) starter.disabled = busy || !ready;
 }
 
 async function api(path, options = {}) {
@@ -115,10 +120,11 @@ async function initialize() {
     await api('/api/session', { method: 'POST' });
     await history();
     ready = true;
+    needsReload = false;
     const site = await (await api('/api/site')).json();
     status.textContent = site.assistant_mode === 'vertex'
       ? 'Chat ready. Ask about rooms, amenities or policies. Replies use AI and may contain mistakes.'
-      : 'Chat ready. Local stub mode is active; AI answers are not enabled.';
+      : 'Chat ready. This demo gives sample replies, not live AI answers.';
   } catch (error) {
     ready = false;
     status.textContent = error.message;
@@ -134,8 +140,8 @@ form.addEventListener('submit', async event => {
   controller = new AbortController();
   controls(true);
   document.querySelector('#chat-empty').hidden = true;
-  message('You · sending', question);
-  const answer = message('Demo assistant · provisional', '');
+  message('You', question);
+  const answer = message('Demo assistant · writing…', '');
   status.textContent = 'Checking hotel information…';
   let result = false;
   let done = false;
@@ -157,6 +163,8 @@ form.addEventListener('submit', async event => {
   } catch (error) {
     // Remove provisional output. A committed answer may still be recovered from history.
     try { await history(); } catch { ready = false; }
+    // A stopped reply is the guest's own choice; anything else may need a reload.
+    if (error.name !== 'AbortError' && /reload/i.test(error.message)) needsReload = true;
     status.textContent = error.name === 'AbortError'
       ? 'Reply stopped. Saved history restored. You can try again shortly.' : error.message;
   } finally {
@@ -166,6 +174,13 @@ form.addEventListener('submit', async event => {
   }
 });
 
+for (const starter of starters) {
+  starter.addEventListener('click', () => {
+    if (!ready || controller) return;
+    input.value = starter.dataset.question;
+    form.requestSubmit();
+  });
+}
 stop.addEventListener('click', () => controller?.abort());
 retry.addEventListener('click', initialize);
 reset.addEventListener('click', async () => {

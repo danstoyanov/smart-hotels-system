@@ -528,12 +528,6 @@ button:disabled {
   gap: 16px;
   flex-wrap: wrap;
 }
-.price-note {
-  font-size: var(--text-label);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-}
 .room-meta {
   font-size: var(--text-small);
   color: var(--muted);
@@ -873,6 +867,34 @@ button:disabled {
 #chat-status {
   color: var(--muted);
   font-size: var(--text-small);
+}
+#chat-empty {
+  margin-top: 14px;
+}
+#chat-empty p {
+  margin-bottom: 10px;
+}
+.chat-starters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.starter {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: #fff;
+  color: var(--green);
+  font-size: var(--text-small);
+  font-weight: 700;
+  text-align: left;
+}
+.starter:hover:not(:disabled) {
+  border-color: var(--green);
+}
+.starter:disabled {
+  cursor: default;
 }
 #chat-log {
   margin: 14px 0;
