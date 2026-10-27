@@ -3,6 +3,23 @@ const images = {
   "manor-suite": "/assets/images/manor-suite.png",
   "garden-room": "/assets/images/garden-room.png",
 };
+// Only amenities with a matching local photograph get a photo card.
+const amenityImages = { terrace: "/assets/images/manor-hero.png" };
+const iconPaths = {
+  bed: "M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 14h18M7 10V7.5A1.5 1.5 0 0 1 8.5 6h2A1.5 1.5 0 0 1 12 7.5V10M12 10V7.5A1.5 1.5 0 0 1 13.5 6h2A1.5 1.5 0 0 1 17 7.5V10M3 18v2M21 18v2",
+  guests: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM2.5 20a6.5 6.5 0 0 1 13 0M16 4.2a3.5 3.5 0 0 1 0 6.6M18 14a6.5 6.5 0 0 1 3.5 6",
+  door: "M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17M3 21h18M15 12h.01",
+  wifi: "M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0M12 19.5h.01",
+  breakfast: "M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9ZM17 10h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3",
+  terrace: "M12 21V11M12 11c-4 0-7-3-7-8 4 0 7 3 7 8ZM12 11c4 0 7-3 7-8-4 0-7 3-7 8ZM5 21h14",
+  sparkle: "M12 3l2 6.5 6.5 2.5-6.5 2-2 7-2-7-6.5-2L10 9.5Z",
+  arrival: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3 2",
+  pets: "M8 9.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM16 9.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM4.5 13.5a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6ZM19.5 13.5a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6ZM12 12c-3 0-5.5 3.5-5.5 6 0 1.5 1.2 2.5 2.7 2.5.9 0 1.8-.5 2.8-.5s1.9.5 2.8.5c1.5 0 2.7-1 2.7-2.5 0-2.5-2.5-6-5.5-6Z",
+  family: "M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2.5 20v-2a5.5 5.5 0 0 1 11 0v2M17 11a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM15 20v-1.5a4 4 0 0 1 7 0V20",
+  cancellation: "M4 6h16v14H4zM4 10h16M8 3v4M16 3v4M10 13l4 4M14 13l-4 4",
+  prices: "M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9-9-9ZM7.5 7.5h.01",
+  reservations: "M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3ZM9 12l2 2 4-4",
+};
 const state = { rooms: [], amenities: [], policies: [], search: null };
 
 function node(tag, className, text) {
@@ -10,6 +27,50 @@ function node(tag, className, text) {
   if (className) el.className = className;
   if (text !== undefined) el.textContent = text;
   return el;
+}
+function icon(name) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("class", "icon");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", iconPaths[name] || iconPaths.sparkle);
+  svg.append(path);
+  return svg;
+}
+function iconItem(name, text) {
+  const item = node("li");
+  item.append(icon(name), node("span", "", text));
+  return item;
+}
+function plural(count, word) {
+  return `${count} ${word}${count === 1 ? "" : "s"}`;
+}
+function roomFeatures(room) {
+  const list = node("ul", "feature-list");
+  list.append(
+    iconItem("door", plural(room.bedrooms, "bedroom")),
+    iconItem("guests", `Sleeps ${room.capacity}`),
+    iconItem("bed", room.beds.join(", ")),
+  );
+  return list;
+}
+function roomAmenities(room) {
+  const list = node("ul", "chip-list");
+  list.setAttribute("aria-label", "Included amenities");
+  room.amenity_ids.forEach((id) => {
+    const amenity = state.amenities.find((item) => item.id === id);
+    if (amenity) list.append(iconItem(id, amenity.name));
+  });
+  return list;
+}
+function formatNight(night) {
+  return new Date(`${night}T00:00:00`).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 function link(text, href, className = "") {
   const el = node("a", className, text);
@@ -32,22 +93,93 @@ function roomCard(room) {
   const card = node("article", "room-card");
   const photo = node("div", "room-photo");
   photo.append(image(room));
-  photo.append(node("span", "photo-tag", "Fictional demo room"));
+  photo.append(
+    node("span", "photo-tag", "Fictional demo room"),
+    node("span", "photo-badge", `Up to ${room.capacity} guests`),
+  );
   const body = node("div", "room-body");
   body.append(
     node("h3", "", room.name),
     node("p", "", room.description),
-    node("p", "room-meta", details(room)),
+    roomFeatures(room),
+    roomAmenities(room),
   );
-  body.append(
+  const footer = node("div", "room-footer");
+  footer.append(
+    node("span", "price-note", "Price not published"),
     link(
       "View room →",
       `/rooms/${encodeURIComponent(room.id)}`,
       "button button-outline",
     ),
   );
+  body.append(footer);
   card.append(photo, body);
   return card;
+}
+function amenityCard(item) {
+  const photo = amenityImages[item.id];
+  const card = node("article", photo ? "fact-card bento-photo" : "fact-card");
+  if (photo) card.style.setProperty("--bento-image", `url("${photo}")`);
+  const symbol = node("span", "fact-symbol");
+  symbol.append(icon(item.id));
+  const rooms = state.rooms
+    .filter((room) => room.amenity_ids.includes(item.id))
+    .map((room) => room.name);
+  card.append(symbol, node("h3", "", item.name), node("p", "", item.description));
+  if (rooms.length)
+    card.append(node("p", "fact-rooms", `Included with: ${rooms.join(", ")}`));
+  return card;
+}
+const demoPrefix = "Fictional demo policy.";
+function policyCard(item) {
+  const card = node("article", "policy-card");
+  const head = node("div", "policy-head");
+  const symbol = node("span", "fact-symbol");
+  symbol.append(icon(item.id));
+  const known = item.status !== "unknown";
+  head.append(
+    symbol,
+    node("h3", "", item.title),
+    node("span", known ? "policy-tag" : "policy-tag muted", known ? "Demo policy" : "Not set"),
+  );
+  // The tag shows the demo label, so the repeated prefix is not shown twice.
+  const body = item.body.startsWith(demoPrefix)
+    ? item.body.slice(demoPrefix.length).trim()
+    : item.body;
+  const list = node("ul", "policy-points");
+  body
+    .split(/(?<=\.)\s+(?=[A-Z])/)
+    .forEach((sentence) => list.append(node("li", "", sentence)));
+  card.append(head, list);
+  return card;
+}
+function renderInventory(nights) {
+  const days = [...new Set((nights || []).map((item) => item.night))].sort();
+  const stats = [
+    ["Demo rooms", String(state.rooms.length), "From the reviewed demo data"],
+    [
+      "Largest room",
+      `${Math.max(0, ...state.rooms.map((room) => room.capacity))} guests`,
+      "Every person counts, infants too",
+    ],
+    ["Amenities", String(state.amenities.length), "Recorded for this hotel"],
+  ];
+  if (days.length) {
+    const range = `${formatNight(days[0])} – ${formatNight(days.at(-1))}`;
+    stats.push(["Sample nights", String(days.length), range]);
+    $("#inventory-note").textContent =
+      `Sample nights: ${range}. A search does not hold a room.`;
+    $("#footer-range").textContent = `Sample nights: ${range}`;
+  }
+  $("#stats-list").replaceChildren(
+    ...stats.map(([label, value, note]) => {
+      const item = node("div", "stat");
+      item.append(node("dt", "", label), node("dd", "stat-value", value));
+      item.append(node("dd", "stat-note", note));
+      return item;
+    }),
+  );
 }
 async function read(path) {
   const response = await fetch(path, {
@@ -104,26 +236,10 @@ function renderCatalogue() {
   list.replaceChildren(...state.rooms.map(roomCard));
   if (!state.rooms.length) errorText(list, "No rooms are listed in this demo.");
   const amenities = $("#amenity-list");
-  amenities.replaceChildren(
-    ...state.amenities.map((item) => {
-      const card = node("article", "fact-card");
-      card.append(
-        node("span", "fact-symbol", "✦"),
-        node("h3", "", item.name),
-        node("p", "", item.description),
-      );
-      return card;
-    }),
-  );
+  amenities.replaceChildren(...state.amenities.map(amenityCard));
   if (!state.amenities.length) errorText(amenities, "No amenities are listed.");
   const policies = $("#policy-list");
-  policies.replaceChildren(
-    ...state.policies.map((item) => {
-      const card = node("article", "policy-card");
-      card.append(node("h3", "", item.title), node("p", "", item.body));
-      return card;
-    }),
-  );
+  policies.replaceChildren(...state.policies.map(policyCard));
   if (!state.policies.length)
     errorText(policies, "No stay information is listed.");
 }
@@ -140,28 +256,31 @@ function roomDetail(room) {
     node("span", "eyebrow", "Fictional demo room"),
     heading,
     node("p", "lead", room.description),
-    node("p", "room-meta", details(room)),
+    roomFeatures(room),
   );
-  const names = room.amenity_ids
-    .map((id) => state.amenities.find((item) => item.id === id)?.name)
-    .filter(Boolean);
   content.append(node("h2", "", "Included in this room"));
   const ul = node("ul", "detail-list");
-  names.forEach((name) => ul.append(node("li", "", name)));
+  room.amenity_ids
+    .map((id) => state.amenities.find((item) => item.id === id))
+    .filter(Boolean)
+    .forEach((amenity) => {
+      const item = node("li");
+      const text = node("div");
+      text.append(node("strong", "", amenity.name), node("p", "", amenity.description));
+      item.append(icon(amenity.id), text);
+      ul.append(item);
+    });
   content.append(ul);
-  content.append(
+  const plan = node("div", "plan-card");
+  plan.append(
     node(
       "p",
       "small-note",
       "Prices are not published. Search the sample dates to review available rooms.",
     ),
+    link("Check dates for this room →", "/#availability", "button button-dark"),
   );
-  const choose = link(
-    "Check dates for this room →",
-    "/#availability",
-    "button button-dark",
-  );
-  content.append(choose);
+  content.append(plan);
   layout.append(photo, content);
   target.append(layout);
 }
@@ -378,6 +497,8 @@ function renderRoute() {
 }
 async function init() {
   $("#availability-form").addEventListener("submit", runSearch);
+  // Inventory only adds dates and counts; the page still works without it.
+  const inventory = read("/api/hotel/inventory").catch(() => null);
   try {
     const [site, rooms, amenities, policies] = await Promise.all([
       read("/api/site"),
@@ -389,11 +510,14 @@ async function init() {
     state.amenities = amenities.data;
     state.policies = policies.data;
     $("#brand-name").textContent = site.name;
+    $("#footer-name").textContent = site.name;
     $("#timezone").textContent = site.timezone;
     document.title = `${site.name} · Fictional demo`;
     document.documentElement.lang = site.language;
     renderCatalogue();
+    renderInventory((await inventory)?.data);
   } catch {
+    $("#stats-list").replaceChildren();
     for (const selector of ["#room-list", "#amenity-list", "#policy-list"]) {
       errorText(
         $(selector),
