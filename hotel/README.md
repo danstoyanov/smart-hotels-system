@@ -5,10 +5,12 @@ information about a real business. Initial language: English (`en`). Property da
 and times use `Europe/Kyiv`. Do not add credentials, private contact details or guest data.
 
 `catalogue.json` lists complete JSON revisions and selects one active revision.
-`revisions/royal-crest-demo.v2.json` is active. It keeps the two rooms, three amenities,
-six policies and fourteen explicit inventory nights from v1, and describes the new
-demo reservation step. V1 remains available for older citations. The Garden Room is closed
-on 5 November. A missing night is unknown, never assumed open. These are fixtures;
+`revisions/royal-crest-demo.v3.json` is active. It keeps the two rooms, three amenities
+and six policies from v2 and extends the explicit inventory to every night from
+1 November 2026 to 30 June 2027 (484 room nights). V1 and v2 remain available for
+older citations; v2 covers only 1–7 November 2026. The Garden Room is closed on
+5 November and on 24–25 December 2026. A missing night is unknown, never assumed open.
+These are fixtures;
 the full-stay search imports them into PostgreSQL. Reading or searching never
 holds rooms or creates reservations. Only explicit confirmation on the review page
 can create a demo reservation.

@@ -3,7 +3,7 @@
 ## Current status — accepted and merged
 
 SIN-62 is Done. PR #6 was merged on 24 October 2026 into main at
-`d8438fdc08cb26ce1c2314d6311ecb532ac855f2`. See [M1 handover](m1-handover.md).
+`d8438fdc08cb26ce1c2314d6311ecb532ac855f2`. See [M1 handover](../m1-handover.md).
 This closure update ran no tests or model calls.
 
 The separately approved foreground real-browser attempt passed. One breakfast

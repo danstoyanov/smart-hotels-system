@@ -8,3 +8,4 @@ __pycache__/
 *.pyc
 assistant-smoke.local.json
 .local/
+.claude/

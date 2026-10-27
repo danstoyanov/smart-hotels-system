@@ -133,7 +133,7 @@ Vertex mode uses aiohttp by default, with the locked Google GenAI extra.
 The smoke runner supports `--compare-transports --case breakfast` only
 after explicit `--approved-paid-calls` authorization. It runs exactly one HTTPX
 and one aiohttp execution, each capped at two model calls, without retries.
-See [the controlled A/B result](sin-62-transport-ab.md). One successful pair
+See [the controlled A/B result](history/sin-62-transport-ab.md). One successful pair
 is not a guarantee against future timeouts.
 
 Failures preserve safe server-side timing, phase, attempted model calls, completed
@@ -160,7 +160,7 @@ ignored `assistant-smoke.local.json`. Review each saved answer against the revie
 notes in `evals/assistant-smoke.json`. The report does not claim live acceptance
 automatically. A scripted model in adapter tests verifies code contracts only.
 The accepted real-model and website journey checks are recorded in
-[the foreground acceptance report](sin-62-foreground-browser.md).
+[the foreground acceptance report](history/sin-62-foreground-browser.md).
 
 ## Full-stay availability (SIN-63)
 
@@ -171,12 +171,12 @@ version and rerun the import instead. `scripts/start.ps1` performs this step. An
 unimported active source returns HTTP 503 for search; ordinary hotel information
 reads still work from files.
 
-Example: `GET /api/availability?check_in=2026-11-01&check_out=2026-11-03&guests=2`.
+Example: `GET /api/availability?check_in=2026-12-01&check_out=2026-12-03&guests=2`.
 Use exact YYYY-MM-DD dates and a total of 1–20 people, including children and infants.
 Check-in must be today or later in the property timezone. Checkout must be later,
 with at most 366 nights. The limit bounds a single search; it is not a hotel policy.
-The accepted fixtures cover only 1–7 November 2026 and do not roll forward.
-After these dates pass, publish a new demo revision to try future stays.
+The active fixtures (revision v3) cover 1 November 2026 to 30 June 2027 and do not
+roll forward. After these dates pass, publish a new demo revision to try future stays.
 
 The query includes check-in night and excludes checkout night. Every requested
 night must be present and open, and one room must fit the whole party. Results
@@ -197,7 +197,7 @@ using the stored property timezone. The model must request missing details and u
 tool results instead of calculating availability. Tool calls use the existing
 invocation call/evidence budgets. Search never holds or reserves a room.
 The stub remains a plain demo reply; offline ADK tests prove tool wiring, not live
-Gemini answer quality. See [verification](sin-63-verification.md).
+Gemini answer quality. See [verification](history/sin-63-verification.md).
 
 ## Guest website and review (SIN-64)
 
@@ -211,8 +211,8 @@ The interface shows loading, empty and error messages. Hotel text is inserted as
 plain text, never as HTML.
 
 The user-supplied visual references are kept in `design/`. Generated local
-photographs and their prompts are documented in [asset notes](sin-64-assets.md).
-See [SIN-64 verification](sin-64-verification.md) for checks and screenshots.
+photographs and their prompts are documented in [asset notes](history/sin-64-assets.md).
+See [SIN-64 verification](history/sin-64-verification.md) for checks and screenshots.
 
 ## Demo reservations (SIN-65)
 
@@ -240,4 +240,4 @@ IDs also keeps those nights booked.
 
 API POST requests have a 16 KiB body limit, which leaves room for a 2,000-character
 UTF-8 chat message. Oversized requests return HTTP 413 before a route writes data.
-See [SIN-66 verification](sin-66-verification.md).
+See [SIN-66 verification](history/sin-66-verification.md).

@@ -3,7 +3,7 @@
 **Closure:** SIN-62 is Done and PR #6 is merged. This report preserves the earlier
 comparison and the acceptance gaps that existed then. They were closed by the
 later [foreground acceptance](sin-62-foreground-browser.md). See
-[M1 handover](m1-handover.md) for the current baseline. No comparison was rerun.
+[M1 handover](../m1-handover.md) for the current baseline. No comparison was rerun.
 
 ## Result
 

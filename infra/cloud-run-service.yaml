@@ -8,7 +8,7 @@ metadata:
   labels:
     cloud.googleapis.com/location: europe-central2
   name: smart-hotel-demo
-  namespace: '613644187384'
+  namespace: 'PROJECT_NUMBER'
 spec:
   template:
     metadata:
@@ -38,7 +38,7 @@ spec:
         - name: HOTEL_TIMEZONE
           value: Europe/Kyiv
         - name: APP_ORIGIN
-          value: https://smart-hotel-demo-613644187384.europe-central2.run.app
+          value: https://smart-hotel-demo-PROJECT_NUMBER.europe-central2.run.app
         - name: COOKIE_SECURE
           value: 'true'
         - name: DATABASE_URL

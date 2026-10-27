@@ -2,7 +2,7 @@ displayName: Smart hotel demo - Cloud Run 5xx
 combiner: OR
 enabled: true
 notificationChannels:
-- projects/smart-hotels-system/notificationChannels/15735388054728012527
+- projects/smart-hotels-system/notificationChannels/NOTIFICATION_CHANNEL_ID
 documentation:
   mimeType: text/markdown
   content: >-

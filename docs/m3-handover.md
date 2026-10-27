@@ -2,7 +2,7 @@
 
 This is the first cloud demo of one fictional hotel. It is restricted to one
 approved Google user. Reservations are demos, not real bookings. The live site
-is <https://smart-hotel-demo-613644187384.europe-central2.run.app>. Use
+is `https://smart-hotel-demo-PROJECT_NUMBER.europe-central2.run.app`. Use
 [the operations runbook](../infra/operations.md) for startup, updates, model
 settings, checks and common failures. [The T11 record](../infra/cloud-demo.md)
 contains the original deployment settings and acceptance evidence.
@@ -17,11 +17,10 @@ restore was attempted or passed. Do not use the live database as a restore or
 test target. The release cannot meet the recovery acceptance check until this
 is resolved.
 
-The user confirmed `stoyanov.dann@gmail.com` for operational notifications.
-After separate approval, two Cloud Monitoring policies were created. Cloud Run
-5xx policy `11854293725787736831` and Cloud SQL down policy
-`11854293725787735888` are enabled and point to email channel
-`15735388054728012527`. The user explicitly approved reusing its address for
+The user confirmed their own email address for operational notifications.
+After separate approval, two Cloud Monitoring policies were created. A Cloud Run
+5xx policy and a Cloud SQL down policy are enabled and point to
+the owner's email channel. The user explicitly approved reusing its address for
 operations. The existing $50 project budget uses that email too, but is a
 separate budget alert. No incident or email delivery was triggered. There is
 no backup-failure alert while backups are disabled. The older $2 Vertex AI
@@ -60,7 +59,8 @@ gcloud monitoring policies create --policy-from-file=infra/alert-sql-down.yaml -
 gcloud monitoring policies list --project=smart-hotels-system
 ```
 
-The two policy creation commands returned the IDs above. The Monitoring API
+The two policy creation commands returned the policy IDs, which are kept in the
+owner's private notes. The Monitoring API
 read-only checks then found the Cloud SQL `up=1` series and Cloud Run request
 series with the expected service label. No `gcloud sql instances patch`,
 backup create, restore, or live traffic switch command was run.
@@ -90,8 +90,9 @@ reviewed. It must not be marked Done before the user accepts and merges its PR.
 
 - Only the approved account can enter through IAP. There are no guest accounts,
   staff inboxes or account recovery. Sessions expire after 24 hours.
-- The inventory horizon is 1–7 November 2026. It does not roll forward.
-  A new reviewed demo source revision and import are needed for later dates.
+- The cloud inventory horizon is 1–7 November 2026 (revision v2). It does not roll
+  forward. Revision v3 (to 30 June 2027) was added in SIN-87; the cloud demo needs an
+  approved image update and import job before it uses v3.
 - Content, rooms, inventory and reservations are fictional. No prices,
   payments or real hotel integration exist. The chatbot can make mistakes.
 - Cloud SQL is a single-zone, shared-core demo database without an SLA.

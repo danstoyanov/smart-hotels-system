@@ -8,19 +8,19 @@ and the steps actually completed; it is not a production handover.
 
 | Area | Setting |
 | --- | --- |
-| Project | `smart-hotels-system` with billing account `0177EF-BD94EC-8A99B3` |
+| Project | `smart-hotels-system` with the owner's billing account |
 | Region | `europe-central2` for Cloud Run, Cloud SQL and Artifact Registry |
 | Model | Vertex AI `gemini-3.8-flash` at `global` |
 | Image | One container from `Dockerfile`, tagged by the exact Git commit |
 | Cloud Run | `smart-hotel-demo`, 1 vCPU, 1 GiB RAM, port 8080, request-based CPU, min 0 and max 1 instance, concurrency 4, timeout 120 seconds |
-| Access | Cloud Run IAP with only `stoyanov.dann@gmail.com`; no `allUsers` or `allAuthenticatedUsers` grant |
+| Access | Cloud Run IAP with only the owner's Google account; no `allUsers` or `allAuthenticatedUsers` grant |
 | Cloud SQL | PostgreSQL 16, `smart-hotel-demo-db`, single zone, `db-g1-small`, 10 GiB SSD, no automatic storage growth, no authorized client networks |
 | DB connection | Cloud Run's Cloud SQL Unix socket; database and user `smart_hotels`; `DATABASE_URL` in Secret Manager version 1 |
 | Service identity | Dedicated account with `roles/cloudsql.client` and `roles/aiplatform.user`; `roles/secretmanager.secretAccessor` on the database secret only |
 | App variables | `CLOUD_DEMO=true`, `ASSISTANT_MODE=vertex`, approved project/model/location, `HOTEL_NAME=Royal Crest Manor`, `HOTEL_LANGUAGE=en`, `HOTEL_TIMEZONE=Europe/Kyiv`, exact HTTPS `APP_ORIGIN`, `COOKIE_SECURE=true` |
 | Health | HTTP startup probe on `/api/health`; the endpoint checks the database and migration state with no model call |
 | Logs | Cloud Run request logs and safe application warnings in Cloud Logging; no guest text, credentials or SDK debug logs |
-| Budget | Single-project $50 monthly USD alert budget; gross actual-spend email thresholds at 50%, 80% and 100% to `stoyanov.dann@gmail.com`. An older, separate $2 monthly Vertex AI spend cap remains configured. |
+| Budget | Single-project $50 monthly USD alert budget; gross actual-spend email thresholds at 50%, 80% and 100% to the owner's email. An older, separate $2 monthly Vertex AI spend cap remains configured. |
 | Acceptance calls | At most five real Gemini requests during the deployed acceptance check; no automatic model retry |
 
 The Cloud Run instance maximum is a capacity setting, not a hard billing limit.
@@ -97,11 +97,10 @@ through the CLI checks, so they are unverified. The user approved this deploy
 with that limit known. Google Cloud lists `gemini-3.8-flash` on the `global`
 endpoint. The live acceptance check later made one chat request to this model.
 
-On 25 October 2026, the required APIs were enabled. Budget
-`4944a252-e24c-4285-81f7-f8cfbfc85e93` was created for project
-`613644187384`, $50 USD per month, excluding credits when measuring spend,
-with current-spend thresholds 50%, 80% and 100%. It uses Monitoring email
-channel `15735388054728012527` for `stoyanov.dann@gmail.com`. The older
+On 25 October 2026, the required APIs were enabled. A budget was
+created for the project, $50 USD per month, excluding credits when measuring spend,
+with current-spend thresholds 50%, 80% and 100%. It uses the Monitoring email
+channel for the owner's email. The older
 service-specific $2 Hotel AI budget was inspected and left unchanged. It is a
 configured spend cap for Vertex AI service `C7E2-9256-1C43`, not another
 project-wide alert budget. If enforced, it can pause Vertex AI use while other
@@ -125,7 +124,7 @@ Separate import execution `smart-hotel-demo-import-kqc7t` completed and logged
 CLI joined two arguments; it made no schema change and the job was corrected.
 
 Cloud Run service `smart-hotel-demo` is Ready at
-<https://smart-hotel-demo-613644187384.europe-central2.run.app>. The running
+`https://smart-hotel-demo-PROJECT_NUMBER.europe-central2.run.app`. The running
 revision uses image digest
 `sha256:3b69b5ec6281e190cb2f440f54f1fc7e6bf03219910e8def08c38d2026f989f0`,
 the Cloud SQL socket and secret,
@@ -134,13 +133,12 @@ service and revision maximum 1 instance, concurrency 4, timeout 120 seconds,
 and a `/api/health` startup probe every 10 seconds with a 5-second timeout
 and 12 allowed failures. The application origin is this exact HTTPS URL and
 its session cookie is secure. Cloud Run Invoker has only the IAP service agent;
-IAP Web App User has only `stoyanov.dann@gmail.com`.
+IAP Web App User has only the owner's Google account.
 
 This project has no Google organization, so the user completed the one-time
 external consent screen and IAP Custom OAuth setup in Cloud Console with
-auto-generated credentials. The service-level client ID is
-`613644187384-b9ot6aadf298pl14np24i11muar2g2tk.apps.googleusercontent.com`;
-the client secret is not recorded here. Before this setup, IAP returned HTTP
+auto-generated credentials. The service-level client ID and
+the client secret are not recorded here. Before this setup, IAP returned HTTP
 502 because the OAuth client was empty. After setup, an unauthenticated GET to
 `/api/health` returned HTTP 302 to Google sign-in. The approved user confirmed
 the site opened after sign-in, and Cloud Run logs showed HTTP 200 for the page's

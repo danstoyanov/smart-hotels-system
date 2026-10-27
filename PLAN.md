@@ -106,17 +106,17 @@ Keep this plan focused on future development. Historical audits and detailed wor
 ### M2 guest journey accepted — 2026-10-24
 
 - Result: SIN-63–SIN-65 (T06–T08) are Done; PRs #8–#10 are merged. The demo journey covers search, room details, review and explicit reservation confirmation.
-- Check: [SIN-64 verification](docs/sin-64-verification.md) and [SIN-65 verification](docs/sin-65-verification.md) record local and desktop/mobile checks. T08 used a separate disposable PostgreSQL database.
+- Check: [SIN-64 verification](docs/history/sin-64-verification.md) and [SIN-65 verification](docs/history/sin-65-verification.md) record local and desktop/mobile checks. T08 used a separate disposable PostgreSQL database.
 - Next: M2 is closed. T09 safeguards and T10 journey checks remain before public access. Cloud setup and launch need separate approval.
 
 ### M3 first cloud version — 2026-10-25
 
 - Result: SIN-66–SIN-69 (T09–T12) are Done; PRs #11–#14 are merged. Request limits and safe retry are in place, the connected journey check exists, and a restricted demo runs on Cloud Run, Cloud SQL and Vertex AI with an operations runbook and two alert policies.
-- Check: [SIN-66](docs/sin-66-verification.md) and [SIN-67](docs/sin-67-verification.md) verification, the [T11 record](infra/cloud-demo.md) and the [M3 handover](docs/m3-handover.md) record the actual local and cloud checks, including one approved live chat request and an old-revision health probe.
-- Next: the recovery check is open because Cloud SQL backups are disabled (section 5). The demo inventory ends on 7 November 2026.
+- Check: [SIN-66](docs/history/sin-66-verification.md) and [SIN-67](docs/history/sin-67-verification.md) verification, the [T11 record](infra/cloud-demo.md) and the [M3 handover](docs/m3-handover.md) record the actual local and cloud checks, including one approved live chat request and an old-revision health probe.
+- Next: the recovery check is open because Cloud SQL backups are disabled (section 5). The cloud demo inventory (revision v2) ends on 7 November 2026.
 
 ### Repository readiness — 2026-10-27
 
-- Result: SIN-85 (PR #15) rewrote the README for external local testing and moved behaviour details to [technical notes](docs/technical-notes.md). SIN-86 shortened AGENTS.md, added the [task workflow](docs/workflow.md), a PR template and a documentation link check.
-- Check: SIN-85 ran the README quick start and `scripts/test.ps1` locally. SIN-86 results are in its PR.
-- Next: choose a repository license before public sharing; publish a new demo data revision for dates after 7 November 2026.
+- Result: SIN-85 (PR #15) rewrote the README for external local testing and moved behaviour details to [technical notes](docs/technical-notes.md). SIN-86 shortened AGENTS.md, added the [task workflow](docs/workflow.md), a PR template and a documentation link check. SIN-87 replaced personal cloud identifiers with placeholders, moved task records to [docs/history](docs/history/README.md) and published demo data v3 (to 30 June 2027).
+- Check: SIN-85 ran the README quick start and `scripts/test.ps1` locally. SIN-86 and SIN-87 results are in their PRs.
+- Next: the owner chooses the license and GitHub description. Updating the cloud demo to data v3 needs a separate approval.

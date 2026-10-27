@@ -4,7 +4,7 @@ metadata:
   labels:
     cloud.googleapis.com/location: europe-central2
   name: smart-hotel-demo-migrate
-  namespace: '613644187384'
+  namespace: 'PROJECT_NUMBER'
 spec:
   template:
     metadata:

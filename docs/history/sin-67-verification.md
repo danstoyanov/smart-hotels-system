@@ -22,7 +22,7 @@
 
 ## Browser evidence
 
-- [Desktop review](screenshots/sin-67-review-1440.png) and [desktop confirmation](screenshots/sin-67-confirmed-1440.png).
+- [Desktop review](../images/guest-review-desktop.png) and [desktop confirmation](screenshots/sin-67-confirmed-1440.png).
 - [Mobile review](screenshots/sin-67-review-375.png) and [mobile confirmation](screenshots/sin-67-confirmed-375.png).
 
 ## Limits and next step

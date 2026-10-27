@@ -3,9 +3,16 @@
 This runbook covers one fictional hotel. Reservations are demos, not real
 bookings. Use the approved Google account. Run commands from the repository root
 in PowerShell. The live address is
-<https://smart-hotel-demo-613644187384.europe-central2.run.app>.
+`https://smart-hotel-demo-PROJECT_NUMBER.europe-central2.run.app`, where
+`PROJECT_NUMBER` is the Google Cloud project number.
 IAP allows only the approved user. Keep credentials, guest cookies and database
 URLs out of commands, logs and Git.
+
+The YAML files in `infra/` use placeholders instead of private identifiers:
+`PROJECT_NUMBER` in the Cloud Run files and `NOTIFICATION_CHANNEL_ID` in the
+alert files. The update steps below fill in the project number before applying
+the files. Take the channel ID from Cloud Monitoring (Alerting → notification
+channels) before you create an alert policy from a file.
 
 ## Current settings
 
@@ -19,7 +26,7 @@ URLs out of commands, logs and Git.
 | Secret | `DATABASE_URL` from Secret Manager `smart-hotel-database-url` version 1 |
 | Budget | $50 project alert at 50%, 80% and 100%; separate $2 Vertex AI spend cap |
 | Recovery state | Automatic Cloud SQL backups are disabled; no restore drill has passed |
-| Operational alerts | Cloud Run 5xx and Cloud SQL down policies use the confirmed `stoyanov.dann@gmail.com` email channel |
+| Operational alerts | Cloud Run 5xx and Cloud SQL down policies use the owner's confirmed email channel |
 
 The $50 alerts do not stop spending. The service maximum and five model calls
 per cloud chat turn are request bounds, not account-wide cost caps. Cloud SQL
@@ -30,9 +37,9 @@ The applied alert definitions are [`alert-run-errors.yaml`](alert-run-errors.yam
 and [`alert-sql-down.yaml`](alert-sql-down.yaml). The Cloud Run policy opens
 when at least one 5xx response is counted in five minutes. The Cloud SQL
 policy opens when its `up` metric stays below one for three minutes. They use
-notification channel `15735388054728012527`, now explicitly approved for
-operations as well as the earlier budget. Policy IDs are recorded in
-[the M3 handover](../docs/m3-handover.md). Metric reporting and policy state
+the owner's email notification channel, now explicitly approved for
+operations as well as the earlier budget. Policy and channel IDs are
+kept in the owner's private notes, not in Git. Metric reporting and policy state
 were checked, but no incident or email delivery was tested. There is no
 backup-failure alert while backups are disabled.
 
@@ -84,13 +91,20 @@ $commit = git rev-parse HEAD
 $image = "europe-central2-docker.pkg.dev/smart-hotels-system/smart-hotel-demo/hotel:$commit"
 gcloud builds submit --project=$project --tag=$image .
 gcloud artifacts docker images describe $image --project=$project --format="value(image_summary.digest)"
-# After putting the returned digest in the three reviewed YAML files:
-gcloud run jobs replace infra/migrate-job.yaml --project=$project --region=$region
+# After putting the returned digest in the three reviewed YAML files,
+# fill in the project number in ignored copies under .local/infra:
+$projectNumber = gcloud projects describe $project --format="value(projectNumber)"
+New-Item -ItemType Directory -Force .local/infra | Out-Null
+foreach ($name in "migrate-job", "import-job", "cloud-run-service") {
+    $text = (Get-Content "infra/$name.yaml" -Raw).Replace("PROJECT_NUMBER", $projectNumber)
+    [IO.File]::WriteAllText("$PWD/.local/infra/$name.yaml", $text)
+}
+gcloud run jobs replace .local/infra/migrate-job.yaml --project=$project --region=$region
 gcloud run jobs execute smart-hotel-demo-migrate --project=$project --region=$region --wait
 # Run the import pair only when reviewed hotel data changed:
-gcloud run jobs replace infra/import-job.yaml --project=$project --region=$region
+gcloud run jobs replace .local/infra/import-job.yaml --project=$project --region=$region
 gcloud run jobs execute smart-hotel-demo-import --project=$project --region=$region --wait
-gcloud run services replace infra/cloud-run-service.yaml --project=$project --region=$region
+gcloud run services replace .local/infra/cloud-run-service.yaml --project=$project --region=$region
 ```
 
 The migration command is `python -m backend.app.db`. It uses a transaction,

@@ -3,7 +3,7 @@
 **Closure:** The user accepted M1 and merged PR #6 on 24 October 2026.
 SIN-62 is Done; main commit is `d8438fdc08cb26ce1c2314d6311ecb532ac855f2`.
 The results below are the recorded development run, not a new execution.
-See [M1 handover](m1-handover.md).
+See [M1 handover](../m1-handover.md).
 
 ## Result: requested acceptance flow passed
 

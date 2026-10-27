@@ -69,26 +69,26 @@ async function run(width, dates, keyboard) {
 }
 
 (async () => {
-  await run(1440, ['2026-11-01', '2026-11-03'], true);
-  await run(375, ['2026-11-03', '2026-11-05'], false);
+  await run(1440, ['2026-12-01', '2026-12-03'], true);
+  await run(375, ['2026-12-03', '2026-12-05'], false);
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     await page.goto(origin);
     const unknown = await page.request.get(`${origin}/api/hotel/policies/prices`);
     assert.equal((await unknown.json()).status, 'unknown');
-    await page.getByLabel('Arrival').fill('2026-11-06');
-    await page.getByLabel('Departure').fill('2026-11-08');
+    await page.getByLabel('Arrival').fill('2026-12-06');
+    await page.getByLabel('Departure').fill('2026-12-08');
     await page.getByLabel('Guests').fill('5');
     await page.getByRole('button', { name: /Check availability/i }).last().click();
     await page.getByText('No room is available for the full stay and guest count.').waitFor();
-    await page.getByLabel('Arrival').fill('2026-11-08');
-    await page.getByLabel('Departure').fill('2026-11-10');
+    await page.getByLabel('Arrival').fill('2027-07-01');
+    await page.getByLabel('Departure').fill('2027-07-03');
     await page.getByLabel('Guests').fill('2');
     await page.getByRole('button', { name: /Check availability/i }).last().click();
     await page.getByText('Inventory is unknown for at least one suitable room on these dates.').waitFor();
-    await page.getByLabel('Arrival').fill('2026-11-06');
-    await page.getByLabel('Departure').fill('2026-11-08');
+    await page.getByLabel('Arrival').fill('2026-12-06');
+    await page.getByLabel('Departure').fill('2026-12-08');
     await page.getByLabel('Guests').fill('2');
     await page.getByRole('button', { name: /Check availability/i }).last().click();
     await page.getByRole('link', { name: 'Review this stay' }).first().click();
