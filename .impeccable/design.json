@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-27T19:30:00Z",
+  "generatedAt": "2026-10-27T21:40:00Z",
   "title": "Design System: Royal Crest Manor",
   "extensions": {
     "colorMeta": {
@@ -49,8 +49,8 @@
       "kind": "button",
       "refersTo": "button-gold",
       "description": "The main action in a view.",
-      "html": "<button class=\"ds-btn ds-btn-gold\">Ask the concierge</button>",
-      "css": ".ds-btn { border: 0; display: inline-flex; align-items: center; gap: 16px; border-radius: 999px; padding: 13px 23px; font: 700 0.74rem/1.4 Manrope, Arial, sans-serif; letter-spacing: 0.09em; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; } .ds-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(5, 27, 18, 0.15); } .ds-btn:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; } .ds-btn-gold { background: #ffe088; color: #241a00; }"
+      "html": "<button class=\"ds-btn ds-btn-gold\">Find a room for your dates</button>",
+      "css": ".ds-btn { border: 0; display: inline-flex; align-items: center; gap: 16px; border-radius: 999px; padding: 13px 23px; font: 700 0.75rem/1.4 Manrope, Arial, sans-serif; letter-spacing: 0.09em; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; } .ds-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(5, 27, 18, 0.15); } .ds-btn:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; } .ds-btn-gold { background: #ffe088; color: #241a00; }"
     },
     {
       "name": "Dark Button",
@@ -58,7 +58,7 @@
       "refersTo": "button-dark",
       "description": "Strong secondary action on light pages.",
       "html": "<button class=\"ds-btn-dark\">Send message</button>",
-      "css": ".ds-btn-dark { border: 0; border-radius: 999px; padding: 13px 23px; background: #051b12; color: #fff; font: 700 0.74rem/1.4 Manrope, Arial, sans-serif; letter-spacing: 0.09em; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; } .ds-btn-dark:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(5, 27, 18, 0.15); } .ds-btn-dark:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; }"
+      "css": ".ds-btn-dark { border: 0; border-radius: 999px; padding: 13px 23px; background: #051b12; color: #fff; font: 700 0.75rem/1.4 Manrope, Arial, sans-serif; letter-spacing: 0.09em; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; } .ds-btn-dark:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(5, 27, 18, 0.15); } .ds-btn-dark:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; }"
     },
     {
       "name": "Outline Button",
@@ -66,15 +66,15 @@
       "refersTo": "button-outline",
       "description": "Quiet action next to a primary button.",
       "html": "<button class=\"ds-btn-outline\">View room</button>",
-      "css": ".ds-btn-outline { border: 1px solid #051b12; border-radius: 999px; padding: 13px 23px; background: transparent; color: #051b12; font: 700 0.74rem/1.4 Manrope, Arial, sans-serif; letter-spacing: 0.09em; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; } .ds-btn-outline:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(5, 27, 18, 0.15); } .ds-btn-outline:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; }"
+      "css": ".ds-btn-outline { border: 1px solid #051b12; border-radius: 999px; padding: 13px 23px; background: transparent; color: #051b12; font: 700 0.75rem/1.4 Manrope, Arial, sans-serif; letter-spacing: 0.09em; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; } .ds-btn-outline:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(5, 27, 18, 0.15); } .ds-btn-outline:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; }"
     },
     {
       "name": "Date Field",
       "kind": "input",
       "refersTo": "input-field",
       "description": "Availability search field with an uppercase label.",
-      "html": "<label class=\"ds-field\">Check-in<input class=\"ds-input\" type=\"date\"></label>",
-      "css": ".ds-field { display: flex; flex-direction: column; gap: 7px; font: 700 0.68rem Manrope, Arial, sans-serif; letter-spacing: 0.11em; text-transform: uppercase; color: #424844; } .ds-input { height: 50px; border: 1px solid #d8d8d0; background: #f6f3ee; border-radius: 14px; padding: 0 14px; color: #051b12; font: 1rem Manrope, Arial, sans-serif; letter-spacing: normal; } .ds-input:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; }"
+      "html": "<label class=\"ds-field\">Arrival<input class=\"ds-input\" type=\"date\"></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 7px; font: 700 0.75rem Manrope, Arial, sans-serif; letter-spacing: 0.11em; text-transform: uppercase; color: #424844; } .ds-input { height: 50px; border: 1px solid #d8d8d0; background: #f6f3ee; border-radius: 14px; padding: 0 14px; color: #051b12; font: 1rem Manrope, Arial, sans-serif; letter-spacing: normal; } .ds-input:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; }"
     },
     {
       "name": "Amenity Chip",
@@ -82,7 +82,7 @@
       "refersTo": "chip",
       "description": "Room amenity with a small line icon.",
       "html": "<span class=\"ds-chip\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"><path d=\"M5 12l5 5L20 7\"/></svg>Wi-Fi</span>",
-      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 9px; border-radius: 999px; background: #f6f3ee; color: #051b12; font: 700 0.76rem Manrope, Arial, sans-serif; }"
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 9px; border-radius: 999px; background: #f6f3ee; color: #051b12; font: 700 0.75rem Manrope, Arial, sans-serif; }"
     },
     {
       "name": "Room Card",
@@ -90,7 +90,7 @@
       "refersTo": "room-card",
       "description": "Room summary with photo area, demo badge and footer.",
       "html": "<article class=\"ds-card\"><div class=\"ds-card-photo\"><span class=\"ds-badge\">Fictional demo room</span></div><div class=\"ds-card-body\"><h3>Garden Room</h3><p>Illustrative card from the design system.</p></div></article>",
-      "css": ".ds-card { background: #fff; border: 1px solid #eee9de; border-radius: 28px; overflow: hidden; box-shadow: 0 12px 32px rgba(5, 27, 18, 0.07); max-width: 360px; } .ds-card-photo { height: 160px; background: linear-gradient(135deg, #1a3026, #4c6358); position: relative; } .ds-badge { position: absolute; top: 18px; right: 18px; background: rgba(252, 249, 244, 0.9); color: #051b12; border-radius: 999px; padding: 5px 12px; font: 700 0.7rem Manrope, Arial, sans-serif; } .ds-card-body { padding: 28px; font: 15px/1.65 Manrope, Arial, sans-serif; color: #424844; } .ds-card-body h3 { margin: 0 0 10px; font: 600 1.7rem/1.15 'Playfair Display', Georgia, serif; color: #1c1c19; }"
+      "css": ".ds-card { background: #fff; border: 1px solid #eee9de; border-radius: 28px; overflow: hidden; box-shadow: 0 12px 32px rgba(5, 27, 18, 0.07); max-width: 360px; } .ds-card-photo { height: 160px; background: linear-gradient(135deg, #1a3026, #4c6358); position: relative; } .ds-badge { position: absolute; top: 18px; right: 18px; background: rgba(252, 249, 244, 0.9); color: #051b12; border-radius: 999px; padding: 5px 12px; font: 700 0.75rem Manrope, Arial, sans-serif; } .ds-card-body { padding: 28px; font: 15px/1.65 Manrope, Arial, sans-serif; color: #424844; } .ds-card-body h3 { margin: 0 0 10px; font: 600 1.75rem/1.15 'Playfair Display', Georgia, serif; color: #1c1c19; }"
     }
   ],
   "narrative": {
@@ -107,7 +107,7 @@
       { "name": "The Brass on Cream Rule", "body": "On light backgrounds, gold text and icons use Antique Brass, never Lantern Gold, so they stay readable.", "section": "colors" },
       { "name": "The One Serif Voice Rule", "body": "Playfair Display is for headings and the brand name only. Labels, forms, chat messages and notes always use Manrope.", "section": "typography" },
       { "name": "The Green Shadow Rule", "body": "Shadows are always tinted with Canopy Green, never pure black, so depth stays warm.", "section": "elevation" },
-      { "name": "The Lift on Hover Rule", "body": "Buttons and the chat launcher lift 2–4px on hover. With prefers-reduced-motion: reduce, the lift and transitions are turned off.", "section": "elevation" }
+      { "name": "The Lift on Hover Rule", "body": "Buttons and the chat launcher lift 2–4px on hover and settle back when pressed. With prefers-reduced-motion: reduce, the lift, transitions and the chat entry motion are turned off.", "section": "elevation" }
     ],
     "dos": [
       "Do use only the colour tokens above; add a new token here before using a new colour.",

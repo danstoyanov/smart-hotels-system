@@ -72,8 +72,11 @@ entire stay, and nothing is reserved until the guest explicitly confirms.
   amenities, six policies and explicit inventory from 1 November 2026 to
   30 June 2027.
 - Images: three generated, illustrative photographs in `frontend/assets/images/`
-  (`manor-hero.png`, `manor-suite.png`, `garden-room.png`). They are not photographs
-  of a real hotel. See [the SIN-64 asset notes](docs/history/sin-64-assets.md).
+  (`manor-hero.png`, `manor-suite.png`, `garden-room.png`). The website loads smaller
+  WebP copies of them (since SIN-94); the PNG files are the originals. They are not
+  photographs of a real hotel. See [the SIN-64 asset notes](docs/history/sin-64-assets.md).
+- Brand mark: the fleur on Canopy Green, drawn as inline SVG in the navigation and
+  as the favicon (`frontend/assets/favicon.svg`).
 - Fonts: self-hosted Playfair Display and Manrope in `frontend/assets/fonts/` (OFL).
 - **Not available, and must not be invented:** prices, guest reviews or ratings,
   awards, press, testimonials, contact details, addresses, staff names, newsletter,
