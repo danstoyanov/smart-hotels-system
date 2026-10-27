@@ -5,7 +5,7 @@ const path = require("node:path");
 const hotel = require("../../hotel/revisions/royal-crest-demo.v1.json");
 
 const base = process.env.GUEST_TEST_ORIGIN || "http://127.0.0.1:8061";
-const screenshots = path.resolve("docs/screenshots");
+const screenshots = path.resolve(".local/screenshots");
 fs.mkdirSync(screenshots, { recursive: true });
 
 function payload(section) {

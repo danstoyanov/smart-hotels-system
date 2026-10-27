@@ -6,7 +6,7 @@ const fs = require('node:fs');
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
-    fs.mkdirSync('docs/screenshots', { recursive: true });
+    fs.mkdirSync('.local/screenshots', { recursive: true });
     for (const [name, viewport] of [['desktop', { width: 1440, height: 1200 }], ['mobile', { width: 390, height: 844 }]]) {
       const context = await browser.newContext({ viewport });
       const page = await context.newPage();
@@ -56,7 +56,7 @@ const fs = require('node:fs');
       await page.getByRole('button', { name: 'Reload chat' }).click();
       await page.waitForFunction(() => document.querySelector('#chat-log').textContent.includes('Hello, I would like'));
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-      await page.screenshot({ path: `docs/screenshots/sin-61-${name}.png`, fullPage: true });
+      await page.screenshot({ path: `.local/screenshots/sin-61-${name}.png`, fullPage: true });
       await page.getByRole('button', { name: 'New conversation' }).click();
       await page.getByText('New conversation ready.', { exact: false }).waitFor();
       assert.equal(await page.locator('.chat-message').count(), 0);

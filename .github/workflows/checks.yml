@@ -33,4 +33,5 @@ jobs:
       - run: node --check frontend/assets/chat.js
       - run: node --test frontend/tests/sse.test.mjs
       - run: uv run --locked python -m backend.app.hotel
+      - run: uv run --locked python scripts/check_links.py
       - run: uv run --locked pytest

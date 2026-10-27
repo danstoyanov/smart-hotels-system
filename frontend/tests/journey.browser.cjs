@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const origin = process.env.GUEST_TEST_ORIGIN || 'http://127.0.0.1:8000';
-const screenshots = path.resolve('docs/screenshots');
+const screenshots = path.resolve('.local/screenshots');
 fs.mkdirSync(screenshots, { recursive: true });
 
 async function run(width, dates, keyboard) {

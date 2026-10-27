@@ -6,7 +6,7 @@ const fs = require('node:fs');
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
-    fs.mkdirSync('docs/screenshots', { recursive: true });
+    fs.mkdirSync('.local/screenshots', { recursive: true });
     for (const [name, viewport] of [['desktop', { width: 1440, height: 1200 }], ['mobile', { width: 390, height: 844 }]]) {
       const context = await browser.newContext({ viewport });
       const page = await context.newPage();
@@ -49,7 +49,7 @@ const fs = require('node:fs');
       await page.getByRole('button', { name: 'Open concierge chat' }).click();
       assert.equal(await page.locator('#chat-log a').count(), 1);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-      await page.screenshot({ path: `docs/screenshots/sin-62-${name}.png`, fullPage: true });
+      await page.screenshot({ path: `.local/screenshots/sin-62-${name}.png`, fullPage: true });
       failure = true;
       await page.getByLabel('Your message', { exact: true }).fill('A failed question');
       await page.getByRole('button', { name: 'Send message' }).click();

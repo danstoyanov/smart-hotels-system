@@ -206,7 +206,7 @@ NODE_PATH=.local/node_modules node frontend/tests/journey.browser.cjs
 ```
 
 These scripts use fixed November 2026 dates, so they only pass while those dates
-are in the future. They also overwrite screenshots in `docs/screenshots/`.
+are in the future. They save screenshots in `.local/screenshots/`, which Git ignores.
 
 ## Configuration
 
@@ -328,7 +328,8 @@ the confirmed demo choices.
 | [infra/cloud-demo.md](infra/cloud-demo.md) | Approved cloud configuration and acceptance record |
 | [docs/m1-handover.md](docs/m1-handover.md), [docs/m3-handover.md](docs/m3-handover.md) | Milestone handovers with evidence and limits |
 | `docs/sin-*-verification.md` | Check records for each task |
-| [AGENTS.md](AGENTS.md) | Workflow rules for coding agents in this repository |
+| [AGENTS.md](AGENTS.md) | Lasting rules for coding agents in this repository |
+| [docs/workflow.md](docs/workflow.md) | Task checklist, Linear issue template and milestone review |
 
 ## License
 
