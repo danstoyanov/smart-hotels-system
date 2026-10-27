@@ -13,6 +13,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "SSE browser-module tests failed." }
     uv run --locked python -m backend.app.hotel
     if ($LASTEXITCODE -ne 0) { throw "Hotel data validation failed." }
+    uv run --locked python scripts/check_links.py
+    if ($LASTEXITCODE -ne 0) { throw "Documentation link check failed." }
     uv run --locked pytest
     if ($LASTEXITCODE -ne 0) { throw "Tests failed." }
 } finally { Pop-Location }

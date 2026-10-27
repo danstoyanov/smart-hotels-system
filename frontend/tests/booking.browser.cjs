@@ -4,7 +4,7 @@ const path = require("node:path");
 const hotel = require("../../hotel/revisions/royal-crest-demo.v1.json");
 
 const base = process.env.GUEST_TEST_ORIGIN || "http://127.0.0.1:8061";
-const screenshots = path.resolve("docs/screenshots");
+const screenshots = path.resolve(".local/screenshots");
 const selected =
   "/review?room=manor-suite&check_in=2026-11-01&check_out=2026-11-03&guests=2";
 const booking = {

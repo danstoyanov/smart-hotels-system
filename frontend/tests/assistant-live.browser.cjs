@@ -57,7 +57,7 @@ const fs = require('node:fs');
     for (const [name, viewport] of [['desktop', { width: 1440, height: 1200 }], ['mobile', { width: 390, height: 844 }]]) {
       await page.setViewportSize(viewport);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-      await page.screenshot({ path: `docs/screenshots/sin-62-final-live-${name}.png`, fullPage: true });
+      await page.screenshot({ path: `.local/screenshots/sin-62-final-live-${name}.png`, fullPage: true });
     }
     await page.getByRole('button', { name: 'New conversation' }).click();
     await page.getByText('New conversation ready.', { exact: false }).waitFor();

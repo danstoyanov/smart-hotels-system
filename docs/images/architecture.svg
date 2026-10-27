@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="552" viewBox="0 0 960 552" role="img" aria-labelledby="title desc" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title id="title">Smart Hotels System architecture</title>
+  <desc id="desc">The guest browser talks to one FastAPI app. For a chat turn, FastAPI starts a new ADK agent that calls Gemini on Vertex AI or a local stub. The agent's tools read the hotel files and search availability in PostgreSQL. FastAPI stores sessions, turns and demo bookings in PostgreSQL. A demo reservation is saved only after explicit confirmation on the review page. Hotel files are imported into PostgreSQL as inventory.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#4c6358"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#9a6b1f"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="552" rx="12" fill="#fcf9f4"/>
+
+  <g fill="#ffffff" stroke="#4c6358" stroke-width="1.5">
+    <rect x="24" y="180" width="180" height="130" rx="8"/>
+    <rect x="300" y="110" width="220" height="270" rx="8" fill="#f0ede9"/>
+    <rect x="600" y="40" width="160" height="76" rx="8"/>
+    <rect x="800" y="40" width="136" height="76" rx="8"/>
+    <rect x="600" y="170" width="160" height="90" rx="8"/>
+    <rect x="800" y="170" width="136" height="90" rx="8"/>
+    <path d="M600 332 V428 A168 12 0 0 0 936 428 V332"/>
+    <ellipse cx="768" cy="332" rx="168" ry="12"/>
+  </g>
+
+  <g fill="#1c1c19" text-anchor="middle">
+    <text x="114" y="222" font-size="15" font-weight="600">Guest browser</text>
+    <text x="114" y="248" font-size="13">Website, rooms and</text>
+    <text x="114" y="266" font-size="13">review page</text>
+    <text x="114" y="290" font-size="13">Concierge chat</text>
+
+    <text x="410" y="140" font-size="15" font-weight="600">FastAPI · one origin</text>
+    <g font-size="12" font-family="Consolas, 'SFMono-Regular', Menlo, monospace">
+      <text x="410" y="174">Pages and /assets</text>
+      <text x="410" y="198">/api/session, /api/history</text>
+      <text x="410" y="222">/api/chat (SSE)</text>
+      <text x="410" y="246">/api/availability</text>
+      <text x="410" y="270">/api/hotel/*</text>
+      <text x="410" y="294">/api/bookings</text>
+    </g>
+    <text x="410" y="336" font-size="12" fill="#424844">Checks: exact Origin</text>
+    <text x="410" y="354" font-size="12" fill="#424844">and owned session cookie</text>
+
+    <text x="680" y="72" font-size="15" font-weight="600">ADK agent</text>
+    <text x="680" y="94" font-size="12" fill="#424844">new for every reply</text>
+
+    <text x="868" y="66" font-size="15" font-weight="600">Gemini</text>
+    <text x="868" y="86" font-size="12" fill="#424844">Vertex AI or</text>
+    <text x="868" y="102" font-size="12" fill="#424844">local stub</text>
+
+    <text x="680" y="196" font-size="15" font-weight="600">Assistant tools</text>
+    <g font-size="11" font-family="Consolas, 'SFMono-Regular', Menlo, monospace">
+      <text x="680" y="218">list_information</text>
+      <text x="680" y="234">read_information</text>
+      <text x="680" y="250">search_availability</text>
+    </g>
+
+    <text x="868" y="204" font-size="15" font-weight="600">hotel/ files</text>
+    <text x="868" y="226" font-size="12" fill="#424844">fictional demo data,</text>
+    <text x="868" y="243" font-size="12" fill="#424844">validated versions</text>
+
+    <text x="768" y="374" font-size="15" font-weight="600">PostgreSQL</text>
+    <text x="768" y="398" font-size="12" fill="#424844">guest sessions · turns with sources</text>
+    <text x="768" y="416" font-size="12" fill="#424844">inventory nights · demo bookings</text>
+  </g>
+
+  <g fill="none" stroke="#4c6358" stroke-width="1.5" marker-end="url(#arrow)">
+    <path d="M204 225 H298"/>
+    <path d="M520 140 H568 V78 H598"/>
+    <path d="M760 78 H798"/>
+    <path d="M680 116 V168"/>
+    <path d="M760 215 H798"/>
+    <path d="M680 260 V318"/>
+    <path d="M520 380 H598"/>
+  </g>
+  <path d="M868 260 V318" fill="none" stroke="#4c6358" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <path d="M204 285 H298" fill="none" stroke="#9a6b1f" stroke-width="2" marker-end="url(#arrow-accent)"/>
+
+  <g font-size="11" fill="#424844">
+    <text x="251" y="216" text-anchor="middle">fetch / SSE</text>
+    <text x="251" y="304" text-anchor="middle" fill="#9a6b1f">Confirm demo</text>
+    <text x="251" y="318" text-anchor="middle" fill="#9a6b1f">reservation</text>
+    <text x="544" y="130" text-anchor="middle">chat</text>
+    <text x="688" y="294">availability</text>
+    <text x="860" y="294" text-anchor="end">inventory import</text>
+    <text x="559" y="372" text-anchor="middle">read / write</text>
+  </g>
+
+  <line x1="24" y1="466" x2="936" y2="466" stroke="#c2c8c3"/>
+  <g font-size="13" fill="#1c1c19">
+    <text x="24" y="492"><tspan fill="#9a6b1f" font-weight="600">Gold arrow:</tspan> the assistant has no booking tool. A demo reservation is saved only after the guest confirms it.</text>
+    <text x="24" y="514"><tspan font-weight="600">Dashed arrow:</tspan> <tspan font-family="Consolas, 'SFMono-Regular', Menlo, monospace" font-size="12">python -m backend.app.inventory</tspan> imports the active hotel/ revision.</text>
+    <text x="24" y="536"><tspan font-weight="600">Cloud:</tspan> one container on Cloud Run, Cloud SQL for PostgreSQL, Gemini through Vertex AI, restricted IAP access.</text>
+  </g>
+</svg>
