@@ -270,8 +270,8 @@ hotel/               fictional demo hotel data and inventory (see hotel/README.m
 evals/               representative questions for live assistant checks
 scripts/             PowerShell helpers: start, check, test
 infra/               Google Cloud deployment files and operations runbook
-design/              visual design references
-docs/                technical notes, handovers and verification records
+design/              visual reference material only, not part of the app (see design/README.md)
+docs/                technical notes, workflow and handovers; task records in docs/history/
 compose.yaml         local PostgreSQL and the disposable test database
 Dockerfile           one container image for the cloud deployment
 ```
@@ -335,5 +335,10 @@ the confirmed demo choices.
 
 ## License
 
-No license has been chosen for this repository yet. Ask the owner before you
-reuse the code outside this project.
+This project is released under the [MIT License](LICENSE). Copyright (c) 2026
+Dan Stoyanov.
+
+The hotel, its rooms, policies and reservations are fictional. The photographs in
+`frontend/assets/images/` were generated for this demo. The files in `design/` are
+visual reference material supplied for the website design; they are not part of
+the application. See [design/README.md](design/README.md).
