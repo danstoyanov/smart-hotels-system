@@ -88,9 +88,13 @@ async function api(path, options = {}) {
   return response;
 }
 
-function message(label, text, sources = []) {
+// Guest and concierge messages get different styles. Only messages sent now
+// get the entry motion, so reloading saved history does not replay it.
+function message(label, text, sources = [], { guest = false, fresh = false } = {}) {
   const item = document.createElement('div');
   item.className = 'chat-message';
+  item.classList.toggle('is-guest', guest);
+  item.classList.toggle('is-new', fresh);
   const name = document.createElement('strong');
   name.textContent = label;
   const body = document.createElement('p');
@@ -122,7 +126,7 @@ async function history() {
   const data = await (await api('/api/history')).json();
   log.replaceChildren();
   for (const turn of data.turns) {
-    message('You', turn.question);
+    message('You', turn.question, [], { guest: true });
     message('Demo assistant', turn.answer, turn.sources || []);
   }
   document.querySelector('#chat-empty').hidden = data.turns.length > 0;
@@ -156,8 +160,8 @@ form.addEventListener('submit', async event => {
   controller = new AbortController();
   controls(true);
   document.querySelector('#chat-empty').hidden = true;
-  message('You', question);
-  const answer = message('Demo assistant · writing…', '');
+  message('You', question, [], { guest: true, fresh: true });
+  const answer = message('Demo assistant · writing…', '', [], { fresh: true });
   status.textContent = 'Checking hotel information…';
   let result = false;
   let done = false;
