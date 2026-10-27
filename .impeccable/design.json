@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T19:30:00Z",
+  "title": "Design System: Royal Crest Manor",
+  "extensions": {
+    "colorMeta": {
+      "green": { "role": "primary", "displayName": "Canopy Green", "canonical": "#051b12", "tonalRamp": ["#051b12", "#1a3026", "#354c40", "#4c6358", "#80988b", "#b3ccbe", "#cfe9d9", "#eef6f1"] },
+      "green-soft": { "role": "primary", "displayName": "Deep Canopy", "canonical": "#1a3026" },
+      "gold": { "role": "secondary", "displayName": "Lantern Gold", "canonical": "#ffe088", "tonalRamp": ["#241a00", "#574500", "#735c00", "#b18000", "#e9c349", "#ffe088", "#fdf0c4", "#fff8e1"] },
+      "gold-deep": { "role": "secondary", "displayName": "Antique Brass", "canonical": "#735c00" },
+      "gold-focus": { "role": "secondary", "displayName": "Focus Amber", "canonical": "#b18000" },
+      "cream": { "role": "neutral", "displayName": "Manor Cream", "canonical": "#fcf9f4" },
+      "paper": { "role": "neutral", "displayName": "Terrace Paper", "canonical": "#f6f3ee" },
+      "white": { "role": "neutral", "displayName": "White", "canonical": "#ffffff" },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#1c1c19" },
+      "muted": { "role": "neutral", "displayName": "Moss Grey", "canonical": "#424844" },
+      "line": { "role": "neutral", "displayName": "Stone Line", "canonical": "#d8d8d0" },
+      "card-line": { "role": "neutral", "displayName": "Card Edge", "canonical": "#eee9de" },
+      "error": { "role": "error", "displayName": "Brick", "canonical": "#8c281e" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero h1 only; italic words in Lantern Gold." },
+      "headline": { "displayName": "Headline", "purpose": "Section h2 headings." },
+      "title": { "displayName": "Title", "purpose": "Card and panel headings." },
+      "body": { "displayName": "Body", "purpose": "All running text, max 65ch." },
+      "label": { "displayName": "Label", "purpose": "Uppercase buttons, navigation, eyebrows, form labels and tags." }
+    },
+    "shadows": [
+      { "name": "card-rest", "value": "0 12px 32px rgba(5, 27, 18, 0.07)", "purpose": "Room cards at rest." },
+      { "name": "tile-rest", "value": "0 8px 25px rgba(5, 27, 18, 0.04)", "purpose": "Bento tiles." },
+      { "name": "button-hover", "value": "0 12px 28px rgba(5, 27, 18, 0.15)", "purpose": "Buttons on hover, with a 2px lift." },
+      { "name": "nav-float", "value": "0 18px 40px rgba(5, 27, 18, 0.16)", "purpose": "Floating glass navigation." },
+      { "name": "panel-float", "value": "0 22px 50px rgba(5, 27, 18, 0.12)", "purpose": "Glass search panel over the hero." },
+      { "name": "chat-window", "value": "0 24px 65px rgba(5, 27, 18, 0.3)", "purpose": "Open concierge chat window." }
+    ],
+    "motion": [
+      { "name": "button-lift", "value": "transform 0.2s, background 0.2s, box-shadow 0.2s", "purpose": "Button hover lift; off under prefers-reduced-motion." },
+      { "name": "launcher-lift", "value": "transform 0.2s ease-out", "purpose": "Chat launcher 4px hover lift; off under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "phone", "value": "600px" },
+      { "name": "tablet", "value": "850px" },
+      { "name": "laptop", "value": "1100px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Gold Button",
+      "kind": "button",
+      "refersTo": "button-gold",
+      "description": "The main action in a view.",
+      "html": "<button class=\"ds-btn ds-btn-gold\">Ask the concierge</button>",
+      "css": ".ds-btn { border: 0; display: inline-flex; align-items: center; gap: 16px; border-radius: 999px; padding: 13px 23px; font: 700 0.74rem/1.4 Manrope, Arial, sans-serif; letter-spacing: 0.09em; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; } .ds-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(5, 27, 18, 0.15); } .ds-btn:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; } .ds-btn-gold { background: #ffe088; color: #241a00; }"
+    },
+    {
+      "name": "Dark Button",
+      "kind": "button",
+      "refersTo": "button-dark",
+      "description": "Strong secondary action on light pages.",
+      "html": "<button class=\"ds-btn-dark\">Send message</button>",
+      "css": ".ds-btn-dark { border: 0; border-radius: 999px; padding: 13px 23px; background: #051b12; color: #fff; font: 700 0.74rem/1.4 Manrope, Arial, sans-serif; letter-spacing: 0.09em; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; } .ds-btn-dark:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(5, 27, 18, 0.15); } .ds-btn-dark:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Quiet action next to a primary button.",
+      "html": "<button class=\"ds-btn-outline\">View room</button>",
+      "css": ".ds-btn-outline { border: 1px solid #051b12; border-radius: 999px; padding: 13px 23px; background: transparent; color: #051b12; font: 700 0.74rem/1.4 Manrope, Arial, sans-serif; letter-spacing: 0.09em; text-transform: uppercase; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; } .ds-btn-outline:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(5, 27, 18, 0.15); } .ds-btn-outline:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; }"
+    },
+    {
+      "name": "Date Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Availability search field with an uppercase label.",
+      "html": "<label class=\"ds-field\">Check-in<input class=\"ds-input\" type=\"date\"></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 7px; font: 700 0.68rem Manrope, Arial, sans-serif; letter-spacing: 0.11em; text-transform: uppercase; color: #424844; } .ds-input { height: 50px; border: 1px solid #d8d8d0; background: #f6f3ee; border-radius: 14px; padding: 0 14px; color: #051b12; font: 1rem Manrope, Arial, sans-serif; letter-spacing: normal; } .ds-input:focus-visible { outline: 3px solid #b18000; outline-offset: 4px; }"
+    },
+    {
+      "name": "Amenity Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Room amenity with a small line icon.",
+      "html": "<span class=\"ds-chip\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"><path d=\"M5 12l5 5L20 7\"/></svg>Wi-Fi</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 9px; border-radius: 999px; background: #f6f3ee; color: #051b12; font: 700 0.76rem Manrope, Arial, sans-serif; }"
+    },
+    {
+      "name": "Room Card",
+      "kind": "card",
+      "refersTo": "room-card",
+      "description": "Room summary with photo area, demo badge and footer.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-card-photo\"><span class=\"ds-badge\">Fictional demo room</span></div><div class=\"ds-card-body\"><h3>Garden Room</h3><p>Illustrative card from the design system.</p></div></article>",
+      "css": ".ds-card { background: #fff; border: 1px solid #eee9de; border-radius: 28px; overflow: hidden; box-shadow: 0 12px 32px rgba(5, 27, 18, 0.07); max-width: 360px; } .ds-card-photo { height: 160px; background: linear-gradient(135deg, #1a3026, #4c6358); position: relative; } .ds-badge { position: absolute; top: 18px; right: 18px; background: rgba(252, 249, 244, 0.9); color: #051b12; border-radius: 999px; padding: 5px 12px; font: 700 0.7rem Manrope, Arial, sans-serif; } .ds-card-body { padding: 28px; font: 15px/1.65 Manrope, Arial, sans-serif; color: #424844; } .ds-card-body h3 { margin: 0 0 10px; font: 600 1.7rem/1.15 'Playfair Display', Georgia, serif; color: #1c1c19; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Garden Terrace",
+    "overview": "The site feels like stepping onto the stone terrace of a manor at golden hour: deep canopy green, warm cream stone and a little lantern gold. It is calm and spacious, with large serif headlines, generous whitespace and photographs that do the atmospheric work. Nothing shouts. Gold is a small, warm light, not a fill. Components are soft and restrained: pill-shaped buttons and chips, softly rounded cards, gentle green-tinted shadows and a slight lift on hover. Glass panels (the floating navigation and the search panel) sit over the hero photograph like glass in a garden room. Every fictional room and demo reservation carries a visible label, and that label is part of the design, not a footnote.",
+    "keyCharacteristics": [
+      "Deep green and warm cream, with gold used sparingly for accents and focus.",
+      "Playfair Display headlines over a quiet Manrope body.",
+      "Pill buttons, 28px cards, soft green shadows, light glass over photographs.",
+      "Calm density: one clear next step per section."
+    ],
+    "rules": [
+      { "name": "The Lantern Rule", "body": "Lantern Gold is a light, not a wall. Use it for one primary action per view, small accents and text on green; never for large backgrounds.", "section": "colors" },
+      { "name": "The Brass on Cream Rule", "body": "On light backgrounds, gold text and icons use Antique Brass, never Lantern Gold, so they stay readable.", "section": "colors" },
+      { "name": "The One Serif Voice Rule", "body": "Playfair Display is for headings and the brand name only. Labels, forms, chat messages and notes always use Manrope.", "section": "typography" },
+      { "name": "The Green Shadow Rule", "body": "Shadows are always tinted with Canopy Green, never pure black, so depth stays warm.", "section": "elevation" },
+      { "name": "The Lift on Hover Rule", "body": "Buttons and the chat launcher lift 2–4px on hover. With prefers-reduced-motion: reduce, the lift and transitions are turned off.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use only the colour tokens above; add a new token here before using a new colour.",
+      "Do keep one Lantern Gold primary action per view.",
+      "Do keep the \"Fictional demo room\" and \"Demo reservation\" labels visible wherever rooms or reservations appear.",
+      "Do keep the 3px Focus Amber outline on every interactive element.",
+      "Do turn off lifts and transitions under prefers-reduced-motion: reduce."
+    ],
+    "donts": [
+      "Don't use Lantern Gold for text or icons on cream or white backgrounds.",
+      "Don't use pure black shadows or hard, dark drop shadows.",
+      "Don't use Playfair Display for labels, form fields or chat messages.",
+      "Don't add remote images or fonts; use the three photographs and the self-hosted fonts in frontend/assets/.",
+      "Don't show prices, ratings, awards or contact details as visual decoration."
+    ]
+  }
+}
