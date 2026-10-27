@@ -147,39 +147,29 @@ function policyCard(item) {
   const body = item.body.startsWith(demoPrefix)
     ? item.body.slice(demoPrefix.length).trim()
     : item.body;
-  const list = node("ul", "policy-points");
-  body
+  const points = body
     .split(/(?<=\.)\s+(?=[A-Z])/)
-    .forEach((sentence) => list.append(node("li", "", sentence)));
+    .map((sentence) => node("li", "", sentence));
+  // Long policies show two points first, so the section stays short on phones.
+  const list = node("ul", "policy-points");
+  list.append(...points.slice(0, 2));
   card.append(head, list);
+  if (points.length > 2) {
+    const more = node("details", "policy-more");
+    const rest = node("ul", "policy-points");
+    rest.append(...points.slice(2));
+    more.append(node("summary", "", `Show all ${points.length} points`), rest);
+    card.append(more);
+  }
   return card;
 }
 function renderInventory(nights) {
   const days = [...new Set((nights || []).map((item) => item.night))].sort();
-  const stats = [
-    ["Demo rooms", String(state.rooms.length), "From the reviewed demo data"],
-    [
-      "Largest room",
-      `${Math.max(0, ...state.rooms.map((room) => room.capacity))} guests`,
-      "Every person counts, infants too",
-    ],
-    ["Amenities", String(state.amenities.length), "Recorded for this hotel"],
-  ];
-  if (days.length) {
-    const range = `${formatNight(days[0])} – ${formatNight(days.at(-1))}`;
-    stats.push(["Sample nights", String(days.length), range]);
-    $("#inventory-note").textContent =
-      `Sample nights: ${range}. A search does not hold a room.`;
-    $("#footer-range").textContent = `Sample nights: ${range}`;
-  }
-  $("#stats-list").replaceChildren(
-    ...stats.map(([label, value, note]) => {
-      const item = node("div", "stat");
-      item.append(node("dt", "", label), node("dd", "stat-value", value));
-      item.append(node("dd", "stat-note", note));
-      return item;
-    }),
-  );
+  if (!days.length) return;
+  const range = `${formatNight(days[0])} – ${formatNight(days.at(-1))}`;
+  $("#inventory-note").textContent =
+    `Sample nights: ${range}. A search does not hold a room.`;
+  $("#footer-range").textContent = `Sample nights: ${range}`;
 }
 async function read(path) {
   const response = await fetch(path, {
@@ -216,11 +206,17 @@ function renderBooking(target, booking) {
   const card = node("div", "review-card confirmation-card");
   if (room) card.append(image(room));
   const text = node("div", "review-copy");
+  // The reference is the one thing to keep, so it gets its own block.
+  const reference = node("p", "booking-reference");
+  reference.append(
+    node("span", "booking-reference-label", "Reference: "),
+    node("strong", "", booking.reference),
+  );
   text.append(
     node("span", "eyebrow", "Demo reservation confirmed"),
     node("h2", "", room?.name || booking.room_id),
     node("p", "", `${booking.check_in} to ${booking.check_out} · ${booking.guests} guests`),
-    node("p", "booking-reference", `Reference: ${booking.reference}`),
+    reference,
     node("p", "small-note", booking.message),
     node("p", "small-note", "No price or payment is part of this demo."),
     link("Return to rooms", "/#rooms", "button button-outline"),
@@ -230,6 +226,20 @@ function renderBooking(target, booking) {
   $("#review-title").textContent = "Your demo reservation";
   $(".review-lead").textContent =
     "Your selected room is reserved in this fictional demo. This is not a real hotel booking.";
+  markStepsDone();
+}
+const doneSteps = [
+  "Every night of the stay was available.",
+  "Your demo reservation is saved.",
+  "Only this browser session can open it.",
+];
+function markStepsDone() {
+  const steps = $(".review-steps");
+  steps.classList.add("is-done");
+  $("#steps-title").textContent = "Demo reservation saved";
+  steps.querySelectorAll("li span").forEach((item, index) => {
+    item.textContent = doneSteps[index];
+  });
 }
 function renderCatalogue() {
   const list = $("#room-list");
@@ -517,7 +527,6 @@ async function init() {
     renderCatalogue();
     renderInventory((await inventory)?.data);
   } catch {
-    $("#stats-list").replaceChildren();
     for (const selector of ["#room-list", "#amenity-list", "#policy-list"]) {
       errorText(
         $(selector),

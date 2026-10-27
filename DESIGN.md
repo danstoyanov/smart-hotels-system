@@ -14,6 +14,7 @@ colors:
   muted: "#424844"
   line: "#d8d8d0"
   card-line: "#eee9de"
+  gold-pale: "#fdf0c4"
   error: "#8c281e"
 typography:
   display:
@@ -28,20 +29,41 @@ typography:
     fontWeight: 600
     lineHeight: 1.15
     letterSpacing: "-0.01em"
+  title-lg:
+    fontFamily: "Playfair Display, Georgia, serif"
+    fontSize: "1.75rem"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "-0.01em"
   title:
     fontFamily: "Playfair Display, Georgia, serif"
     fontSize: "1.35rem"
     fontWeight: 600
     lineHeight: 1.15
     letterSpacing: "-0.01em"
+  lead:
+    fontFamily: "Manrope, Arial, sans-serif"
+    fontSize: "1.125rem"
+    fontWeight: 400
+    lineHeight: 1.65
+  input:
+    fontFamily: "Manrope, Arial, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 400
+    lineHeight: 1.65
   body:
     fontFamily: "Manrope, Arial, sans-serif"
     fontSize: "15px"
     fontWeight: 400
     lineHeight: 1.65
+  small:
+    fontFamily: "Manrope, Arial, sans-serif"
+    fontSize: "0.875rem"
+    fontWeight: 400
+    lineHeight: 1.55
   label:
     fontFamily: "Manrope, Arial, sans-serif"
-    fontSize: "0.7rem"
+    fontSize: "0.75rem"
     fontWeight: 700
     letterSpacing: "0.1em"
 rounded:
@@ -138,8 +160,9 @@ stone, lantern light.
 - **Deep Canopy** (`green-soft`): secondary dark surfaces next to Canopy Green.
 
 ### Secondary
-- **Lantern Gold** (`gold`): the primary call to action ("Ask the concierge",
-  search), italic hero words and gold text on dark backgrounds.
+- **Lantern Gold** (`gold`): the one primary call to action per view ("Find a room
+  for your dates" in the hero, "Confirm demo reservation" on review), italic hero
+  words and gold text on dark backgrounds.
 - **Antique Brass** (`gold-deep`): eyebrows, feature icons and link hover on light
   backgrounds, where Lantern Gold has too little contrast.
 - **Focus Amber** (`gold-focus`): the 3px keyboard focus outline only.
@@ -151,6 +174,7 @@ stone, lantern light.
 - **Ink** (`ink`): body text.
 - **Moss Grey** (`muted`): secondary text, labels and notes.
 - **Stone Line** (`line`) and **Card Edge** (`card-line`): borders and dividers.
+- **Pale Lantern** (`gold-pale`): the fill of the muted "Not set" tag only.
 - **Brick** (`error`): error notices only.
 
 ### Named Rules
@@ -173,10 +197,17 @@ self-hosted variable fonts in `frontend/assets/fonts/`.
 - **Display** (600, fluid 2.6rem–5.1rem, 1.15): the hero `h1` only. Italic words
   in Lantern Gold at weight 400 add warmth.
 - **Headline** (600, fluid 1.9rem–2.7rem, 1.15): section `h2` headings.
-- **Title** (600, 1.35rem; room titles 1.7rem): card and panel headings.
-- **Body** (400, 15px, 1.65): all running text. Paragraphs stop at 65ch.
-- **Label** (700, 0.64rem–0.74rem, letter-spacing 0.09em–0.19em, uppercase):
-  buttons, navigation, eyebrows, form labels and tags.
+- **Title Large** (600, 1.75rem): room titles, the search heading and review cards.
+- **Title** (600, 1.35rem): card and panel headings.
+- **Lead** (400, 1.125rem): hero text and the first paragraph of inner pages.
+- **Body** (400, 15px, 1.65): all running text. Paragraphs stop at 65ch. Form
+  inputs use 1rem so phones do not zoom in.
+- **Small** (400, 0.875rem): notes, chips, policy points and chat details.
+- **Label** (700, 0.75rem, letter-spacing 0.09em–0.19em, uppercase): buttons,
+  navigation, eyebrows, form labels and tags. Functional text is never smaller.
+
+In `site.css` these steps are the `--text-*` variables, and the corner radii are
+the `--radius-*` variables. Use them instead of literal sizes.
 
 ### Named Rules
 **The One Serif Voice Rule.** Playfair Display is for headings and the brand name
@@ -252,8 +283,9 @@ are circles. Icons are thin line icons (18px, 1.6 stroke, round caps).
 ### Navigation
 - A floating glass pill over the hero: translucent cream, blur, soft shadow and
   the round brand mark (gold fleur on Canopy Green). Links are uppercase labels
-  that turn Antique Brass on hover. Below 850px the bar wraps and its corners
-  soften to 25px.
+  that turn Antique Brass on hover. The "Check availability" button in the bar is
+  Dark, so the hero keeps the only gold action. Below 850px the bar wraps and its
+  corners soften to 28px.
 
 ### Concierge Chat (signature component)
 - A round gold launcher with a speech bubble in the bottom-right corner opens a
