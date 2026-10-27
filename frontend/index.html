@@ -43,9 +43,14 @@
               Explore Royal Crest Manor’s demo rooms, hotel information and
               sample availability in one calm place.
             </p>
-            <a class="button button-gold" href="#rooms"
-              >Explore the rooms <span aria-hidden="true">↗</span></a
-            >
+            <div class="hero-actions">
+              <a class="button button-gold" href="#rooms"
+                >Explore the rooms <span aria-hidden="true">↗</span></a
+              >
+              <button class="button button-glass" type="button" data-open-chat>
+                Ask the concierge
+              </button>
+            </div>
           </div>
         </section>
         <section
@@ -56,10 +61,7 @@
           <div class="search-intro">
             <span class="eyebrow">Plan your stay</span>
             <h2 id="search-title">Find a room for your dates</h2>
-            <p>
-              Sample inventory covers 1–7 November 2026. A search does not hold
-              a room.
-            </p>
+            <p id="inventory-note">A search does not hold a room.</p>
           </div>
           <form id="availability-form" class="booking-bar">
             <label
@@ -94,6 +96,12 @@
             Choose dates and guests to check the demo inventory.
           </div>
           <div id="availability-results" class="result-grid"></div>
+        </section>
+        <section class="stats-band wrap" aria-labelledby="stats-title">
+          <h2 id="stats-title" class="visually-hidden">The demo in numbers</h2>
+          <dl id="stats-list" class="stats-list">
+            <div><dt>Demo rooms</dt><dd>…</dd></div>
+          </dl>
         </section>
         <section
           class="rooms-section section-space"
@@ -130,8 +138,26 @@
                 here.
               </p>
             </div>
-            <div id="amenity-list" class="fact-grid">
-              <p role="status">Loading amenities…</p>
+            <div class="bento-grid">
+              <div id="amenity-list" class="bento-amenities">
+                <p role="status">Loading amenities…</p>
+              </div>
+              <article class="bento-concierge">
+                <span class="bento-orb" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" focusable="false">
+                    <path d="M16 3.5 18.7 13.3 28.5 16l-9.8 2.7L16 28.5l-2.7-9.8L3.5 16l9.8-2.7L16 3.5Z" fill="currentColor" />
+                  </svg>
+                </span>
+                <span class="eyebrow">Demo concierge</span>
+                <h3>Questions before you book?</h3>
+                <p>
+                  The concierge answers from the same hotel information shown on
+                  this page and says when something is not recorded.
+                </p>
+                <button class="button button-dark" type="button" data-open-chat>
+                  Ask the concierge
+                </button>
+              </article>
             </div>
           </div>
         </section>
@@ -149,6 +175,27 @@
             </div>
             <div id="policy-list" class="policy-grid">
               <p role="status">Loading stay information…</p>
+            </div>
+          </div>
+        </section>
+        <section class="cta-band" aria-labelledby="cta-title">
+          <div class="wrap cta-inner">
+            <div>
+              <span class="eyebrow light">Begin your demo stay</span>
+              <h2 id="cta-title">Plan a quiet stay<br />at the <em>manor</em></h2>
+              <p>
+                Check the sample nights, review a room and confirm a clearly
+                labelled demo reservation. Nothing is charged and no real room
+                is booked.
+              </p>
+            </div>
+            <div class="cta-actions">
+              <a class="button button-gold" href="/#availability"
+                >Check the sample nights</a
+              >
+              <button class="button button-glass" type="button" data-open-chat>
+                Ask the concierge
+              </button>
             </div>
           </div>
         </section>
@@ -175,7 +222,27 @@
           Review the demo stay before you confirm. A room is not held until
           confirmation succeeds. This is not a real hotel booking.
         </p>
-        <div id="review-detail" role="status">Checking this selection…</div>
+        <div class="review-layout">
+          <div id="review-detail" role="status">Checking this selection…</div>
+          <aside class="review-steps" aria-labelledby="steps-title">
+            <h2 id="steps-title">How the demo reservation works</h2>
+            <ol>
+              <li>
+                <strong>Check</strong>
+                <span>This page checks every night of the stay again.</span>
+              </li>
+              <li>
+                <strong>Confirm</strong>
+                <span>Nothing is saved until you press the confirm button.</span>
+              </li>
+              <li>
+                <strong>Keep the reference</strong>
+                <span>Only this browser session can open the demo reservation.</span>
+              </li>
+            </ol>
+            <p class="small-note">No price, payment or real hotel booking is part of this demo.</p>
+          </aside>
+        </div>
       </section>
     </main>
     <div class="concierge-widget">
@@ -233,14 +300,32 @@
         </div>
       </section>
     </div>
-    <footer>
-      <div class="wrap footer-inner">
-        <div>
-          <strong>Royal Crest Manor</strong>
-          <p>Fictional hotel · Demo only</p>
+    <footer class="site-footer">
+      <div class="wrap footer-grid">
+        <div class="footer-brand">
+          <strong id="footer-name">Royal Crest Manor</strong>
+          <p>
+            A fictional hotel for this demo. Rooms, policies and reservations
+            are sample data, not a real business.
+          </p>
         </div>
-        <p>Property time: <span id="timezone">Europe/Kyiv</span></p>
-        <a href="/#policies">Stay information</a>
+        <nav class="footer-column" aria-label="Footer navigation">
+          <h2>Explore</h2>
+          <a href="/#rooms">Rooms</a>
+          <a href="/#amenities">Amenities</a>
+          <a href="/#policies">Stay information</a>
+          <a href="/#availability">Availability</a>
+        </nav>
+        <div class="footer-column">
+          <h2>Your stay</h2>
+          <p>Property time: <span id="timezone">Europe/Kyiv</span></p>
+          <p id="footer-range">Sample nights load with the hotel data.</p>
+          <p>No prices or payments.</p>
+        </div>
+      </div>
+      <div class="wrap footer-bottom">
+        <span>Fictional hotel · Demo only</span>
+        <span>Reservations made here are demo reservations.</span>
       </div>
     </footer>
   </body>

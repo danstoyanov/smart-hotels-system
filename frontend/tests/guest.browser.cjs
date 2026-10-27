@@ -31,6 +31,11 @@ function payload(section) {
         deviceScaleFactor: 1,
       });
       const errors = [];
+      let bookingPosts = 0;
+      page.on("request", (request) => {
+        if (request.method() === "POST" && new URL(request.url()).pathname === "/api/bookings")
+          bookingPosts += 1;
+      });
       page.on("pageerror", (error) => errors.push(error.message));
       page.on("console", (msg) => {
         if (msg.type() === "error") errors.push(msg.text());
@@ -52,6 +57,8 @@ function payload(section) {
           return json(payload("amenities"));
         if (url.pathname === "/api/hotel/policies")
           return json(payload("policies"));
+        if (url.pathname === "/api/hotel/inventory")
+          return json(payload("inventory"));
         if (url.pathname === "/api/session")
           return json({ conversation_id: "fixture" });
         if (url.pathname === "/api/history")
@@ -173,12 +180,19 @@ function payload(section) {
           fullPage: true,
         });
       }
+      // Since SIN-65 the review page offers one explicit confirmation button,
+      // but opening it must not send a booking request.
       assert.equal(
         await page
           .getByRole("button", { name: /confirm|reserve|book now/i })
           .count(),
-        0,
+        1,
       );
+      assert.equal(
+        await page.getByRole("button", { name: "Confirm demo reservation" }).count(),
+        1,
+      );
+      assert.equal(bookingPosts, 0);
       await page.goto(base);
       await page.getByLabel("Arrival").fill("2026-11-05");
       await page.getByLabel("Departure").fill("2026-11-07");

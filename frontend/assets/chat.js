@@ -33,6 +33,10 @@ function closeChat() {
 
 launcher.addEventListener('click', openChat);
 navChat.addEventListener('click', openChat);
+// Page buttons such as "Ask the concierge" can be added after this script runs.
+document.addEventListener('click', event => {
+  if (event.target.closest('[data-open-chat]')) openChat();
+});
 close.addEventListener('click', closeChat);
 windowPanel.addEventListener('keydown', event => {
   if (event.key === 'Escape') closeChat();

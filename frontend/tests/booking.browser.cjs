@@ -41,7 +41,7 @@ function payload(section) {
         const json = (data, status = 200) => route.fulfill({ json: data, status });
         if (url.pathname === "/api/site")
           return json({ name: hotel.name, language: "en", timezone: hotel.timezone, demo: true });
-        if (["rooms", "amenities", "policies"].some((section) => url.pathname === `/api/hotel/${section}`))
+        if (["rooms", "amenities", "policies", "inventory"].some((section) => url.pathname === `/api/hotel/${section}`))
           return json(payload(url.pathname.split("/")[3]));
         if (url.pathname === "/api/availability")
           return json({ status: "ok", rooms: [hotel.rooms[0]], nights: 2, timezone: hotel.timezone });
@@ -87,7 +87,7 @@ function payload(section) {
         const url = new URL(route.request().url());
         const json = (data, status = 200) => route.fulfill({ json: data, status });
         if (url.pathname === "/api/site") return json({ name: hotel.name, language: "en", timezone: hotel.timezone });
-        if (["rooms", "amenities", "policies"].some((section) => url.pathname === `/api/hotel/${section}`))
+        if (["rooms", "amenities", "policies", "inventory"].some((section) => url.pathname === `/api/hotel/${section}`))
           return json(payload(url.pathname.split("/")[3]));
         if (url.pathname === "/api/availability") return json({ status: "ok", rooms: [hotel.rooms[0]], nights: 2, timezone: hotel.timezone });
         if (url.pathname === "/api/session") return json({ conversation_id: "demo" });
