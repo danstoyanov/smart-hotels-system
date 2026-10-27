@@ -42,6 +42,7 @@
   --text-lead: 1.125rem;
   --text-title: 1.35rem;
   --text-title-lg: 1.75rem;
+  --radius-tail: 6px;
   --radius-field: 14px;
   --radius-photo: 18px;
   --radius-chat: 22px;
@@ -93,6 +94,16 @@ p {
 }
 a {
   color: inherit;
+  text-underline-offset: 3px;
+}
+::selection {
+  background: var(--gold-pale);
+  color: var(--green);
+}
+input,
+textarea {
+  caret-color: var(--green);
+  accent-color: var(--green);
 }
 img {
   display: block;
@@ -116,6 +127,11 @@ button:disabled {
 :focus-visible {
   outline: 3px solid var(--gold-focus);
   outline-offset: 4px;
+}
+/* Text fields: the focus outline covers the border, so it reads as one ring. */
+input:focus-visible,
+textarea:focus-visible {
+  outline-offset: -1px;
 }
 .visually-hidden {
   position: absolute;
@@ -253,6 +269,14 @@ button:disabled {
 .button:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 28px rgba(5, 27, 18, 0.15);
+}
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(5, 27, 18, 0.12);
+}
+.button:disabled {
+  transform: none;
+  box-shadow: none;
 }
 .button-gold {
   background: var(--gold);
@@ -397,16 +421,46 @@ button:disabled {
   margin-top: 16px;
 }
 .result-card {
-  padding: 20px;
-  border: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--card-line);
   border-radius: var(--radius-photo);
+  background: #fff;
+  box-shadow: 0 8px 25px rgba(5, 27, 18, 0.04);
+}
+.result-card img {
+  width: 100%;
+  height: 100%;
+  min-height: 140px;
+  object-fit: cover;
+  border-radius: var(--radius-field);
+}
+.result-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+.result-tag {
+  margin-bottom: 8px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
   background: var(--paper);
+  color: var(--green);
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 .result-card h3 {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 .result-card p {
+  margin-bottom: 14px;
   color: var(--muted);
+  font-size: var(--text-small);
 }
 .section-space {
   padding: 100px 0;
@@ -556,18 +610,18 @@ button:disabled {
   margin-inline: auto;
   color: var(--muted);
 }
+/* The photo amenity takes two columns and two rows; the others stack beside it. */
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-rows: minmax(250px, auto);
+  grid-auto-rows: minmax(210px, auto);
   gap: 18px;
 }
 .bento-amenities {
   display: contents;
 }
 .fact-card,
-.policy-card,
-.bento-concierge {
+.policy-card {
   padding: 30px;
   background: #fff;
   border: 1px solid var(--card-line);
@@ -606,6 +660,7 @@ button:disabled {
 .bento-photo {
   order: -1;
   grid-column: span 2;
+  grid-row: span 2;
   justify-content: end;
   min-height: 320px;
   border: 0;
@@ -622,37 +677,13 @@ button:disabled {
   color: rgba(255, 255, 255, 0.86);
   max-width: 52ch;
 }
+/* All text sits low, on the dark end of the gradient. */
+.bento-photo .fact-rooms {
+  margin-top: 0;
+}
 .bento-photo .fact-symbol {
   background: rgba(255, 224, 136, 0.18);
   color: var(--gold);
-}
-.bento-concierge {
-  grid-column: span 2;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  background: var(--cream);
-  border-color: var(--line);
-}
-.bento-concierge p {
-  color: var(--muted);
-}
-.bento-concierge .button {
-  margin-top: auto;
-}
-.bento-orb {
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  margin-bottom: 18px;
-  border-radius: 50%;
-  background: var(--green);
-  color: var(--gold);
-}
-.bento-orb svg {
-  width: 24px;
-  height: 24px;
 }
 .policy-grid {
   display: grid;
@@ -726,6 +757,10 @@ button:disabled {
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+.policy-more summary:hover {
+  color: var(--gold-deep);
+  text-decoration-thickness: 2px;
 }
 .policy-more[open] summary {
   margin-bottom: 4px;
@@ -831,6 +866,28 @@ button:disabled {
   min-height: 0;
   overflow-y: auto;
   padding: 18px 22px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+/* The one motion moment: the chat panel opens, and new messages settle in. */
+@keyframes chat-open {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+}
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.chat-window:not([hidden]) {
+  transform-origin: bottom right;
+  animation: chat-open 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.chat-message.is-new {
+  animation: message-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .chat-intro {
   margin-bottom: 18px;
@@ -906,19 +963,40 @@ button:disabled {
 .starter:disabled {
   cursor: default;
 }
+/* Concierge messages are white cards on the left; guest messages are green on the right. */
 #chat-log {
-  margin: 14px 0;
-  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+#chat-log:empty {
+  margin: 0;
 }
 .chat-message {
-  padding: 15px 0;
-  border-bottom: 1px solid var(--line);
+  justify-self: start;
+  max-width: 92%;
+  padding: 12px 16px 13px;
+  border: 1px solid var(--card-line);
+  border-radius: var(--radius-photo) var(--radius-photo) var(--radius-photo) var(--radius-tail);
+  background: #fff;
+}
+.chat-message.is-guest {
+  justify-self: end;
+  max-width: 85%;
+  border-color: transparent;
+  border-radius: var(--radius-photo) var(--radius-photo) var(--radius-tail) var(--radius-photo);
+  background: var(--green);
+  color: #fff;
 }
 .chat-message strong {
   display: block;
-  color: var(--muted);
-  margin-bottom: 5px;
-  font-size: var(--text-small);
+  color: var(--gold-deep);
+  margin-bottom: 4px;
+  font-size: var(--text-label);
+  letter-spacing: 0.06em;
+}
+.chat-message.is-guest strong {
+  color: var(--gold);
 }
 .chat-message p {
   white-space: pre-wrap;
@@ -926,9 +1004,16 @@ button:disabled {
   margin: 0;
 }
 .chat-message ul {
-  margin: 8px 0 0;
-  padding-left: 20px;
+  margin: 10px 0 0;
+  padding: 10px 0 0 18px;
+  border-top: 1px solid var(--card-line);
   font-size: var(--text-small);
+}
+.chat-message a {
+  color: var(--green);
+}
+.chat-message a:hover {
+  color: var(--gold-deep);
 }
 #chat-form label {
   display: block;
@@ -965,10 +1050,16 @@ button:disabled {
   font-size: clamp(2.5rem, 4.5vw, 4rem);
 }
 .back-link {
-  display: inline-block;
-  margin: 0 0 42px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0 0 30px;
   color: var(--green);
   font-weight: 700;
+}
+.back-link:hover {
+  color: var(--gold-deep);
+  text-decoration-thickness: 2px;
 }
 .detail-grid {
   display: grid;
@@ -1270,6 +1361,9 @@ button:disabled {
   .bento-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .bento-photo {
+    grid-row: auto;
+  }
   .review-layout {
     grid-template-columns: 1fr;
   }
@@ -1336,6 +1430,11 @@ button:disabled {
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
+  .nav-toggle:hover,
+  .nav-toggle[aria-expanded="true"] {
+    background: var(--green);
+    color: #fff;
+  }
   .nav-links {
     display: none;
   }
@@ -1385,6 +1484,14 @@ button:disabled {
   .booking-bar {
     grid-template-columns: 1fr;
   }
+  .result-card {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .result-card img {
+    min-height: 0;
+    height: 150px;
+  }
   .result-grid,
   .room-grid,
   .bento-grid,
@@ -1407,8 +1514,7 @@ button:disabled {
     margin-left: 0;
     justify-self: start;
   }
-  .bento-photo,
-  .bento-concierge {
+  .bento-photo {
     grid-column: auto;
   }
   .bento-photo {
@@ -1460,6 +1566,9 @@ button:disabled {
     height: 100dvh;
     border-radius: 0;
   }
+  .chat-window:not([hidden]) {
+    animation-name: message-in;
+  }
   .chat-window-top {
     padding-top: max(20px, env(safe-area-inset-top));
   }
@@ -1494,8 +1603,13 @@ button:disabled {
   .button {
     transition: none;
   }
-  .button:hover {
+  .button:hover,
+  .button:active {
     transform: none;
+  }
+  .chat-window:not([hidden]),
+  .chat-message.is-new {
+    animation: none;
   }
   .chat-launcher {
     transition: none;

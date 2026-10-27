@@ -85,6 +85,7 @@ typography:
     fontWeight: 700
     letterSpacing: "0.1em"
 rounded:
+  tail: "6px"
   field: "14px"
   photo: "18px"
   chat: "22px"
@@ -258,14 +259,16 @@ values are in `.impeccable/design.json`.
 **The Green Shadow Rule.** Shadows are always tinted with Canopy Green, never pure
 black, so depth stays warm.
 
-**The Lift on Hover Rule.** Buttons and the chat launcher lift 2–4px on hover. With
-`prefers-reduced-motion: reduce`, the lift and transitions are turned off.
+**The Lift on Hover Rule.** Buttons and the chat launcher lift 2–4px on hover and
+settle back when pressed. With `prefers-reduced-motion: reduce`, the lift,
+transitions and the chat entry motion are turned off.
 
 ## Shapes
 
 Soft and rounded throughout. Buttons, chips, tags and the navigation bar are full
 pills (999px). Cards and the search panel use 28px corners, the chat window 22px,
-photographs inside cards 18px and form fields 14px. Brand marks and icon buttons
+photographs inside cards 18px and form fields 14px. Chat messages keep one
+6px corner on the side of the person who wrote them. Brand marks and icon buttons
 are circles. Icons are thin line icons (18px, 1.6 stroke, round caps).
 
 ## Components
@@ -293,11 +296,15 @@ are circles. Icons are thin line icons (18px, 1.6 stroke, round caps).
 - **Border:** 1px Card Edge.
 - **Internal Padding:** 28px; room cards have a 320px photograph on top and a
   footer row divided by a hairline.
+- **Search results:** white cards with the room photograph beside the text (above
+  it on phones), a "Fictional demo room" tag, the room name and one dark action.
+- **Amenities:** the amenity with a photograph spans two columns and two rows; the
+  other amenities stack beside it.
 
 ### Inputs / Fields
 - **Style:** 50px high, Terrace Paper fill, 1px Stone Line border, 14px corners,
   Canopy Green text. Labels sit above in uppercase Label style.
-- **Focus:** 3px Focus Amber outline.
+- **Focus:** 3px Focus Amber outline drawn over the border, so it reads as one ring.
 - **Error:** notices under the form turn Brick.
 
 ### Navigation
@@ -309,9 +316,13 @@ are circles. Icons are thin line icons (18px, 1.6 stroke, round caps).
 
 ### Concierge Chat (signature component)
 - A round gold launcher with a speech bubble in the bottom-right corner opens a
-  420px chat window: Canopy Green header, Manor Cream body, messages divided by
-  hairlines, a white text area and a privacy note. Messages render as plain text
-  and list the hotel sources the concierge read.
+  420px chat window: Canopy Green header, Manor Cream body, a white text area and a
+  privacy note. Concierge messages are white cards on the left; guest messages are
+  Canopy Green cards on the right, each with one smaller corner on its own side.
+  Messages render as plain text and list the hotel sources the concierge read.
+- **Motion:** the chat window opens with a short rise and fade (0.24s, ease-out), and
+  messages the guest sends now settle in the same way. Saved history appears without
+  motion. This is the only entry motion on the site.
 
 ## Do's and Don'ts
 

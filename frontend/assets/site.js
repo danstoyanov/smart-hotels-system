@@ -350,14 +350,20 @@ function renderResults(data, query) {
   status.textContent = `${data.rooms.length} room${data.rooms.length === 1 ? "" : "s"} available for the full demo stay. Search does not reserve a room.`;
   data.rooms.forEach((room) => {
     const card = node("article", "result-card");
-    card.append(node("h3", "", room.name), node("p", "", details(room)));
-    card.append(
+    const photo = image(room);
+    photo.sizes = "140px";
+    const text = node("div", "result-copy");
+    text.append(
+      node("span", "result-tag", "Fictional demo room"),
+      node("h3", "", room.name),
+      node("p", "", details(room)),
       link(
         "Review this stay →",
         reviewUrl(room.id, query),
         "button button-dark",
       ),
     );
+    card.append(photo, text);
     target.append(card);
   });
 }
@@ -495,10 +501,8 @@ async function renderReview() {
         confirm.disabled = false;
       }
     });
+    // "← Change dates" above the heading is the one way back to search.
     text.append(confirm, status);
-    text.append(
-      link("Choose different dates", "/#availability", "button button-outline"),
-    );
     card.append(photo, text);
     target.replaceChildren(card);
   } catch (error) {
