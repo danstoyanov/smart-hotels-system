@@ -10,18 +10,7 @@ The first version uses demo hotel data and clearly labels demo reservations. The
 
 This section describes the system as it is built now. It is guidance for new work, not a feature checklist. Behaviour details are in [technical notes](docs/technical-notes.md); cloud settings are in [infra/cloud-demo.md](infra/cloud-demo.md). The example project in REFERENCE.md is a source of ideas only.
 
-```mermaid
-flowchart LR
-    Browser[Hotel website and concierge chat] --> API[Same-origin FastAPI]
-    API --> Agent[Per-reply ADK agent]
-    Agent --> Model[Gemini on Vertex AI or local stub]
-    Agent --> Tools[Hotel information and availability tools]
-    Tools --> Files[hotel/ demo data]
-    Tools --> DB[(PostgreSQL)]
-    API --> DB
-    Browser --> Confirm[Explicit demo reservation confirmation]
-    Confirm --> API
-```
+![Architecture: the guest browser calls one FastAPI app; for a chat turn FastAPI starts a new ADK agent that calls Gemini or the stub; the agent's tools read hotel/ files and search PostgreSQL; FastAPI stores sessions, turns and demo bookings in PostgreSQL; a reservation needs explicit confirmation](docs/images/architecture.svg)
 
 - One FastAPI app serves the website, static assets and the API from one origin. Writes require the exact `APP_ORIGIN` and an owned guest session cookie.
 - PostgreSQL owns durable state. Hotel facts are read from validated files in `hotel/`; nightly inventory is imported from those files into PostgreSQL.
