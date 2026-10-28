@@ -48,6 +48,8 @@ async function run(width, dates, keyboard) {
       await confirm.click();
     }
     await page.getByRole('heading', { name: 'Your demo reservation' }).waitFor();
+    assert.equal(await page.getByRole('link', { name: 'Change dates' }).count(), 0);
+    assert.equal(await page.getByRole('link', { name: 'Plan another stay' }).getAttribute('href'), '/#availability');
     assert.equal(bookingPosts, 1, 'confirmation must send one booking request');
     const reference = await page.locator('.booking-reference').textContent();
     assert.match(reference, /^Reference: DEM-/);
@@ -81,7 +83,7 @@ async function run(width, dates, keyboard) {
     await page.getByLabel('Departure').fill('2026-12-08');
     await page.getByLabel('Guests').fill('5');
     await page.getByRole('button', { name: /Check availability/i }).last().click();
-    await page.getByText('No room is available for the full stay and guest count.').waitFor();
+    await page.getByText('No room holds 5 guests. The largest demo room sleeps 4.').waitFor();
     await page.getByLabel('Arrival').fill('2027-07-01');
     await page.getByLabel('Departure').fill('2027-07-03');
     await page.getByLabel('Guests').fill('2');
