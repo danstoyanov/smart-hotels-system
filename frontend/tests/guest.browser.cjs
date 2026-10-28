@@ -119,9 +119,19 @@ function payload(section) {
       assert.equal(await launcher.isVisible(), true);
       assert.equal(await page.locator("#chat").isVisible(), false);
       assert.equal(await launcher.locator(".launcher-bubble").textContent(), "Ask");
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      await page.waitForFunction(() => !document.querySelector("#chat-launcher").classList.contains("is-tucked"));
+      await page.evaluate(() => window.scrollTo({ top: 400, behavior: "instant" }));
+      await page.waitForFunction(() => document.querySelector("#chat-launcher").classList.contains("is-tucked"));
+      assert.equal(await launcher.evaluate(element => element.classList.contains("is-tucked")), true);
+      await page.evaluate(() => window.scrollTo({ top: 250, behavior: "instant" }));
+      await page.waitForFunction(() => !document.querySelector("#chat-launcher").classList.contains("is-tucked"));
+      assert.equal(await launcher.evaluate(element => element.classList.contains("is-tucked")), false);
+      await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
+      await page.waitForFunction(() => !document.querySelector("#chat-launcher").classList.contains("is-tucked"));
       assert.equal(await launcher.isVisible(), true);
-      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
       if (width === 375 || width === 1440) {
         await page.screenshot({
           path: path.join(screenshots, `sin-64-${width}.png`),

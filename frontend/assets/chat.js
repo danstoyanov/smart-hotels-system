@@ -18,8 +18,34 @@ let controller;
 let ready = false;
 // "Reload chat" is offered only after something went wrong.
 let needsReload = false;
+let scrollAnchor = window.scrollY;
+let scrollPending = false;
+
+function updateLauncher() {
+  scrollPending = false;
+  const y = Math.max(0, window.scrollY);
+  const end = document.documentElement.scrollHeight - window.innerHeight;
+  if (!windowPanel.hidden || y <= 120 || y >= end - 8) {
+    launcher.classList.remove('is-tucked');
+  } else if (Math.abs(y - scrollAnchor) < 8) {
+    return;
+  } else {
+    launcher.classList.toggle('is-tucked', y > scrollAnchor
+      && document.activeElement !== launcher);
+  }
+  // Keep a small distance between changes so scroll jitter does not toggle it.
+  scrollAnchor = y;
+}
+
+window.addEventListener('scroll', () => {
+  if (scrollPending) return;
+  scrollPending = true;
+  requestAnimationFrame(updateLauncher);
+}, { passive: true });
+launcher.addEventListener('focus', () => launcher.classList.remove('is-tucked'));
 
 function openChat() {
+  launcher.classList.remove('is-tucked');
   windowPanel.hidden = false;
   // On phones site.css turns this into a full-screen sheet and locks page scroll.
   document.documentElement.classList.add('chat-open');
@@ -30,6 +56,7 @@ function openChat() {
 }
 
 function closeChat() {
+  launcher.classList.remove('is-tucked');
   windowPanel.hidden = true;
   document.documentElement.classList.remove('chat-open');
   launcher.hidden = false;

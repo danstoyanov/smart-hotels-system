@@ -244,8 +244,9 @@ only. Labels, forms, chat messages and notes always use Manrope.
   narrow screens. The search form is a four-column grid that stacks on phones.
 - Breakpoints: 1100px (tighter navigation), 850px (navigation wraps, grids
   narrow) and 600px (phone layout).
-- The floating concierge launcher stays in the bottom-right corner and respects
-  safe-area insets.
+- The floating concierge launcher uses the bottom-right corner and respects
+  safe-area insets. It tucks away while scrolling down to keep page text clear.
+- Footer links on phones have a minimum tap height of 44px.
 
 ## Elevation & Depth
 
@@ -315,6 +316,12 @@ are circles. Icons are thin line icons (18px, 1.6 stroke, round caps).
   corners soften to 28px.
 
 ### Concierge Chat (signature component)
+- The launcher tucks away when scrolling down past 120px, with an 8px threshold
+  to ignore small scroll changes. It shows when scrolling up, at the page end,
+  on short pages and on keyboard focus. It stays in the tab order. Closing the
+  chat shows and focuses it; scrolling never tucks it while the chat is open.
+- The launcher uses a small show/hide transition (0.2s, ease-out), with no
+  transition under reduced motion.
 - A round gold launcher with a speech bubble in the bottom-right corner opens a
   420px chat window: Canopy Green header, Manor Cream body, a white text area and a
   privacy note. Concierge messages are white cards on the left; guest messages are
