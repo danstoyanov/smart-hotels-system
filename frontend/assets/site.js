@@ -184,9 +184,30 @@ function policyCard(item) {
   }
   return card;
 }
+function updateDepartureMin() {
+  const arrival = $("#check-in");
+  const date = new Date(`${arrival.value || arrival.min}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + 1);
+  $("#check-out").min = date.toISOString().slice(0, 10);
+}
+function setupDateLimits(timezone) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const part = (type) => parts.find((item) => item.type === type).value;
+  $("#check-in").min = `${part("year")}-${part("month")}-${part("day")}`;
+  $("#check-in").addEventListener("change", updateDepartureMin);
+  updateDepartureMin();
+}
 function renderInventory(nights) {
   const days = [...new Set((nights || []).map((item) => item.night))].sort();
   if (!days.length) return;
+  const arrival = $("#check-in");
+  if (days[0] > arrival.min) arrival.min = days[0];
+  updateDepartureMin();
   const range = `${formatNight(days[0])} – ${formatNight(days.at(-1))}`;
   $("#inventory-note").textContent =
     `Sample nights: ${range}. A search does not hold a room.`;
@@ -245,10 +266,11 @@ function renderBooking(target, booking) {
     node("p", "", stayText(booking.check_in, booking.check_out, booking.guests)),
     reference,
     node("p", "small-note", booking.message),
-    link("Return to rooms", "/#rooms", "button button-outline"),
+    link("Plan another stay", "/#availability", "button button-outline"),
   );
   card.append(text);
   target.replaceChildren(card);
+  $("#review-page .back-link").hidden = true;
   $("#review-title").textContent = "Your demo reservation";
   $(".review-lead").textContent =
     "Keep the reference. You can open this demo reservation again in this browser.";
@@ -343,8 +365,11 @@ function renderResults(data, query) {
     return;
   }
   if (data.status === "no_match" || !data.rooms.length) {
-    status.textContent =
-      "No room is available for the full stay and guest count. Try other demo dates.";
+    const guests = Number(query.get("guests"));
+    const capacity = Math.max(...state.rooms.map((room) => room.capacity));
+    status.textContent = state.rooms.length && guests > capacity
+      ? `No room holds ${guests} guests. The largest demo room sleeps ${capacity}.`
+      : "No room is available for the full stay and guest count. Try other demo dates.";
     return;
   }
   status.textContent = `${data.rooms.length} room${data.rooms.length === 1 ? "" : "s"} available for the full demo stay. Search does not reserve a room.`;
@@ -567,6 +592,7 @@ async function init() {
     $("#timezone").textContent = site.timezone;
     document.title = `${site.name} · Fictional demo`;
     document.documentElement.lang = site.language;
+    setupDateLimits(site.timezone);
     renderCatalogue();
     renderInventory((await inventory)?.data);
   } catch {
