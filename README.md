@@ -10,7 +10,7 @@ reservation.
 > dates in `hotel/` are invented sample data. Reservations are clearly labelled
 > demo reservations: there are no prices, no payments and no real hotel booking.
 
-![Review page of the demo hotel website](docs/images/guest-review-desktop.png)
+![Review page of the fictional demo hotel, with Garden Room selected for 1–3 December 2026 and the Confirm demo reservation button](docs/images/guest-review-desktop.png)
 
 ## Contents
 
@@ -132,26 +132,34 @@ Ctrl+C. Stop the database with `docker compose stop db`.
 
 ## Try the demo
 
-1. **Ask the concierge.** Open the chat and ask, for example, "What time is
-   breakfast?". In the default stub mode you get a fixed demo reply. With
+On phones, press **Menu** to open the navigation links.
+
+1. **Ask the concierge.** Press **Ask the concierge** to open the chat. Choose
+   one of three starter questions about breakfast, check-in and checkout, or pets,
+   or type your own question. In the default stub mode the status says
+   "Chat ready. This demo gives sample replies, not live AI answers."
+   You get a fixed demo reply. With
    [Vertex mode](#optional-use-real-gemini-through-vertex-ai) the real assistant
    answers from the hotel information and links its sources.
 2. **Search for a stay.** Choose arrival and departure dates and the number of
-   guests. The demo inventory covers the nights from **1 November 2026 to
-   30 June 2027**. On a new database you should see:
+   guests, then press **Check availability**. The demo inventory covers the nights
+   from **1 November 2026 to 30 June 2027**. On a new database you should see:
    - 2 guests, 1–3 December 2026: Garden Room and Manor Suite are available.
    - 2 guests, 23–27 December 2026: only Manor Suite. The Garden Room is closed
      on 24 and 25 December (and on 5 November).
-   - 5 guests: no room fits the party.
+   - 5 guests: "No room holds 5 guests. The largest demo room sleeps 4."
    - Dates from 1 July 2027: inventory is unknown, so nothing is offered.
-3. **Review and confirm.** Open a room, go to the review page and press
-   **Confirm demo reservation**. You get a demo reference such as `DEM-…`.
+3. **Review and confirm.** In the search results, press **Review this stay**,
+   then **Confirm demo reservation**. The page title becomes
+   **Your demo reservation**. The reference block says `Reference: DEM-…`.
+   Press **Plan another stay** to search again.
    Refresh the page: the reservation is still visible to you, but not to another
    browser. Your demo reservations stay in the local database and keep those
    nights booked for later searches.
 
-> **Note about dates.** Check-in must be today or later in the hotel timezone
-> (Europe/Kyiv). After 30 June 2027 the sample nights are in the past, and
+> **Note about dates.** Arrival cannot be earlier than today in the hotel timezone
+> (Europe/Kyiv) or the first sample night, whichever is later.
+> After 30 June 2027 the sample nights are in the past, and
 > every search returns no rooms. To test later dates, publish a new demo data
 > revision as described in [hotel/README.md](hotel/README.md).
 
