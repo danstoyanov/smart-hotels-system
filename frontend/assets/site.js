@@ -489,7 +489,8 @@ async function renderReview() {
       node("h2", "", room.name),
     );
     text.append(node("p", "", stayText(checkIn, checkOut, guests)));
-    text.append(node("p", "", `Property timezone: ${data.timezone}`));
+    const city = data.timezone.split("/").at(-1).replaceAll("_", " ");
+    text.append(node("p", "", `Dates use hotel time (${city}).`));
     text.append(node("p", "small-note", "No price or currency is set."));
     const confirm = node("button", "button button-gold", "Confirm demo reservation");
     confirm.type = "button";

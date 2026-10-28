@@ -212,6 +212,8 @@ Brass, never Lantern Gold, so they stay readable.
 friendly sans for everything the guest has to read or tap. Both fonts are
 self-hosted variable fonts in `frontend/assets/fonts/`.
 
+Headings use `text-wrap: balance`; paragraphs, policy and chat list items use `text-wrap: pretty`.
+
 ### Hierarchy
 - **Display** (600, fluid 2.6rem–5.1rem, 1.15): the hero `h1` only; on phones
   `clamp(2.6rem, 11vw, 4rem)`. Italic words in Lantern Gold at weight 400 add warmth.

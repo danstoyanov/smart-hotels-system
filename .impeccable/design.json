@@ -35,7 +35,8 @@
     ],
     "motion": [
       { "name": "button-lift", "value": "transform 0.2s, background 0.2s, box-shadow 0.2s", "purpose": "Button hover lift; off under prefers-reduced-motion." },
-      { "name": "launcher-lift", "value": "transform 0.2s ease-out", "purpose": "Chat launcher 4px hover lift; off under prefers-reduced-motion." }
+      { "name": "launcher-lift", "value": "transform 0.2s ease-out", "purpose": "Chat launcher 4px hover lift; off under prefers-reduced-motion." },
+      { "name": "launcher-tuck", "value": "0.2s ease-out", "purpose": "The launcher uses a small show/hide transition (0.2s, ease-out), with no transition under reduced motion." }
     ],
     "breakpoints": [
       { "name": "phone", "value": "600px" },
@@ -101,6 +102,13 @@
       "Playfair Display headlines over a quiet Manrope body.",
       "Pill buttons, 28px cards, soft green shadows, light glass over photographs.",
       "Calm density: one clear next step per section."
+    ],
+    "layout": [
+      "The floating concierge launcher uses the bottom-right corner and respects safe-area insets. It tucks away while scrolling down to keep page text clear.",
+      "Footer links on phones have a minimum tap height of 44px."
+    ],
+    "conciergeChat": [
+      "The launcher tucks away when scrolling down past 120px, with an 8px threshold to ignore small scroll changes. It shows when scrolling up, at the page end, on short pages and on keyboard focus. It stays in the tab order. Closing the chat shows and focuses it; scrolling never tucks it while the chat is open."
     ],
     "rules": [
       { "name": "The Lantern Rule", "body": "Lantern Gold is a light, not a wall. Use it for one primary action per view, small accents and text on green; never for large backgrounds.", "section": "colors" },

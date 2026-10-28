@@ -92,7 +92,7 @@ if (location.hash === '#chat') openChat();
 function controls(busy) {
   send.disabled = busy || !ready;
   input.disabled = busy || !ready;
-  reset.disabled = busy || !ready;
+  reset.disabled = busy || !ready || !document.querySelector('#chat-empty').hidden;
   retry.disabled = busy;
   retry.hidden = ready && !needsReload;
   stop.hidden = !busy;
